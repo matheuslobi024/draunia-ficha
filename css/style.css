@@ -215,6 +215,96 @@ textarea {
     color: var(--accent-primary);
 }
 
+/* ========== ADJUSTMENT BUTTONS ========== */
+.btn-adjust {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.btn-adjust:hover {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+}
+
+.btn-adjust:active {
+    transform: scale(0.95);
+}
+
+.btn-adjust.btn-attr {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    font-size: 0.65rem;
+}
+
+.input-with-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.3rem 0.4rem;
+}
+
+.input-with-buttons input {
+    flex: 1;
+    text-align: center;
+    background: transparent !important;
+    border: none !important;
+    padding: 0.2rem !important;
+    min-width: 40px;
+}
+
+.input-with-buttons input:focus {
+    outline: none;
+}
+
+.attr-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.2rem 0.3rem;
+}
+
+.attr-controls .attr-input {
+    width: 36px !important;
+    min-width: 36px;
+    padding: 0.2rem !important;
+    font-size: 1rem;
+    background: transparent !important;
+    border: none !important;
+    text-align: center;
+}
+
+.attr-controls .attr-input:focus {
+    outline: none;
+}
+
+.vital-values .btn-adjust {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    font-size: 0.8rem;
+}
+
 /* ========== CHARACTER LIST ========== */
 .character-list {
     max-height: 300px;
@@ -672,13 +762,14 @@ textarea {
     flex-direction: column;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.5rem;
+    padding: 0.5rem 0.3rem;
     background: var(--bg-input);
     border-radius: var(--border-radius);
+    overflow: hidden;
 }
 
 .vital-compact i {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
 }
 
 .hp-compact i { color: var(--hp-color); }
@@ -686,7 +777,7 @@ textarea {
 .pe-compact i { color: var(--pe-color); }
 
 .vital-compact label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--text-secondary);
     text-transform: uppercase;
 }
@@ -694,21 +785,37 @@ textarea {
 .vital-compact-values {
     display: flex;
     align-items: center;
-    gap: 0.15rem;
+    justify-content: center;
+    gap: 0.25rem;
     font-weight: 600;
+    flex-wrap: nowrap;
 }
 
 .vital-compact-input {
     width: 45px !important;
+    min-width: 45px;
     text-align: center;
-    padding: 0.25rem !important;
-    font-size: 0.9rem !important;
+    padding: 0.3rem !important;
+    font-size: 1rem !important;
     font-weight: 600;
 }
 
 .vital-compact-max {
     color: var(--text-secondary);
     font-size: 0.9rem;
+}
+
+.vital-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.vital-buttons .btn-adjust {
+    width: 28px;
+    height: 24px;
+    min-width: 28px;
+    font-size: 0.7rem;
 }
 
 /* ========== TAB COMBATE ========== */
@@ -799,6 +906,18 @@ input.vital-single {
     border-radius: 4px;
     overflow: hidden;
     margin-top: 0.5rem;
+}
+
+/* Vital buttons in combat tab */
+.vital-info .vital-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.vital-info .vital-buttons .btn-adjust {
+    width: 32px;
+    height: 26px;
 }
 
 .bar-fill {

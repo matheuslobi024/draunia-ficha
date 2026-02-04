@@ -10,6 +10,27 @@ const Sheet = {
         this.generateSkillsHTML();
     },
 
+    // Adjust a numeric value by delta (+1 or -1)
+    adjustValue(fieldId, delta) {
+        const input = document.getElementById(fieldId);
+        if (!input) return;
+
+        let currentValue = parseInt(input.value) || 0;
+        let newValue = currentValue + delta;
+
+        // Respect minimum values
+        const minValue = parseInt(input.min);
+        if (!isNaN(minValue) && newValue < minValue) {
+            newValue = minValue;
+        }
+
+        // Update the input
+        input.value = newValue;
+
+        // Trigger input event to sync and save
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+
     // Bind all events
     bindEvents() {
         // Auto-save on any input change

@@ -148,13 +148,21 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Nível</label>
-                                    <input type="number" id="charLevel" data-field="charLevel" min="1" value="1">
+                                    <div class="input-with-buttons">
+                                        <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('charLevel', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="charLevel" data-field="charLevel" min="1" value="1">
+                                        <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('charLevel', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="info-row">
                                 <div class="form-group">
                                     <label>PN Disponíveis</label>
-                                    <input type="number" id="levelPoints" data-field="levelPoints" min="0" value="0">
+                                    <div class="input-with-buttons">
+                                        <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('levelPoints', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="levelPoints" data-field="levelPoints" min="0" value="0">
+                                        <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('levelPoints', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label>PN/Nível</label>
@@ -171,27 +179,51 @@
                             <div class="attributes-compact">
                                 <div class="attr-item">
                                     <span class="attr-label">FOR</span>
-                                    <input type="number" id="attrFor" data-field="attrFor" class="attr-input" value="0">
+                                    <div class="attr-controls">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrFor', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="attrFor" data-field="attrFor" class="attr-input" value="0">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrFor', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
                                 <div class="attr-item">
                                     <span class="attr-label">CON</span>
-                                    <input type="number" id="attrCon" data-field="attrCon" class="attr-input" value="0">
+                                    <div class="attr-controls">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrCon', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="attrCon" data-field="attrCon" class="attr-input" value="0">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrCon', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
                                 <div class="attr-item">
                                     <span class="attr-label">VON</span>
-                                    <input type="number" id="attrVon" data-field="attrVon" class="attr-input" value="0">
+                                    <div class="attr-controls">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrVon', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="attrVon" data-field="attrVon" class="attr-input" value="0">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrVon', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
                                 <div class="attr-item">
                                     <span class="attr-label">CAR</span>
-                                    <input type="number" id="attrCar" data-field="attrCar" class="attr-input" value="0">
+                                    <div class="attr-controls">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrCar', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="attrCar" data-field="attrCar" class="attr-input" value="0">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrCar', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
                                 <div class="attr-item">
                                     <span class="attr-label">INT</span>
-                                    <input type="number" id="attrInt" data-field="attrInt" class="attr-input" value="0">
+                                    <div class="attr-controls">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrInt', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="attrInt" data-field="attrInt" class="attr-input" value="0">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrInt', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
                                 <div class="attr-item">
                                     <span class="attr-label">AGI</span>
-                                    <input type="number" id="attrAgi" data-field="attrAgi" class="attr-input" value="0">
+                                    <div class="attr-controls">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrAgi', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="attrAgi" data-field="attrAgi" class="attr-input" value="0">
+                                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrAgi', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,11 +239,21 @@
                                     <span>/</span>
                                     <span id="maxHpMain" class="vital-compact-max">20</span>
                                 </div>
+                                <div class="vital-buttons">
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentHpMain', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentHpMain', 1)"><i class="fas fa-plus"></i></button>
+                                </div>
                             </div>
                             <div class="vital-compact san-compact">
                                 <i class="fas fa-brain"></i>
                                 <label>Sanidade</label>
-                                <input type="number" id="sanityMain" class="vital-compact-input" min="0" value="20">
+                                <div class="vital-compact-values">
+                                    <input type="number" id="sanityMain" class="vital-compact-input" min="0" value="20">
+                                </div>
+                                <div class="vital-buttons">
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('sanityMain', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('sanityMain', 1)"><i class="fas fa-plus"></i></button>
+                                </div>
                             </div>
                             <div class="vital-compact pe-compact">
                                 <i class="fas fa-bolt"></i>
@@ -220,6 +262,10 @@
                                     <input type="number" id="currentPEMain" class="vital-compact-input" min="0" value="6">
                                     <span>/</span>
                                     <span id="maxPEMain" class="vital-compact-max">6</span>
+                                </div>
+                                <div class="vital-buttons">
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPEMain', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPEMain', 1)"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -313,6 +359,10 @@
                                 <div class="vital-bar">
                                     <div id="hpBar" class="bar-fill hp-fill" style="width: 100%"></div>
                                 </div>
+                                <div class="vital-buttons">
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentHp', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentHp', 1)"><i class="fas fa-plus"></i></button>
+                                </div>
                             </div>
                         </div>
 
@@ -320,7 +370,13 @@
                             <div class="vital-icon"><i class="fas fa-brain"></i></div>
                             <div class="vital-info">
                                 <label>Sanidade</label>
-                                <input type="number" id="sanity" data-field="sanity" class="vital-single" min="0" value="20">
+                                <div class="vital-values">
+                                    <input type="number" id="sanity" data-field="sanity" class="vital-single" min="0" value="20">
+                                </div>
+                                <div class="vital-buttons">
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('sanity', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('sanity', 1)"><i class="fas fa-plus"></i></button>
+                                </div>
                             </div>
                         </div>
 
@@ -335,6 +391,10 @@
                                 </div>
                                 <div class="vital-bar">
                                     <div id="peBar" class="bar-fill pe-fill" style="width: 100%"></div>
+                                </div>
+                                <div class="vital-buttons">
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPE', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPE', 1)"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
                         </div>

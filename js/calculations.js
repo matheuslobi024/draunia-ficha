@@ -205,9 +205,10 @@ const Calculations = {
         return parseInt(charData.fusionBoneLegs) || 0;
     },
 
-    // Calculate PN per level (always 4)
-    calculatePNPerLevel() {
-        return 4;
+    // Calculate PN per level (sanity / 5)
+    calculatePNPerLevel(charData) {
+        const sanity = parseInt(charData.sanity) || 20;
+        return Math.floor(sanity / 5);
     },
 
     // Calculate used attribute points
@@ -257,7 +258,7 @@ const Calculations = {
             reduceDamage: this.calculateDamageReduction(charData),
             reduceFall: this.calculateFallReduction(charData),
             usedAttrPoints: this.calculateUsedAttrPoints(charData),
-            pnPerLevel: this.calculatePNPerLevel()
+            pnPerLevel: this.calculatePNPerLevel(charData)
         };
     }
 };
