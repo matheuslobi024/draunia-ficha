@@ -8,6 +8,7 @@ const Sheet = {
     init() {
         this.bindEvents();
         this.generateSkillsHTML();
+        this.setupSkillSearch();
     },
 
     // Adjust a numeric value by delta (+1 or -1)
@@ -345,6 +346,28 @@ const Sheet = {
     removeAttack(btn) {
         btn.closest('tr').remove();
         this.onFieldChange();
+    },
+
+    // Setup skill search
+    setupSkillSearch() {
+        const searchInput = document.getElementById('skillSearchInput');
+        if (!searchInput) return;
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            const skillItems = document.querySelectorAll('.skill-item');
+
+            skillItems.forEach(item => {
+                const skillName = item.querySelector('.skill-name')?.textContent.toLowerCase() || '';
+                const skillAttr = item.querySelector('.skill-attr')?.textContent.toLowerCase() || '';
+
+                if (skillName.includes(searchTerm) || skillAttr.includes(searchTerm)) {
+                    item.classList.remove('hidden-by-search');
+                } else {
+                    item.classList.add('hidden-by-search');
+                }
+            });
+        });
     },
 
     // Generate skills HTML
