@@ -1128,14 +1128,6 @@ input.vital-single {
     background: #c0392b !important;
 }
 
-.san-box .btn-restore {
-    background: var(--san-color) !important;
-}
-
-.san-box .btn-restore:hover {
-    background: #8e44ad !important;
-}
-
 .pe-box .btn-restore {
     background: var(--pe-color) !important;
 }

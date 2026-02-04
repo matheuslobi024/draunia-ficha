@@ -386,23 +386,6 @@ const Sheet = {
         this.showNotification('HP restaurado ao máximo!', 'success');
     },
 
-    // Restore Sanity to 20 (default max)
-    restoreSanity() {
-        const maxSanity = 20;
-        const sanityInput = document.getElementById('sanity');
-        const sanityMainInput = document.getElementById('sanityMain');
-        
-        if (sanityInput) {
-            sanityInput.value = maxSanity;
-        }
-        if (sanityMainInput) {
-            sanityMainInput.value = maxSanity;
-        }
-        this.currentCharacter.sanity = maxSanity;
-        this.onFieldChange();
-        this.showNotification('Sanidade restaurada!', 'success');
-    },
-
     // Restore PE to max
     restorePE() {
         const maxPE = Calculations.calculateMaxPE(this.currentCharacter);
