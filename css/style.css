@@ -1852,11 +1852,139 @@ input.vital-single {
     opacity: 1;
 }
 
-/* Esconder controles de layout no mobile */
+/* ========== SISTEMA DE SETAS MOBILE ========== */
+
+/* Container das setas */
+.mobile-arrows {
+    display: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    flex-direction: row;
+    gap: 4px;
+    z-index: 15;
+}
+
+.mobile-arrows.visible {
+    display: flex;
+}
+
+/* Botões de seta */
+.mobile-arrow-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-arrow-btn:hover,
+.mobile-arrow-btn:active {
+    background: var(--accent-secondary);
+    transform: scale(1.1);
+}
+
+.mobile-arrow-btn:disabled {
+    background: var(--bg-card-hover);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Animação quando card é movido */
+.card-moved {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-moved-up {
+    animation: slideUp 0.3s ease;
+}
+
+.card-moved-down {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideUp {
+    0% { transform: translateY(20px); opacity: 0.5; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+    0% { transform: translateY(-20px); opacity: 0.5; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Estilos mobile para modo de edição */
 @media (max-width: 768px) {
-    .layout-controls,
+    /* Mostrar controles no mobile */
+    .layout-controls {
+        display: flex !important;
+        bottom: 15px;
+        right: 15px;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .layout-edit-btn {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+    
+    .layout-reset-btn {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+    }
+    
     .layout-help-tooltip {
+        display: block !important;
+        top: auto;
+        bottom: 100px;
+        width: calc(100% - 30px);
+        left: 15px;
+        transform: none;
+        font-size: 0.8rem;
+        padding: 10px 15px;
+        text-align: center;
+    }
+    
+    /* Ajustes para cards no modo edição mobile */
+    .mobile-layout-mode.layout-edit-mode .draggable-card {
+        padding-top: 50px;
+    }
+    
+    .mobile-layout-mode.layout-edit-mode .character-portrait.draggable-card {
+        padding-top: 0;
+    }
+    
+    .mobile-layout-mode.layout-edit-mode .character-portrait .mobile-arrows {
+        top: -5px;
+        right: calc(50% - 45px);
+    }
+    
+    /* Esconder drag handle no mobile */
+    .mobile-layout-mode .card-drag-handle {
         display: none !important;
+    }
+    
+    /* Destacar card no modo edição */
+    .mobile-layout-mode.layout-edit-mode .draggable-card {
+        border: 2px dashed var(--accent-primary) !important;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Setas maiores para touch */
+    .mobile-arrow-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
     }
 }
 

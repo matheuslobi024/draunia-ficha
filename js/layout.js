@@ -1,5 +1,5 @@
 // ========== LAYOUT CUSTOMIZATION MODULE ==========
-// Apenas para Desktop - Drag and Drop
+// Desktop: Drag and Drop | Mobile: Setas
 
 const Layout = {
     LAYOUT_KEY: 'draunia_layout',
@@ -7,19 +7,37 @@ const Layout = {
     draggedElement: null,
 
     init() {
-        // Só inicializa em desktop
-        if (this.isMobile()) {
-            console.log('Layout: modo mobile - drag-drop desativado');
-            return;
-        }
-        
         this.loadLayout();
         this.createControls();
-        this.bindEvents();
+        
+        if (this.isMobile()) {
+            console.log('Layout: modo mobile - usando setas');
+            this.createMobileArrows();
+        } else {
+            console.log('Layout: modo desktop - usando drag-drop');
+            this.bindEvents();
+        }
+        
+        // Listener para mudança de tamanho de tela
+        window.addEventListener('resize', () => this.handleResize());
     },
 
     isMobile() {
         return window.matchMedia('(max-width: 768px)').matches;
+    },
+    
+    handleResize() {
+        const wasMobile = document.body.classList.contains('mobile-layout-mode');
+        const isMobile = this.isMobile();
+        
+        if (isMobile && !wasMobile) {
+            document.body.classList.add('mobile-layout-mode');
+            this.createMobileArrows();
+        } else if (!isMobile && wasMobile) {
+            document.body.classList.remove('mobile-layout-mode');
+            this.removeMobileArrows();
+            this.bindEvents();
+        }
     },
 
     createControls() {
@@ -44,7 +62,10 @@ const Layout = {
         
         const tooltip = document.createElement('div');
         tooltip.className = 'layout-help-tooltip';
-        tooltip.innerHTML = '<i class="fas fa-info-circle"></i> Arraste os cards para reorganizar.';
+        const tooltipText = this.isMobile() 
+            ? '<i class="fas fa-info-circle"></i> Use as setas para reorganizar os cards.'
+            : '<i class="fas fa-info-circle"></i> Arraste os cards para reorganizar.';
+        tooltip.innerHTML = tooltipText;
         document.body.appendChild(tooltip);
         
         const notification = document.createElement('div');
@@ -52,6 +73,11 @@ const Layout = {
         notification.className = 'layout-saved-notification';
         notification.innerHTML = '<i class="fas fa-check"></i> Layout salvo!';
         document.body.appendChild(notification);
+        
+        // Marca se é mobile
+        if (this.isMobile()) {
+            document.body.classList.add('mobile-layout-mode');
+        }
     },
 
     toggleEditMode() {
@@ -65,12 +91,22 @@ const Layout = {
             editBtn.innerHTML = '<i class="fas fa-check"></i> Salvar Layout';
             editBtn.classList.add('active');
             resetBtn.classList.remove('hidden');
-            this.enableDragAndDrop();
+            
+            if (this.isMobile()) {
+                this.showMobileArrows();
+            } else {
+                this.enableDragAndDrop();
+            }
         } else {
             editBtn.innerHTML = '<i class="fas fa-th"></i> Editar Layout';
             editBtn.classList.remove('active');
             resetBtn.classList.add('hidden');
-            this.disableDragAndDrop();
+            
+            if (this.isMobile()) {
+                this.hideMobileArrows();
+            } else {
+                this.disableDragAndDrop();
+            }
             this.saveLayout();
             this.showNotification();
         }
@@ -270,6 +306,114 @@ const Layout = {
             localStorage.removeItem(this.LAYOUT_KEY);
             location.reload();
         }
+    },
+
+    // ========== SISTEMA DE SETAS MOBILE ==========
+    
+    createMobileArrows() {
+        document.querySelectorAll('.draggable-card').forEach(card => {
+            if (card.querySelector('.mobile-arrows')) return;
+            
+            const arrowsContainer = document.createElement('div');
+            arrowsContainer.className = 'mobile-arrows';
+            
+            const upBtn = document.createElement('button');
+            upBtn.className = 'mobile-arrow-btn arrow-up';
+            upBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+            upBtn.title = 'Mover para cima';
+            upBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.moveCardUp(card);
+            });
+            
+            const downBtn = document.createElement('button');
+            downBtn.className = 'mobile-arrow-btn arrow-down';
+            downBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            downBtn.title = 'Mover para baixo';
+            downBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.moveCardDown(card);
+            });
+            
+            arrowsContainer.appendChild(upBtn);
+            arrowsContainer.appendChild(downBtn);
+            card.appendChild(arrowsContainer);
+        });
+    },
+    
+    removeMobileArrows() {
+        document.querySelectorAll('.mobile-arrows').forEach(el => el.remove());
+    },
+    
+    showMobileArrows() {
+        document.querySelectorAll('.mobile-arrows').forEach(el => {
+            el.classList.add('visible');
+        });
+    },
+    
+    hideMobileArrows() {
+        document.querySelectorAll('.mobile-arrows').forEach(el => {
+            el.classList.remove('visible');
+        });
+    },
+    
+    moveCardUp(card) {
+        const container = card.parentElement;
+        const prevCard = card.previousElementSibling;
+        
+        if (prevCard && prevCard.classList.contains('draggable-card')) {
+            // Move dentro do mesmo container
+            container.insertBefore(card, prevCard);
+            this.animateCard(card, 'up');
+        } else {
+            // Tenta mover para container anterior
+            const activeTab = document.querySelector('.tab-content.active');
+            const containers = Array.from(activeTab.querySelectorAll('.layout-container'));
+            const currentIndex = containers.indexOf(container);
+            
+            if (currentIndex > 0) {
+                const prevContainer = containers[currentIndex - 1];
+                prevContainer.appendChild(card);
+                this.animateCard(card, 'up');
+            }
+        }
+    },
+    
+    moveCardDown(card) {
+        const container = card.parentElement;
+        const nextCard = card.nextElementSibling;
+        
+        if (nextCard && nextCard.classList.contains('draggable-card')) {
+            // Move dentro do mesmo container
+            container.insertBefore(nextCard, card);
+            this.animateCard(card, 'down');
+        } else {
+            // Tenta mover para próximo container
+            const activeTab = document.querySelector('.tab-content.active');
+            const containers = Array.from(activeTab.querySelectorAll('.layout-container'));
+            const currentIndex = containers.indexOf(container);
+            
+            if (currentIndex < containers.length - 1) {
+                const nextContainer = containers[currentIndex + 1];
+                // Insere no início do próximo container
+                const firstCard = nextContainer.querySelector('.draggable-card');
+                if (firstCard) {
+                    nextContainer.insertBefore(card, firstCard);
+                } else {
+                    nextContainer.appendChild(card);
+                }
+                this.animateCard(card, 'down');
+            }
+        }
+    },
+    
+    animateCard(card, direction) {
+        card.classList.add('card-moved');
+        card.classList.add(`card-moved-${direction}`);
+        
+        setTimeout(() => {
+            card.classList.remove('card-moved', `card-moved-${direction}`);
+        }, 300);
     }
 };
 
