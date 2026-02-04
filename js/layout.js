@@ -4,22 +4,21 @@ const Layout = {
     LAYOUT_KEY: 'draunia_layout',
     isEditMode: false,
     draggedElement: null,
-    
-    // Touch-specific properties
-    touchStartY: 0,
-    touchStartX: 0,
-    touchCurrentY: 0,
-    touchCurrentX: 0,
-    touchClone: null,
-    isTouchDragging: false,
-    scrollThreshold: 50, // pixels from edge to trigger scroll
+    isMobile: false,
 
     // Initialize layout system
     init() {
+        this.isMobile = this.detectMobile();
         this.loadLayout();
         this.createControls();
         this.bindEvents();
-        this.bindTouchEvents();
+    },
+
+    // Detect if user is on mobile device
+    detectMobile() {
+        return window.matchMedia('(max-width: 768px)').matches || 
+               'ontouchstart' in window ||
+               navigator.maxTouchPoints > 0;
     },
 
     // Create edit mode controls
@@ -51,7 +50,11 @@ const Layout = {
         // Help tooltip
         const tooltip = document.createElement('div');
         tooltip.className = 'layout-help-tooltip';
-        tooltip.innerHTML = '<i class="fas fa-info-circle"></i> Arraste os cards pelo ícone <i class="fas fa-grip-horizontal"></i> para reorganizar. Clique em "Editar Layout" novamente para salvar.';
+        if (this.isMobile) {
+            tooltip.innerHTML = '<i class="fas fa-info-circle"></i> Use as setas ↑↓ para mover os cards.';
+        } else {
+            tooltip.innerHTML = '<i class="fas fa-info-circle"></i> Arraste os cards para reorganizar.';
+        }
         document.body.appendChild(tooltip);
         
         // Notification element
@@ -74,16 +77,137 @@ const Layout = {
             editBtn.innerHTML = '<i class="fas fa-check"></i> Salvar Layout';
             editBtn.classList.add('active');
             resetBtn.classList.remove('hidden');
-            this.enableDragAndDrop();
+            
+            if (this.isMobile) {
+                this.createMobileControls();
+            } else {
+                this.enableDragAndDrop();
+            }
         } else {
             editBtn.innerHTML = '<i class="fas fa-th"></i> Editar Layout';
             editBtn.classList.remove('active');
             resetBtn.classList.add('hidden');
-            this.disableDragAndDrop();
+            
+            if (this.isMobile) {
+                this.removeMobileControls();
+            } else {
+                this.disableDragAndDrop();
+            }
+            
             this.saveLayout();
             this.showNotification();
         }
     },
+
+    // ========== MOBILE: Arrow Button Controls ==========
+    
+    createMobileControls() {
+        document.querySelectorAll('.draggable-card').forEach(card => {
+            const controlsDiv = document.createElement('div');
+            controlsDiv.className = 'mobile-card-controls';
+            
+            // Move up button
+            const upBtn = document.createElement('button');
+            upBtn.className = 'mobile-move-btn move-up';
+            upBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+            upBtn.setAttribute('aria-label', 'Mover para cima');
+            upBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.moveCardUp(card);
+            });
+            
+            // Move down button
+            const downBtn = document.createElement('button');
+            downBtn.className = 'mobile-move-btn move-down';
+            downBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+            downBtn.setAttribute('aria-label', 'Mover para baixo');
+            downBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.moveCardDown(card);
+            });
+            
+            controlsDiv.appendChild(upBtn);
+            controlsDiv.appendChild(downBtn);
+            
+            // Insert at the beginning of the card
+            card.insertBefore(controlsDiv, card.firstChild);
+        });
+    },
+
+    removeMobileControls() {
+        document.querySelectorAll('.mobile-card-controls').forEach(ctrl => {
+            ctrl.remove();
+        });
+    },
+
+    moveCardUp(card) {
+        const container = card.parentElement;
+        const allCards = Array.from(container.querySelectorAll('.draggable-card'));
+        const currentIndex = allCards.indexOf(card);
+        
+        if (currentIndex > 0) {
+            // Move before the previous card
+            const prevCard = allCards[currentIndex - 1];
+            container.insertBefore(card, prevCard);
+            this.flashCard(card);
+            
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(30);
+        } else {
+            // Already at top, try to move to previous container
+            const prevContainer = this.getPreviousContainer(container);
+            if (prevContainer) {
+                prevContainer.appendChild(card);
+                this.flashCard(card);
+                if (navigator.vibrate) navigator.vibrate(30);
+            }
+        }
+    },
+
+    moveCardDown(card) {
+        const container = card.parentElement;
+        const allCards = Array.from(container.querySelectorAll('.draggable-card'));
+        const currentIndex = allCards.indexOf(card);
+        
+        if (currentIndex < allCards.length - 1) {
+            // Move after the next card
+            const nextCard = allCards[currentIndex + 1];
+            nextCard.after(card);
+            this.flashCard(card);
+            
+            // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(30);
+        } else {
+            // Already at bottom, try to move to next container
+            const nextContainer = this.getNextContainer(container);
+            if (nextContainer) {
+                nextContainer.insertBefore(card, nextContainer.firstChild);
+                this.flashCard(card);
+                if (navigator.vibrate) navigator.vibrate(30);
+            }
+        }
+    },
+
+    getPreviousContainer(currentContainer) {
+        const tab = currentContainer.closest('.tab-content');
+        const containers = Array.from(tab.querySelectorAll('.layout-container'));
+        const currentIndex = containers.indexOf(currentContainer);
+        return currentIndex > 0 ? containers[currentIndex - 1] : null;
+    },
+
+    getNextContainer(currentContainer) {
+        const tab = currentContainer.closest('.tab-content');
+        const containers = Array.from(tab.querySelectorAll('.layout-container'));
+        const currentIndex = containers.indexOf(currentContainer);
+        return currentIndex < containers.length - 1 ? containers[currentIndex + 1] : null;
+    },
+
+    flashCard(card) {
+        card.classList.add('card-moved');
+        setTimeout(() => card.classList.remove('card-moved'), 400);
+    },
+
+    // ========== DESKTOP: Drag and Drop ==========
 
     // Show saved notification
     showNotification() {
@@ -94,14 +218,14 @@ const Layout = {
         }, 2000);
     },
 
-    // Bind events
+    // Bind events for desktop
     bindEvents() {
         // Initially make cards not draggable
         document.querySelectorAll('.draggable-card').forEach(el => {
             el.setAttribute('draggable', 'false');
         });
         
-        // Also allow container drops
+        // Allow container drops
         document.querySelectorAll('.layout-container').forEach(container => {
             container.addEventListener('dragover', this.handleContainerDragOver.bind(this));
             container.addEventListener('drop', this.handleContainerDrop.bind(this));
@@ -110,7 +234,7 @@ const Layout = {
         });
     },
 
-    // Enable drag and drop
+    // Enable drag and drop (desktop)
     enableDragAndDrop() {
         document.querySelectorAll('.draggable-card').forEach(el => {
             el.setAttribute('draggable', 'true');
@@ -141,7 +265,6 @@ const Layout = {
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', this.draggedElement.dataset.cardId);
         
-        // Highlight containers
         document.querySelectorAll('.layout-container').forEach(container => {
             container.style.minHeight = container.offsetHeight + 'px';
         });
@@ -166,14 +289,12 @@ const Layout = {
         this.draggedElement = null;
     },
 
-    // Container drag over
     handleContainerDragOver(e) {
         if (!this.isEditMode || !this.draggedElement) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
     },
 
-    // Container drag enter
     handleContainerDragEnter(e) {
         if (!this.isEditMode || !this.draggedElement) return;
         const container = e.target.closest('.layout-container');
@@ -182,17 +303,14 @@ const Layout = {
         }
     },
 
-    // Container drag leave
     handleContainerDragLeave(e) {
         if (!this.isEditMode) return;
         const container = e.target.closest('.layout-container');
-        // Only remove if we're actually leaving the container
         if (container && e.relatedTarget && !container.contains(e.relatedTarget)) {
             container.classList.remove('drag-over');
         }
     },
 
-    // Container drop
     handleContainerDrop(e) {
         if (!this.isEditMode || !this.draggedElement) return;
         e.preventDefault();
@@ -202,20 +320,17 @@ const Layout = {
         
         container.classList.remove('drag-over');
         
-        // If dropping on the container (not a specific card), append to end
         if (!e.target.closest('.draggable-card')) {
             container.appendChild(this.draggedElement);
         }
     },
 
-    // Drag over handler
     handleDragOver(e) {
         if (!this.isEditMode) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
     },
 
-    // Drag enter handler
     handleDragEnter(e) {
         if (!this.isEditMode) return;
         const target = e.target.closest('.draggable-card');
@@ -224,7 +339,6 @@ const Layout = {
         }
     },
 
-    // Drag leave handler
     handleDragLeave(e) {
         if (!this.isEditMode) return;
         const target = e.target.closest('.draggable-card');
@@ -233,7 +347,6 @@ const Layout = {
         }
     },
 
-    // Drop handler
     handleDrop(e) {
         if (!this.isEditMode) return;
         e.preventDefault();
@@ -244,13 +357,10 @@ const Layout = {
         
         target.classList.remove('drag-over');
         
-        // Get the parent container
         const container = target.parentElement;
         const draggedContainer = this.draggedElement.parentElement;
         
-        // Check if same container
         if (container === draggedContainer) {
-            // Same container - reorder
             const allCards = Array.from(container.querySelectorAll('.draggable-card'));
             const draggedIndex = allCards.indexOf(this.draggedElement);
             const targetIndex = allCards.indexOf(target);
@@ -261,16 +371,15 @@ const Layout = {
                 target.before(this.draggedElement);
             }
         } else {
-            // Different containers - move before target
             target.before(this.draggedElement);
         }
     },
 
-    // Save layout to localStorage
+    // ========== SAVE/LOAD LAYOUT ==========
+
     saveLayout() {
         const layout = {};
         
-        // Save order for each tab
         document.querySelectorAll('.tab-content').forEach(tab => {
             const tabId = tab.id;
             layout[tabId] = {};
@@ -294,7 +403,6 @@ const Layout = {
         console.log('Layout salvo!', layout);
     },
 
-    // Load layout from localStorage
     loadLayout() {
         const savedLayout = localStorage.getItem(this.LAYOUT_KEY);
         if (!savedLayout) return;
@@ -310,12 +418,9 @@ const Layout = {
                     const container = tab.querySelector(`[data-container-id="${containerId}"]`);
                     if (!container) return;
                     
-                    // Reorder cards - find them across the entire tab
                     cardOrder.forEach(cardId => {
-                        // First try to find in the current container
                         let card = container.querySelector(`[data-card-id="${cardId}"]`);
                         
-                        // If not found, look in the entire tab
                         if (!card) {
                             card = tab.querySelector(`[data-card-id="${cardId}"]`);
                         }
@@ -333,241 +438,15 @@ const Layout = {
         }
     },
 
-    // Reset layout to default
     resetLayout() {
         if (confirm('Tem certeza que deseja resetar o layout para o padrão?')) {
             localStorage.removeItem(this.LAYOUT_KEY);
             location.reload();
         }
-    },
-
-    // ========== TOUCH EVENTS FOR MOBILE ==========
-    
-    bindTouchEvents() {
-        // Bind touch events to draggable cards
-        document.querySelectorAll('.draggable-card').forEach(el => {
-            el.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-            el.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-            el.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
-            el.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: false });
-        });
-    },
-
-    handleTouchStart(e) {
-        if (!this.isEditMode) return;
-        
-        const card = e.target.closest('.draggable-card');
-        if (!card) return;
-        
-        // Check if touch started on drag handle or card header
-        const handle = e.target.closest('.drag-handle, .card-header, h3, h4');
-        if (!handle && !e.target.closest('.draggable-card > *:first-child')) {
-            return; // Only drag from header area
-        }
-        
-        const touch = e.touches[0];
-        this.touchStartX = touch.clientX;
-        this.touchStartY = touch.clientY;
-        this.touchCurrentX = touch.clientX;
-        this.touchCurrentY = touch.clientY;
-        this.draggedElement = card;
-        
-        // Small delay to distinguish between tap and drag
-        this.touchTimeout = setTimeout(() => {
-            if (this.draggedElement) {
-                this.startTouchDrag(touch);
-            }
-        }, 150);
-    },
-
-    startTouchDrag(touch) {
-        if (!this.draggedElement) return;
-        
-        this.isTouchDragging = true;
-        this.draggedElement.classList.add('dragging');
-        
-        // Create clone for visual feedback
-        this.touchClone = this.draggedElement.cloneNode(true);
-        this.touchClone.classList.add('touch-drag-clone');
-        this.touchClone.style.cssText = `
-            position: fixed;
-            top: ${this.draggedElement.getBoundingClientRect().top}px;
-            left: ${this.draggedElement.getBoundingClientRect().left}px;
-            width: ${this.draggedElement.offsetWidth}px;
-            height: ${this.draggedElement.offsetHeight}px;
-            opacity: 0.8;
-            z-index: 10000;
-            pointer-events: none;
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: none;
-        `;
-        document.body.appendChild(this.touchClone);
-        
-        // Make original semi-transparent
-        this.draggedElement.style.opacity = '0.4';
-        
-        // Haptic feedback if available
-        if (navigator.vibrate) {
-            navigator.vibrate(50);
-        }
-    },
-
-    handleTouchMove(e) {
-        if (!this.isEditMode || !this.draggedElement) return;
-        
-        const touch = e.touches[0];
-        this.touchCurrentX = touch.clientX;
-        this.touchCurrentY = touch.clientY;
-        
-        // Check if moved enough to start dragging
-        const deltaX = Math.abs(this.touchCurrentX - this.touchStartX);
-        const deltaY = Math.abs(this.touchCurrentY - this.touchStartY);
-        
-        if (!this.isTouchDragging && (deltaX > 10 || deltaY > 10)) {
-            clearTimeout(this.touchTimeout);
-            this.startTouchDrag(touch);
-        }
-        
-        if (!this.isTouchDragging) return;
-        
-        e.preventDefault(); // Prevent scrolling while dragging
-        
-        // Move clone
-        if (this.touchClone) {
-            const offsetX = this.touchCurrentX - this.touchStartX;
-            const offsetY = this.touchCurrentY - this.touchStartY;
-            const originalRect = this.draggedElement.getBoundingClientRect();
-            
-            this.touchClone.style.left = `${originalRect.left + offsetX}px`;
-            this.touchClone.style.top = `${originalRect.top + offsetY}px`;
-        }
-        
-        // Auto-scroll when near edges
-        this.handleAutoScroll();
-        
-        // Find element under touch
-        this.updateDropTarget(touch);
-    },
-
-    handleAutoScroll() {
-        const scrollSpeed = 10;
-        
-        if (this.touchCurrentY < this.scrollThreshold) {
-            window.scrollBy(0, -scrollSpeed);
-        } else if (this.touchCurrentY > window.innerHeight - this.scrollThreshold) {
-            window.scrollBy(0, scrollSpeed);
-        }
-    },
-
-    updateDropTarget(touch) {
-        // Temporarily hide clone to get element underneath
-        if (this.touchClone) {
-            this.touchClone.style.display = 'none';
-        }
-        
-        const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-        
-        if (this.touchClone) {
-            this.touchClone.style.display = '';
-        }
-        
-        // Remove previous highlights
-        document.querySelectorAll('.drag-over, .touch-drop-target').forEach(el => {
-            el.classList.remove('drag-over', 'touch-drop-target');
-        });
-        
-        if (!elementBelow) return;
-        
-        // Check for card or container
-        const targetCard = elementBelow.closest('.draggable-card');
-        const targetContainer = elementBelow.closest('.layout-container');
-        
-        if (targetCard && targetCard !== this.draggedElement) {
-            targetCard.classList.add('drag-over', 'touch-drop-target');
-        } else if (targetContainer) {
-            targetContainer.classList.add('drag-over');
-        }
-    },
-
-    handleTouchEnd(e) {
-        clearTimeout(this.touchTimeout);
-        
-        if (!this.isEditMode || !this.draggedElement) {
-            this.cleanupTouchDrag();
-            return;
-        }
-        
-        if (this.isTouchDragging) {
-            // Find drop target
-            if (this.touchClone) {
-                this.touchClone.style.display = 'none';
-            }
-            
-            const elementBelow = document.elementFromPoint(this.touchCurrentX, this.touchCurrentY);
-            
-            if (elementBelow) {
-                const targetCard = elementBelow.closest('.draggable-card');
-                const targetContainer = elementBelow.closest('.layout-container');
-                
-                if (targetCard && targetCard !== this.draggedElement) {
-                    // Drop on another card
-                    const container = targetCard.parentElement;
-                    const draggedContainer = this.draggedElement.parentElement;
-                    
-                    if (container === draggedContainer) {
-                        const allCards = Array.from(container.querySelectorAll('.draggable-card'));
-                        const draggedIndex = allCards.indexOf(this.draggedElement);
-                        const targetIndex = allCards.indexOf(targetCard);
-                        
-                        if (draggedIndex < targetIndex) {
-                            targetCard.after(this.draggedElement);
-                        } else {
-                            targetCard.before(this.draggedElement);
-                        }
-                    } else {
-                        targetCard.before(this.draggedElement);
-                    }
-                } else if (targetContainer && !targetContainer.contains(this.draggedElement)) {
-                    // Drop in container
-                    targetContainer.appendChild(this.draggedElement);
-                }
-            }
-            
-            // Haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(30);
-            }
-        }
-        
-        this.cleanupTouchDrag();
-    },
-
-    cleanupTouchDrag() {
-        // Remove clone
-        if (this.touchClone) {
-            this.touchClone.remove();
-            this.touchClone = null;
-        }
-        
-        // Reset dragged element
-        if (this.draggedElement) {
-            this.draggedElement.classList.remove('dragging');
-            this.draggedElement.style.opacity = '';
-        }
-        
-        // Remove all highlights
-        document.querySelectorAll('.drag-over, .touch-drop-target').forEach(el => {
-            el.classList.remove('drag-over', 'touch-drop-target');
-        });
-        
-        this.isTouchDragging = false;
-        this.draggedElement = null;
     }
 };
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Small delay to ensure everything is loaded
     setTimeout(() => Layout.init(), 100);
 });
