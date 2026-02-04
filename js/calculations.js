@@ -44,10 +44,10 @@ const Calculations = {
 
     // Armor bonuses and penalties
     ARMOR_BONUS: {
-        'none': { ca: 0, weight: 0, skillPenalty: 0 },
-        'light': { ca: 3, weight: 3, skillPenalty: 0 },
-        'medium': { ca: 5, weight: 5, skillPenalty: -2 },
-        'heavy': { ca: 7, weight: 7, skillPenalty: -5 }
+        'none': { ca: 0, weight: 0, skillPenalty: 0, paPenalty: 0 },
+        'light': { ca: 3, weight: 3, skillPenalty: 0, paPenalty: 0 },
+        'medium': { ca: 5, weight: 5, skillPenalty: -2, paPenalty: -1 },
+        'heavy': { ca: 7, weight: 7, skillPenalty: -5, paPenalty: -3 }
     },
 
     // Race bonuses info
@@ -87,11 +87,23 @@ const Calculations = {
         return Math.floor((brainLevel * 6) + (level * von));
     },
 
-    // Calculate PA: AGI + Level + 4
+    // Calculate PA: AGI + Level + 4 - armor penalty - weight penalty (min 1)
     calculatePA(charData) {
         const agi = parseInt(charData.attrAgi) || 0;
         const level = parseInt(charData.charLevel) || 1;
-        return agi + level + 4;
+        const armorPenalty = this.ARMOR_BONUS[charData.armorType || 'none'].paPenalty;
+        
+        // Weight penalty
+        let weightPenalty = 0;
+        const weightStatus = this.getWeightStatus(charData);
+        if (weightStatus === 'overweight') {
+            weightPenalty = -5;
+        } else if (weightStatus === 'heavy') {
+            weightPenalty = -2;
+        }
+        
+        const pa = agi + level + 4 + armorPenalty + weightPenalty;
+        return Math.max(1, pa); // Minimum PA is 1
     },
 
     // Calculate CA: 10 + armor bonus
