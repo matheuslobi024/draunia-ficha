@@ -235,10 +235,18 @@ const Sheet = {
         const currentHpMain = document.getElementById('currentHpMain');
         const sanityMain = document.getElementById('sanityMain');
         const currentPEMain = document.getElementById('currentPEMain');
+        const currentPAInput = document.getElementById('currentPA');
         
         if (currentHpMain) currentHpMain.value = character.currentHp || 20;
         if (sanityMain) sanityMain.value = character.sanity || 20;
         if (currentPEMain) currentPEMain.value = character.currentPE || 6;
+        
+        // Initialize currentPA if not set
+        if (currentPAInput && !character.currentPA) {
+            const maxPA = Calculations.calculatePA(character);
+            currentPAInput.value = maxPA;
+            this.currentCharacter.currentPA = maxPA;
+        }
 
         // Update all calculations
         this.updateCalculations();
@@ -326,6 +334,7 @@ const Sheet = {
             <td><input type="text" value="${attack.pa || ''}" placeholder="2"></td>
             <td><input type="text" value="${attack.pe || ''}" placeholder="0"></td>
             <td><input type="text" value="${attack.crit || ''}" placeholder="20"></td>
+            <td><button class="btn-use-attack" onclick="Sheet.useAttack(this)" title="Usar Ataque"><i class="fas fa-bolt"></i></button></td>
             <td><button class="btn-remove" onclick="Sheet.removeAttack(this)"><i class="fas fa-times"></i></button></td>
         `;
 
@@ -346,6 +355,139 @@ const Sheet = {
     removeAttack(btn) {
         btn.closest('tr').remove();
         this.onFieldChange();
+    },
+
+    // Next turn - reset PA to max
+    nextTurn() {
+        const maxPA = Calculations.calculatePA(this.currentCharacter);
+        const currentPAInput = document.getElementById('currentPA');
+        if (currentPAInput) {
+            currentPAInput.value = maxPA;
+            this.currentCharacter.currentPA = maxPA;
+            this.onFieldChange();
+            this.showNotification('Turno avançado! PA restaurado.', 'success');
+        }
+    },
+
+    // Restore HP to max
+    restoreHp() {
+        const maxHp = Calculations.calculateMaxHP(this.currentCharacter);
+        const currentHpInput = document.getElementById('currentHp');
+        const currentHpMainInput = document.getElementById('currentHpMain');
+        
+        if (currentHpInput) {
+            currentHpInput.value = maxHp;
+        }
+        if (currentHpMainInput) {
+            currentHpMainInput.value = maxHp;
+        }
+        this.currentCharacter.currentHp = maxHp;
+        this.onFieldChange();
+        this.showNotification('HP restaurado ao máximo!', 'success');
+    },
+
+    // Restore Sanity to 20 (default max)
+    restoreSanity() {
+        const maxSanity = 20;
+        const sanityInput = document.getElementById('sanity');
+        const sanityMainInput = document.getElementById('sanityMain');
+        
+        if (sanityInput) {
+            sanityInput.value = maxSanity;
+        }
+        if (sanityMainInput) {
+            sanityMainInput.value = maxSanity;
+        }
+        this.currentCharacter.sanity = maxSanity;
+        this.onFieldChange();
+        this.showNotification('Sanidade restaurada!', 'success');
+    },
+
+    // Restore PE to max
+    restorePE() {
+        const maxPE = Calculations.calculateMaxPE(this.currentCharacter);
+        const currentPEInput = document.getElementById('currentPE');
+        const currentPEMainInput = document.getElementById('currentPEMain');
+        
+        if (currentPEInput) {
+            currentPEInput.value = maxPE;
+        }
+        if (currentPEMainInput) {
+            currentPEMainInput.value = maxPE;
+        }
+        this.currentCharacter.currentPE = maxPE;
+        this.onFieldChange();
+        this.showNotification('PE restaurado ao máximo!', 'success');
+    },
+
+    // Use attack - consume PA and PE
+    useAttack(btn) {
+        const tr = btn.closest('tr');
+        const inputs = tr.querySelectorAll('input');
+        const attackName = inputs[0].value || 'Ataque';
+        const paCost = parseInt(inputs[4].value) || 0;
+        const peCost = parseInt(inputs[5].value) || 0;
+
+        const currentPAInput = document.getElementById('currentPA');
+        const currentPEInput = document.getElementById('currentPE');
+        const currentPEInputMain = document.getElementById('currentPEMain');
+
+        const currentPA = parseInt(currentPAInput?.value) || 0;
+        const currentPE = parseInt(currentPEInput?.value) || 0;
+
+        // Check if enough PA
+        if (paCost > 0 && currentPA < paCost) {
+            this.showNotification(`PA insuficiente! Precisa de ${paCost} PA, tem ${currentPA}.`, 'error');
+            return;
+        }
+
+        // Check if enough PE
+        if (peCost > 0 && currentPE < peCost) {
+            this.showNotification(`PE insuficiente! Precisa de ${peCost} PE, tem ${currentPE}.`, 'error');
+            return;
+        }
+
+        // Deduct PA
+        if (paCost > 0 && currentPAInput) {
+            currentPAInput.value = currentPA - paCost;
+            this.currentCharacter.currentPA = currentPA - paCost;
+        }
+
+        // Deduct PE
+        if (peCost > 0) {
+            const newPE = currentPE - peCost;
+            if (currentPEInput) {
+                currentPEInput.value = newPE;
+            }
+            if (currentPEInputMain) {
+                currentPEInputMain.value = newPE;
+            }
+            this.currentCharacter.currentPE = newPE;
+        }
+
+        this.onFieldChange();
+        this.showNotification(`${attackName} usado! -${paCost} PA${peCost > 0 ? `, -${peCost} PE` : ''}`, 'success');
+    },
+
+    // Show notification
+    showNotification(message, type = 'info') {
+        // Remove existing notification
+        const existing = document.querySelector('.sheet-notification');
+        if (existing) existing.remove();
+
+        const notification = document.createElement('div');
+        notification.className = `sheet-notification ${type}`;
+        notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+        document.body.appendChild(notification);
+
+        // Animate in
+        setTimeout(() => notification.classList.add('show'), 10);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     },
 
     // Setup skill search
@@ -460,8 +602,8 @@ const Sheet = {
         }
 
         // Update PA
-        const paEl = document.getElementById('actionPoints');
-        if (paEl) paEl.textContent = calc.pa;
+        const maxPAEl = document.getElementById('maxPA');
+        if (maxPAEl) maxPAEl.textContent = calc.pa;
 
         // Update CA
         const caEl = document.getElementById('armorClass');

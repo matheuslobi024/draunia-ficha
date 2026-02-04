@@ -1067,6 +1067,134 @@ input.vital-single {
     cursor: pointer;
 }
 
+.attacks-table .btn-use-attack {
+    background: var(--accent-primary);
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.attacks-table .btn-use-attack:hover {
+    background: var(--accent-secondary);
+    transform: scale(1.05);
+}
+
+/* Next Turn Button */
+.btn-next-turn {
+    background: var(--accent-gold) !important;
+    border: none;
+    color: var(--bg-dark) !important;
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    margin-left: 0.25rem;
+}
+
+.btn-next-turn:hover {
+    background: #ffed4a !important;
+    transform: scale(1.05);
+}
+
+/* Restore Button */
+.btn-restore {
+    background: var(--success) !important;
+    border: none;
+    color: white !important;
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    transition: all 0.2s;
+    margin-left: 0.25rem;
+}
+
+.btn-restore:hover {
+    background: #27ae60 !important;
+    transform: scale(1.05);
+}
+
+.hp-box .btn-restore {
+    background: var(--hp-color) !important;
+}
+
+.hp-box .btn-restore:hover {
+    background: #c0392b !important;
+}
+
+.san-box .btn-restore {
+    background: var(--san-color) !important;
+}
+
+.san-box .btn-restore:hover {
+    background: #8e44ad !important;
+}
+
+.pe-box .btn-restore {
+    background: var(--pe-color) !important;
+}
+
+.pe-box .btn-restore:hover {
+    background: #2980b9 !important;
+}
+
+/* Sheet Notification */
+.sheet-notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--border-radius);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 2000;
+    box-shadow: var(--shadow);
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+}
+
+.sheet-notification.show {
+    transform: translateX(0);
+}
+
+.sheet-notification.success {
+    border-color: var(--success);
+    background: rgba(46, 204, 113, 0.15);
+}
+
+.sheet-notification.success i {
+    color: var(--success);
+}
+
+.sheet-notification.error {
+    border-color: var(--danger);
+    background: rgba(231, 76, 60, 0.15);
+}
+
+.sheet-notification.error i {
+    color: var(--danger);
+}
+
+.sheet-notification.info {
+    border-color: var(--pe-color);
+    background: rgba(52, 152, 219, 0.15);
+}
+
+.sheet-notification.info i {
+    color: var(--pe-color);
+}
+
 /* Fusions */
 .fusions-section {
     background: var(--bg-card);
@@ -1680,6 +1808,29 @@ input.vital-single {
         padding: 0.15rem !important;
         font-size: 0.6rem !important;
         min-width: 30px !important;
+    }
+    
+    .attacks-table .btn-use-attack {
+        padding: 0.2rem 0.35rem !important;
+        font-size: 0.6rem !important;
+    }
+    
+    .btn-next-turn {
+        padding: 0.2rem 0.35rem !important;
+        font-size: 0.55rem !important;
+    }
+    
+    .btn-restore {
+        padding: 0.2rem 0.35rem !important;
+        font-size: 0.5rem !important;
+    }
+    
+    .sheet-notification {
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
     }
     
     .btn-add-item {

@@ -362,6 +362,7 @@
                                 <div class="vital-buttons">
                                     <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentHp', -1)"><i class="fas fa-minus"></i></button>
                                     <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentHp', 1)"><i class="fas fa-plus"></i></button>
+                                    <button type="button" class="btn-restore" onclick="Sheet.restoreHp()" title="Restaurar HP"><i class="fas fa-heart"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -376,6 +377,7 @@
                                 <div class="vital-buttons">
                                     <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('sanity', -1)"><i class="fas fa-minus"></i></button>
                                     <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('sanity', 1)"><i class="fas fa-plus"></i></button>
+                                    <button type="button" class="btn-restore" onclick="Sheet.restoreSanity()" title="Restaurar Sanidade"><i class="fas fa-brain"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -395,6 +397,7 @@
                                 <div class="vital-buttons">
                                     <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPE', -1)"><i class="fas fa-minus"></i></button>
                                     <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPE', 1)"><i class="fas fa-plus"></i></button>
+                                    <button type="button" class="btn-restore" onclick="Sheet.restorePE()" title="Restaurar PE"><i class="fas fa-bolt"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -403,7 +406,16 @@
                             <div class="vital-icon"><i class="fas fa-running"></i></div>
                             <div class="vital-info">
                                 <label>PA</label>
-                                <span id="actionPoints" class="vital-single calculated">5</span>
+                                <div class="vital-values">
+                                    <input type="number" id="currentPA" data-field="currentPA" class="vital-current" min="0" value="5">
+                                    <span>/</span>
+                                    <span id="maxPA" class="vital-max">5</span>
+                                </div>
+                                <div class="vital-buttons">
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPA', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPA', 1)"><i class="fas fa-plus"></i></button>
+                                    <button type="button" class="btn-next-turn" onclick="Sheet.nextTurn()" title="Próximo Turno"><i class="fas fa-redo"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -463,6 +475,7 @@
                                         <th>PA</th>
                                         <th>PE</th>
                                         <th>Crit</th>
+                                        <th>Usar</th>
                                         <th></th>
                                     </tr>
                                 </thead>
