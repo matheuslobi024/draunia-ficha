@@ -327,6 +327,7 @@ const Sheet = {
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
+            <td><button class="btn-use-attack" onclick="Sheet.useAttack(this)" title="Usar Ataque"><i class="fas fa-bolt"></i></button></td>
             <td><input type="text" value="${attack.name || ''}" placeholder="Nome"></td>
             <td><input type="text" value="${attack.damage || ''}" placeholder="1d8+2"></td>
             <td><input type="text" value="${attack.range || ''}" placeholder="Corpo"></td>
@@ -334,7 +335,6 @@ const Sheet = {
             <td><input type="text" value="${attack.pa || ''}" placeholder="2"></td>
             <td><input type="text" value="${attack.pe || ''}" placeholder="0"></td>
             <td><input type="text" value="${attack.crit || ''}" placeholder="20"></td>
-            <td><button class="btn-use-attack" onclick="Sheet.useAttack(this)" title="Usar Ataque"><i class="fas fa-bolt"></i></button></td>
             <td><button class="btn-remove" onclick="Sheet.removeAttack(this)"><i class="fas fa-times"></i></button></td>
         `;
 
