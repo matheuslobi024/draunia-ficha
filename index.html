@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0d0d15">
+    <title>Ficha de RPG - Draunia</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Entrar</button>
+                <button class="auth-tab" data-tab="register">Cadastrar</button>
+            </div>
+            
+            <form id="loginForm" class="auth-form">
+                <h2>Bem-vindo a Draunia!</h2>
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+            
+            <form id="registerForm" class="auth-form hidden">
+                <h2>Criar Conta</h2>
+                <div class="form-group">
+                    <label for="registerName">Nome</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Senha</label>
+                    <input type="password" id="registerPassword" required minlength="6">
+                </div>
+                <button type="submit" class="btn-primary">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Character Select Modal -->
+    <div id="characterModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Suas Fichas</h2>
+            <div id="characterList" class="character-list"></div>
+            <button id="newCharacterBtn" class="btn-primary">
+                <i class="fas fa-plus"></i> Nova Ficha
+            </button>
+            <button id="logoutBtn" class="btn-secondary">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-scroll"></i> Draunia</h1>
+            </div>
+            <div class="header-center">
+                <!-- Navigation Tabs -->
+                <nav class="main-nav">
+                    <button class="nav-tab active" data-tab="principal">
+                        <i class="fas fa-user"></i>
+                        <span>Principal</span>
+                    </button>
+                    <button class="nav-tab" data-tab="combate">
+                        <i class="fas fa-fist-raised"></i>
+                        <span>Combate</span>
+                    </button>
+                    <button class="nav-tab" data-tab="pericias">
+                        <i class="fas fa-star"></i>
+                        <span>Perícias</span>
+                    </button>
+                    <button class="nav-tab" data-tab="historia">
+                        <i class="fas fa-book"></i>
+                        <span>História</span>
+                    </button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <span id="saveStatus" class="save-status">
+                    <i class="fas fa-check-circle"></i> Salvo
+                </span>
+                <span id="userName"></span>
+                <button id="switchCharBtn" class="btn-icon" title="Trocar Ficha">
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Tab Content -->
+        <main class="sheet-container">
+            
+            <!-- ==================== TELA PRINCIPAL ==================== -->
+            <div id="tab-principal" class="tab-content active">
+                <div class="principal-layout">
+                    <!-- Coluna Esquerda: Imagem + Info Básica + Atributos -->
+                    <div class="principal-left layout-container" data-container-id="principal-left">
+                        <!-- Imagem do Personagem -->
+                        <div class="character-portrait draggable-card" data-card-id="portrait">
+                            <div class="portrait-container">
+                                <img id="charPortrait" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%232a2a4a' width='100' height='100'/%3E%3Ctext x='50' y='55' text-anchor='middle' fill='%23666' font-size='12'%3EImagem%3C/text%3E%3C/svg%3E" alt="Retrato">
+                                <label class="portrait-upload" title="Alterar imagem">
+                                    <i class="fas fa-camera"></i>
+                                    <input type="file" id="portraitInput" accept="image/*" hidden>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Info Básica -->
+                        <div class="basic-info-card draggable-card" data-card-id="basic-info">
+                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                            <div class="form-group">
+                                <label>Nome</label>
+                                <input type="text" id="charName" data-field="charName" class="char-name-input">
+                            </div>
+                            <div class="info-row">
+                                <div class="form-group">
+                                    <label>Raça</label>
+                                    <select id="charRace" data-field="charRace">
+                                        <option value="">Selecione...</option>
+                                        <option value="humano">Humano</option>
+                                        <option value="elfo">Elfo</option>
+                                        <option value="anao">Anão</option>
+                                        <option value="demonio">Demônio</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nível</label>
+                                    <input type="number" id="charLevel" data-field="charLevel" min="1" value="1">
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="form-group">
+                                    <label>PN Disponíveis</label>
+                                    <input type="number" id="levelPoints" data-field="levelPoints" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>PN/Nível</label>
+                                    <span id="pnPerLevel" class="calculated-small">4</span>
+                                </div>
+                            </div>
+                            <div class="race-bonus" id="raceBonus"></div>
+                        </div>
+
+                        <!-- Atributos -->
+                        <div class="attributes-card draggable-card" data-card-id="attributes">
+                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                            <h3><i class="fas fa-fist-raised"></i> Atributos <small>(<span id="usedAttrPoints">0</span>/8)</small></h3>
+                            <div class="attributes-compact">
+                                <div class="attr-item">
+                                    <span class="attr-label">FOR</span>
+                                    <input type="number" id="attrFor" data-field="attrFor" class="attr-input" value="0">
+                                </div>
+                                <div class="attr-item">
+                                    <span class="attr-label">CON</span>
+                                    <input type="number" id="attrCon" data-field="attrCon" class="attr-input" value="0">
+                                </div>
+                                <div class="attr-item">
+                                    <span class="attr-label">VON</span>
+                                    <input type="number" id="attrVon" data-field="attrVon" class="attr-input" value="0">
+                                </div>
+                                <div class="attr-item">
+                                    <span class="attr-label">CAR</span>
+                                    <input type="number" id="attrCar" data-field="attrCar" class="attr-input" value="0">
+                                </div>
+                                <div class="attr-item">
+                                    <span class="attr-label">INT</span>
+                                    <input type="number" id="attrInt" data-field="attrInt" class="attr-input" value="0">
+                                </div>
+                                <div class="attr-item">
+                                    <span class="attr-label">AGI</span>
+                                    <input type="number" id="attrAgi" data-field="attrAgi" class="attr-input" value="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HP e Sanidade compactos -->
+                        <div class="vitals-compact-card draggable-card" data-card-id="vitals">
+                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                            <div class="vital-compact hp-compact">
+                                <i class="fas fa-heart"></i>
+                                <label>HP</label>
+                                <div class="vital-compact-values">
+                                    <input type="number" id="currentHpMain" class="vital-compact-input" min="0" value="20">
+                                    <span>/</span>
+                                    <span id="maxHpMain" class="vital-compact-max">20</span>
+                                </div>
+                            </div>
+                            <div class="vital-compact san-compact">
+                                <i class="fas fa-brain"></i>
+                                <label>Sanidade</label>
+                                <input type="number" id="sanityMain" class="vital-compact-input" min="0" value="20">
+                            </div>
+                            <div class="vital-compact pe-compact">
+                                <i class="fas fa-bolt"></i>
+                                <label>PE</label>
+                                <div class="vital-compact-values">
+                                    <input type="number" id="currentPEMain" class="vital-compact-input" min="0" value="6">
+                                    <span>/</span>
+                                    <span id="maxPEMain" class="vital-compact-max">6</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna Direita: Inventário -->
+                    <div class="principal-right layout-container" data-container-id="principal-right">
+                        <div class="inventory-card draggable-card" data-card-id="inventory">
+                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                            <h3>
+                                <i class="fas fa-backpack"></i> Inventário
+                                <span class="weight-display">
+                                    <span id="currentWeight">0</span> / <span id="maxWeight">12</span> kg
+                                    <span id="weightStatus" class="weight-badge normal">OK</span>
+                                </span>
+                            </h3>
+                            
+                            <!-- Ouro -->
+                            <div class="gold-bar">
+                                <i class="fas fa-coins"></i>
+                                <input type="number" id="gold" data-field="gold" min="0" value="0" step="0.01">
+                                <span>Ouro</span>
+                            </div>
+
+                            <!-- Armadura -->
+                            <div class="armor-bar">
+                                <label>Armadura:</label>
+                                <select id="armorType" data-field="armorType">
+                                    <option value="none">Nenhuma (0)</option>
+                                    <option value="light">Leve (+3 CA, 3kg)</option>
+                                    <option value="medium">Média (+5 CA, 3kg, -2 pen.)</option>
+                                    <option value="heavy">Pesada (+7 CA, 7kg, -5 pen.)</option>
+                                </select>
+                            </div>
+
+                            <!-- Lista de Itens -->
+                            <div class="inventory-list">
+                                <div class="inventory-header">
+                                    <span>Item</span>
+                                    <span>Peso (kg)</span>
+                                    <span></span>
+                                </div>
+                                <div id="inventoryItems">
+                                    <!-- Items serão gerados por JS -->
+                                </div>
+                                <button id="addItemBtn" class="btn-add-item">
+                                    <i class="fas fa-plus"></i> Adicionar Item
+                                </button>
+                            </div>
+
+                            <!-- Status de Peso -->
+                            <div class="weight-info">
+                                <small>Máx: <span id="maxWeightInfo">12</span>kg | Pesado: <span id="heavyWeightInfo">18</span>kg</small>
+                            </div>
+                        </div>
+
+                        <!-- Notas Rápidas -->
+                        <div class="notes-card draggable-card" data-card-id="quick-notes">
+                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                            <h3><i class="fas fa-sticky-note"></i> Notas Rápidas</h3>
+                            <textarea id="quickNotes" data-field="quickNotes" placeholder="Anotações..."></textarea>
+                        </div>
+
+                        <!-- Perícias Treinadas -->
+                        <div class="trained-skills-card draggable-card" data-card-id="trained-skills">
+                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                            <h3><i class="fas fa-star"></i> Perícias Treinadas</h3>
+                            <div id="trainedSkillsList" class="trained-skills-list">
+                                <p class="no-skills">Nenhuma perícia treinada</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TELA DE COMBATE ==================== -->
+            <div id="tab-combate" class="tab-content">
+                <div class="combat-layout layout-container" data-container-id="combat-main">
+                    <!-- Status Vitais -->
+                    <div class="vital-stats draggable-card" data-card-id="combat-vitals">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <div class="vital-box hp-box">
+                            <div class="vital-icon"><i class="fas fa-heart"></i></div>
+                            <div class="vital-info">
+                                <label>HP</label>
+                                <div class="vital-values">
+                                    <input type="number" id="currentHp" data-field="currentHp" class="vital-current" min="0" value="20">
+                                    <span>/</span>
+                                    <span id="maxHp" class="vital-max">20</span>
+                                </div>
+                                <div class="vital-bar">
+                                    <div id="hpBar" class="bar-fill hp-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="vital-box san-box">
+                            <div class="vital-icon"><i class="fas fa-brain"></i></div>
+                            <div class="vital-info">
+                                <label>Sanidade</label>
+                                <input type="number" id="sanity" data-field="sanity" class="vital-single" min="0" value="20">
+                            </div>
+                        </div>
+
+                        <div class="vital-box pe-box">
+                            <div class="vital-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="vital-info">
+                                <label>PE</label>
+                                <div class="vital-values">
+                                    <input type="number" id="currentPE" data-field="currentPE" class="vital-current" min="0" value="6">
+                                    <span>/</span>
+                                    <span id="maxPE" class="vital-max">6</span>
+                                </div>
+                                <div class="vital-bar">
+                                    <div id="peBar" class="bar-fill pe-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="vital-box pa-box">
+                            <div class="vital-icon"><i class="fas fa-running"></i></div>
+                            <div class="vital-info">
+                                <label>PA</label>
+                                <span id="actionPoints" class="vital-single calculated">5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Defesas -->
+                    <div class="defense-stats draggable-card" data-card-id="combat-defenses">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <div class="defense-box">
+                            <i class="fas fa-shield-alt"></i>
+                            <label>CA</label>
+                            <span id="armorClass" class="defense-value">10</span>
+                        </div>
+                        <div class="defense-box">
+                            <i class="fas fa-wind"></i>
+                            <label>Esquiva</label>
+                            <span id="dodge" class="defense-value">10</span>
+                        </div>
+                        <div class="defense-box">
+                            <i class="fas fa-bolt"></i>
+                            <label>Iniciativa</label>
+                            <span id="initiative" class="defense-value">+0</span>
+                        </div>
+                    </div>
+
+                    <!-- Reduções de Dano -->
+                    <div class="damage-reduction draggable-card" data-card-id="combat-reduction">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-shield-virus"></i> Reduções de Dano</h3>
+                        <div class="reduction-grid">
+                            <div class="reduction-item">
+                                <span>Ao Defender (Braços)</span>
+                                <span id="reduceDefend" class="reduction-value">0</span>
+                            </div>
+                            <div class="reduction-item">
+                                <span>Dano Geral</span>
+                                <span id="reduceDamage" class="reduction-value">0</span>
+                            </div>
+                            <div class="reduction-item">
+                                <span>Dano de Queda</span>
+                                <span id="reduceFall" class="reduction-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ataques -->
+                    <div class="attacks-section draggable-card" data-card-id="combat-attacks">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-crosshairs"></i> Ataques</h3>
+                        <div class="attacks-table-container">
+                            <table class="attacks-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Dano</th>
+                                        <th>Dist.</th>
+                                        <th>Perícia</th>
+                                        <th>PA</th>
+                                        <th>PE</th>
+                                        <th>Crit</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attacksBody">
+                                    <!-- Ataques serão gerados por JS -->
+                                </tbody>
+                            </table>
+                            <button id="addAttackBtn" class="btn-add-item">
+                                <i class="fas fa-plus"></i> Adicionar Ataque
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Habilidades -->
+                    <div class="abilities-section draggable-card" data-card-id="combat-abilities">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-magic"></i> Habilidades e Poderes</h3>
+                        <textarea id="abilities" data-field="abilities" placeholder="Liste suas habilidades, poderes e magias..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TELA DE PERÍCIAS E FUSÕES ==================== -->
+            <div id="tab-pericias" class="tab-content">
+                <div class="skills-page-layout layout-container" data-container-id="skills-main">
+                    <!-- Perícias -->
+                    <div class="skills-section-box draggable-card" data-card-id="skills-list">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <div class="skills-header">
+                            <h2><i class="fas fa-star"></i> Perícias</h2>
+                            <div class="skill-legend">
+                                <span class="legend-item"><span class="dot untrained"></span> Sem Treino (+0)</span>
+                                <span class="legend-item"><span class="dot trained"></span> Treinada (+1)</span>
+                                <span class="legend-item"><span class="dot veteran"></span> Veterana (+3)</span>
+                                <span class="legend-item"><span class="dot expert"></span> Expert (+5)</span>
+                                <span class="legend-item"><i class="fas fa-weight-hanging" style="color: var(--warning);"></i> Penalidade de Carga</span>
+                            </div>
+                        </div>
+                        <div class="skills-grid" id="skillsGrid">
+                            <!-- Skills serão geradas por JS -->
+                        </div>
+                    </div>
+
+                    <!-- Fusões -->
+                    <div class="fusions-section draggable-card" data-card-id="fusions">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-dna"></i> Fusões</h3>
+                        
+                        <div class="fusion-row">
+                            <h4>Órgãos Vitais</h4>
+                            <div class="fusion-grid">
+                                <div class="fusion-item">
+                                    <label><i class="fas fa-brain"></i> Cérebro</label>
+                                    <select id="fusionBrainSkills" data-field="fusionBrain">
+                                        <option value="1">Vermelho (×1)</option>
+                                        <option value="1.5">Rosa Escuro (×1.5)</option>
+                                        <option value="2">Rosa Sock (×2)</option>
+                                        <option value="2.5">Rosa Claro (×2.5)</option>
+                                        <option value="3">Prata (×3)</option>
+                                        <option value="4">Branco (×4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label><i class="fas fa-heart"></i> Coração</label>
+                                    <select id="fusionHeartSkills" data-field="fusionHeart">
+                                        <option value="1">Vermelho (×1)</option>
+                                        <option value="1.5">Rosa Escuro (×1.5)</option>
+                                        <option value="2">Rosa Sock (×2)</option>
+                                        <option value="2.5">Rosa Claro (×2.5)</option>
+                                        <option value="3">Prata (×3)</option>
+                                        <option value="4">Branco (×4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label><i class="fas fa-eye"></i> Olhos</label>
+                                    <select id="fusionEyesSkills" data-field="fusionEyes">
+                                        <option value="normal">Não Fundido</option>
+                                        <option value="fused">Fundido</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="fusion-row">
+                            <h4>Ossos (Redução de Dano)</h4>
+                            <div class="fusion-grid">
+                                <div class="fusion-item">
+                                    <label>Braços</label>
+                                    <select id="fusionBoneArmsSkills" data-field="fusionBoneArms">
+                                        <option value="0">Normal</option>
+                                        <option value="2">Transiente (-2)</option>
+                                        <option value="4">Mesclado (-4)</option>
+                                        <option value="6">Integrado (-6)</option>
+                                        <option value="8">Fundido (-8)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label>Cabeça</label>
+                                    <select id="fusionBoneHeadSkills" data-field="fusionBoneHead">
+                                        <option value="0">Normal</option>
+                                        <option value="1">Transiente (-1)</option>
+                                        <option value="2">Mesclado (-2)</option>
+                                        <option value="3">Integrado (-3)</option>
+                                        <option value="4">Fundido (-4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label>Costas</label>
+                                    <select id="fusionBoneBackSkills" data-field="fusionBoneBack">
+                                        <option value="0">Normal</option>
+                                        <option value="1">Transiente (-1)</option>
+                                        <option value="2">Mesclado (-2)</option>
+                                        <option value="3">Integrado (-3)</option>
+                                        <option value="4">Fundido (-4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label>Peitoral</label>
+                                    <select id="fusionBoneChestSkills" data-field="fusionBoneChest">
+                                        <option value="0">Normal</option>
+                                        <option value="1">Transiente (-1)</option>
+                                        <option value="2">Mesclado (-2)</option>
+                                        <option value="3">Integrado (-3)</option>
+                                        <option value="4">Fundido (-4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label>Pernas</label>
+                                    <select id="fusionBoneLegsSkills" data-field="fusionBoneLegs">
+                                        <option value="0">Normal</option>
+                                        <option value="2">Transiente (-2)</option>
+                                        <option value="4">Mesclado (-4)</option>
+                                        <option value="6">Integrado (-6)</option>
+                                        <option value="8">Fundido (-8)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="fusion-row">
+                            <h4>Músculos (Bônus em Perícias)</h4>
+                            <div class="fusion-grid">
+                                <div class="fusion-item">
+                                    <label>Braços (+Luta)</label>
+                                    <select id="fusionMuscleArmsSkills" data-field="fusionMuscleArms">
+                                        <option value="0">Normal</option>
+                                        <option value="1">Rosa (+1)</option>
+                                        <option value="2">Rosa Claro (+2)</option>
+                                        <option value="3">Prata (+3)</option>
+                                        <option value="4">Branco (+4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label>Cabeça (+Percepção)</label>
+                                    <select id="fusionMuscleHeadSkills" data-field="fusionMuscleHead">
+                                        <option value="0">Normal</option>
+                                        <option value="1">Rosa (+1)</option>
+                                        <option value="2">Rosa Claro (+2)</option>
+                                        <option value="3">Prata (+3)</option>
+                                        <option value="4">Branco (+4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label>Costas (+Pontaria)</label>
+                                    <select id="fusionMuscleBackSkills" data-field="fusionMuscleBack">
+                                        <option value="0">Normal</option>
+                                        <option value="1">Rosa (+1)</option>
+                                        <option value="2">Rosa Claro (+2)</option>
+                                        <option value="3">Prata (+3)</option>
+                                        <option value="4">Branco (+4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label>Peitoral (+Atletismo)</label>
+                                    <select id="fusionMuscleChestSkills" data-field="fusionMuscleChest">
+                                        <option value="0">Normal</option>
+                                        <option value="1">Rosa (+1)</option>
+                                        <option value="2">Rosa Claro (+2)</option>
+                                        <option value="3">Prata (+3)</option>
+                                        <option value="4">Branco (+4)</option>
+                                    </select>
+                                </div>
+                                <div class="fusion-item">
+                                    <label>Pernas (+Acrobacia)</label>
+                                    <select id="fusionMuscleLegsSkills" data-field="fusionMuscleLegs">
+                                        <option value="0">Normal</option>
+                                        <option value="1">Rosa (+1)</option>
+                                        <option value="2">Rosa Claro (+2)</option>
+                                        <option value="3">Prata (+3)</option>
+                                        <option value="4">Branco (+4)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TELA DE HISTÓRIA ==================== -->
+            <div id="tab-historia" class="tab-content">
+                <div class="history-layout layout-container" data-container-id="history-main">
+                    <!-- Aparência -->
+                    <div class="history-section draggable-card" data-card-id="appearance">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-eye"></i> Aparência</h3>
+                        <div class="appearance-grid">
+                            <div class="form-group">
+                                <label>Idade</label>
+                                <input type="text" id="age" data-field="age">
+                            </div>
+                            <div class="form-group">
+                                <label>Altura</label>
+                                <input type="text" id="height" data-field="height">
+                            </div>
+                            <div class="form-group">
+                                <label>Peso</label>
+                                <input type="text" id="charWeight" data-field="charWeight">
+                            </div>
+                            <div class="form-group">
+                                <label>Olhos</label>
+                                <input type="text" id="eyes" data-field="eyes">
+                            </div>
+                            <div class="form-group">
+                                <label>Pele</label>
+                                <input type="text" id="skin" data-field="skin">
+                            </div>
+                            <div class="form-group">
+                                <label>Cabelo</label>
+                                <input type="text" id="hair" data-field="hair">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição da Aparência</label>
+                            <textarea id="appearanceDesc" data-field="appearanceDesc" placeholder="Descreva a aparência do seu personagem..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Personalidade -->
+                    <div class="history-section draggable-card" data-card-id="personality">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-theater-masks"></i> Personalidade</h3>
+                        <div class="personality-grid">
+                            <div class="form-group">
+                                <label>Traços de Personalidade</label>
+                                <textarea id="personalityTraits" data-field="personalityTraits"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Ideais</label>
+                                <textarea id="ideals" data-field="ideals"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Vínculos</label>
+                                <textarea id="bonds" data-field="bonds"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Fraquezas</label>
+                                <textarea id="flaws" data-field="flaws"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- História -->
+                    <div class="history-section draggable-card" data-card-id="backstory">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-book"></i> História do Personagem</h3>
+                        <textarea id="backstory" data-field="backstory" class="large-textarea" placeholder="Conte a história do seu personagem..."></textarea>
+                    </div>
+
+                    <!-- Anotações -->
+                    <div class="history-section draggable-card" data-card-id="notes">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-sticky-note"></i> Anotações</h3>
+                        <textarea id="notes" data-field="notes" class="large-textarea" placeholder="Anotações gerais, lembretes, etc..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts - Ordem importante! -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/calculations.js"></script>
+    <script src="js/sheet.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
