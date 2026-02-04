@@ -1880,12 +1880,78 @@ input.vital-single {
         grid-template-columns: repeat(2, 1fr);
     }
     
+    /* Combat compact for extra small devices */
     .vital-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.25rem;
+    }
+    
+    .vital-box {
+        padding: 0.35rem;
+    }
+    
+    .vital-icon {
+        font-size: 0.9rem;
+    }
+    
+    .vital-info label {
+        font-size: 0.55rem;
+    }
+    
+    .vital-values {
+        font-size: 0.9rem;
+    }
+    
+    .vital-current {
+        width: 32px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    input.vital-single {
+        width: 40px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .vital-info .vital-buttons .btn-adjust {
+        width: 20px;
+        height: 18px;
+        font-size: 0.6rem;
+    }
+    
+    .defense-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.25rem;
     }
     
     .defense-box {
-        min-width: 100%;
+        padding: 0.3rem;
+    }
+    
+    .defense-box i {
+        font-size: 0.85rem;
+    }
+    
+    .defense-box label {
+        font-size: 0.55rem;
+    }
+    
+    .defense-value {
+        font-size: 1rem;
+    }
+    
+    .reduction-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.25rem;
+    }
+    
+    .reduction-item {
+        font-size: 0.6rem;
+        padding: 0.25rem;
+    }
+    
+    .attacks-table {
+        font-size: 0.6rem;
+        min-width: 400px;
     }
     
     .fusion-grid {
