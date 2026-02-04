@@ -4,12 +4,22 @@ const Layout = {
     LAYOUT_KEY: 'draunia_layout',
     isEditMode: false,
     draggedElement: null,
+    
+    // Touch-specific properties
+    touchStartY: 0,
+    touchStartX: 0,
+    touchCurrentY: 0,
+    touchCurrentX: 0,
+    touchClone: null,
+    isTouchDragging: false,
+    scrollThreshold: 50, // pixels from edge to trigger scroll
 
     // Initialize layout system
     init() {
         this.loadLayout();
         this.createControls();
         this.bindEvents();
+        this.bindTouchEvents();
     },
 
     // Create edit mode controls
@@ -329,6 +339,230 @@ const Layout = {
             localStorage.removeItem(this.LAYOUT_KEY);
             location.reload();
         }
+    },
+
+    // ========== TOUCH EVENTS FOR MOBILE ==========
+    
+    bindTouchEvents() {
+        // Bind touch events to draggable cards
+        document.querySelectorAll('.draggable-card').forEach(el => {
+            el.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+            el.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+            el.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: false });
+            el.addEventListener('touchcancel', this.handleTouchEnd.bind(this), { passive: false });
+        });
+    },
+
+    handleTouchStart(e) {
+        if (!this.isEditMode) return;
+        
+        const card = e.target.closest('.draggable-card');
+        if (!card) return;
+        
+        // Check if touch started on drag handle or card header
+        const handle = e.target.closest('.drag-handle, .card-header, h3, h4');
+        if (!handle && !e.target.closest('.draggable-card > *:first-child')) {
+            return; // Only drag from header area
+        }
+        
+        const touch = e.touches[0];
+        this.touchStartX = touch.clientX;
+        this.touchStartY = touch.clientY;
+        this.touchCurrentX = touch.clientX;
+        this.touchCurrentY = touch.clientY;
+        this.draggedElement = card;
+        
+        // Small delay to distinguish between tap and drag
+        this.touchTimeout = setTimeout(() => {
+            if (this.draggedElement) {
+                this.startTouchDrag(touch);
+            }
+        }, 150);
+    },
+
+    startTouchDrag(touch) {
+        if (!this.draggedElement) return;
+        
+        this.isTouchDragging = true;
+        this.draggedElement.classList.add('dragging');
+        
+        // Create clone for visual feedback
+        this.touchClone = this.draggedElement.cloneNode(true);
+        this.touchClone.classList.add('touch-drag-clone');
+        this.touchClone.style.cssText = `
+            position: fixed;
+            top: ${this.draggedElement.getBoundingClientRect().top}px;
+            left: ${this.draggedElement.getBoundingClientRect().left}px;
+            width: ${this.draggedElement.offsetWidth}px;
+            height: ${this.draggedElement.offsetHeight}px;
+            opacity: 0.8;
+            z-index: 10000;
+            pointer-events: none;
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: none;
+        `;
+        document.body.appendChild(this.touchClone);
+        
+        // Make original semi-transparent
+        this.draggedElement.style.opacity = '0.4';
+        
+        // Haptic feedback if available
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
+    },
+
+    handleTouchMove(e) {
+        if (!this.isEditMode || !this.draggedElement) return;
+        
+        const touch = e.touches[0];
+        this.touchCurrentX = touch.clientX;
+        this.touchCurrentY = touch.clientY;
+        
+        // Check if moved enough to start dragging
+        const deltaX = Math.abs(this.touchCurrentX - this.touchStartX);
+        const deltaY = Math.abs(this.touchCurrentY - this.touchStartY);
+        
+        if (!this.isTouchDragging && (deltaX > 10 || deltaY > 10)) {
+            clearTimeout(this.touchTimeout);
+            this.startTouchDrag(touch);
+        }
+        
+        if (!this.isTouchDragging) return;
+        
+        e.preventDefault(); // Prevent scrolling while dragging
+        
+        // Move clone
+        if (this.touchClone) {
+            const offsetX = this.touchCurrentX - this.touchStartX;
+            const offsetY = this.touchCurrentY - this.touchStartY;
+            const originalRect = this.draggedElement.getBoundingClientRect();
+            
+            this.touchClone.style.left = `${originalRect.left + offsetX}px`;
+            this.touchClone.style.top = `${originalRect.top + offsetY}px`;
+        }
+        
+        // Auto-scroll when near edges
+        this.handleAutoScroll();
+        
+        // Find element under touch
+        this.updateDropTarget(touch);
+    },
+
+    handleAutoScroll() {
+        const scrollSpeed = 10;
+        
+        if (this.touchCurrentY < this.scrollThreshold) {
+            window.scrollBy(0, -scrollSpeed);
+        } else if (this.touchCurrentY > window.innerHeight - this.scrollThreshold) {
+            window.scrollBy(0, scrollSpeed);
+        }
+    },
+
+    updateDropTarget(touch) {
+        // Temporarily hide clone to get element underneath
+        if (this.touchClone) {
+            this.touchClone.style.display = 'none';
+        }
+        
+        const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        if (this.touchClone) {
+            this.touchClone.style.display = '';
+        }
+        
+        // Remove previous highlights
+        document.querySelectorAll('.drag-over, .touch-drop-target').forEach(el => {
+            el.classList.remove('drag-over', 'touch-drop-target');
+        });
+        
+        if (!elementBelow) return;
+        
+        // Check for card or container
+        const targetCard = elementBelow.closest('.draggable-card');
+        const targetContainer = elementBelow.closest('.layout-container');
+        
+        if (targetCard && targetCard !== this.draggedElement) {
+            targetCard.classList.add('drag-over', 'touch-drop-target');
+        } else if (targetContainer) {
+            targetContainer.classList.add('drag-over');
+        }
+    },
+
+    handleTouchEnd(e) {
+        clearTimeout(this.touchTimeout);
+        
+        if (!this.isEditMode || !this.draggedElement) {
+            this.cleanupTouchDrag();
+            return;
+        }
+        
+        if (this.isTouchDragging) {
+            // Find drop target
+            if (this.touchClone) {
+                this.touchClone.style.display = 'none';
+            }
+            
+            const elementBelow = document.elementFromPoint(this.touchCurrentX, this.touchCurrentY);
+            
+            if (elementBelow) {
+                const targetCard = elementBelow.closest('.draggable-card');
+                const targetContainer = elementBelow.closest('.layout-container');
+                
+                if (targetCard && targetCard !== this.draggedElement) {
+                    // Drop on another card
+                    const container = targetCard.parentElement;
+                    const draggedContainer = this.draggedElement.parentElement;
+                    
+                    if (container === draggedContainer) {
+                        const allCards = Array.from(container.querySelectorAll('.draggable-card'));
+                        const draggedIndex = allCards.indexOf(this.draggedElement);
+                        const targetIndex = allCards.indexOf(targetCard);
+                        
+                        if (draggedIndex < targetIndex) {
+                            targetCard.after(this.draggedElement);
+                        } else {
+                            targetCard.before(this.draggedElement);
+                        }
+                    } else {
+                        targetCard.before(this.draggedElement);
+                    }
+                } else if (targetContainer && !targetContainer.contains(this.draggedElement)) {
+                    // Drop in container
+                    targetContainer.appendChild(this.draggedElement);
+                }
+            }
+            
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+        }
+        
+        this.cleanupTouchDrag();
+    },
+
+    cleanupTouchDrag() {
+        // Remove clone
+        if (this.touchClone) {
+            this.touchClone.remove();
+            this.touchClone = null;
+        }
+        
+        // Reset dragged element
+        if (this.draggedElement) {
+            this.draggedElement.classList.remove('dragging');
+            this.draggedElement.style.opacity = '';
+        }
+        
+        // Remove all highlights
+        document.querySelectorAll('.drag-over, .touch-drop-target').forEach(el => {
+            el.classList.remove('drag-over', 'touch-drop-target');
+        });
+        
+        this.isTouchDragging = false;
+        this.draggedElement = null;
     }
 };
 

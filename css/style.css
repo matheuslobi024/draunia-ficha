@@ -1872,3 +1872,100 @@ input.vital-single {
         top: 60px;
     }
 }
+
+/* ========== TOUCH DRAG STYLES FOR MOBILE ========== */
+
+/* Clone visual durante o arrasto touch */
+.touch-drag-clone {
+    border: 2px solid var(--accent-primary) !important;
+    border-radius: var(--border-radius);
+    background: var(--bg-card);
+}
+
+/* Target de drop no touch */
+.touch-drop-target {
+    border: 2px solid var(--success) !important;
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
+    transform: scale(1.02);
+    transition: all 0.15s ease;
+}
+
+/* Melhorar área de toque no mobile */
+@media (max-width: 768px) {
+    .layout-edit-mode .draggable-card {
+        cursor: grab;
+    }
+    
+    .layout-edit-mode .draggable-card:active {
+        cursor: grabbing;
+    }
+    
+    /* Área de arrasto maior no mobile */
+    .layout-edit-mode .card-header,
+    .layout-edit-mode .draggable-card > h3,
+    .layout-edit-mode .draggable-card > h4 {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        background: rgba(108, 92, 231, 0.1);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        margin: -1rem -1rem 1rem -1rem;
+        padding: 1rem;
+        border-bottom: 1px dashed var(--accent-primary);
+    }
+    
+    /* Indicador visual de que pode arrastar */
+    .layout-edit-mode .draggable-card::before {
+        content: '⋮⋮';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 1.2rem;
+        color: var(--accent-secondary);
+        opacity: 0.8;
+        letter-spacing: -3px;
+    }
+    
+    /* Feedback visual melhorado no drag */
+    .layout-edit-mode .draggable-card.dragging {
+        opacity: 0.3 !important;
+        border: 2px dashed var(--warning) !important;
+    }
+    
+    /* Container highlight no touch */
+    .layout-edit-mode .layout-container.drag-over {
+        background: rgba(108, 92, 231, 0.15);
+        border: 3px dashed var(--accent-secondary);
+        padding: 10px;
+        min-height: 100px;
+    }
+    
+    /* Tooltip atualizado para mobile */
+    .layout-edit-mode .layout-help-tooltip {
+        font-size: 0.8rem;
+        padding: 8px 15px;
+    }
+    
+    .layout-help-tooltip i {
+        display: none; /* Esconder ícones no mobile para economizar espaço */
+    }
+}
+
+/* Prevenir seleção de texto durante arrasto */
+.layout-edit-mode .draggable-card {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Animação suave quando card é solto */
+.draggable-card {
+    transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Desabilitar transições durante arrasto para performance */
+.draggable-card.dragging,
+.touch-drag-clone {
+    transition: none !important;
+}
