@@ -1032,6 +1032,64 @@ input.vital-single {
     gap: 0.5rem;
 }
 
+/* Combat Skills Section */
+.combat-skills-section {
+    background: var(--bg-card);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.combat-skills-section h3 {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--accent-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.combat-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+}
+
+.combat-skill-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    background: var(--bg-input);
+    border-radius: var(--border-radius);
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+    text-align: center;
+}
+
+.combat-skill-item:hover {
+    border-color: var(--accent-primary);
+}
+
+.combat-skill-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.combat-skill-attr {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.combat-skill-total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-secondary);
+    margin-top: 0.25rem;
+}
+
 .attacks-table-container {
     overflow-x: auto;
 }
@@ -1769,6 +1827,38 @@ input.vital-single {
     
     .reduction-value {
         font-size: 0.85rem !important;
+    }
+    
+    /* Combat Skills Mobile */
+    .combat-skills-section {
+        padding: 0.5rem !important;
+    }
+    
+    .combat-skills-section h3 {
+        font-size: 0.7rem !important;
+        margin-bottom: 0.35rem !important;
+    }
+    
+    .combat-skills-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 0.25rem !important;
+    }
+    
+    .combat-skill-item {
+        padding: 0.3rem !important;
+    }
+    
+    .combat-skill-name {
+        font-size: 0.6rem !important;
+    }
+    
+    .combat-skill-attr {
+        font-size: 0.5rem !important;
+    }
+    
+    .combat-skill-total {
+        font-size: 0.85rem !important;
+        margin-top: 0.1rem !important;
     }
     
     /* Attacks Table Mobile */

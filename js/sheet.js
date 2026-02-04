@@ -8,6 +8,7 @@ const Sheet = {
     init() {
         this.bindEvents();
         this.generateSkillsHTML();
+        this.generateCombatSkillsHTML();
         this.setupSkillSearch();
     },
 
@@ -526,6 +527,45 @@ const Sheet = {
         });
     },
 
+    // Combat skills to display
+    COMBAT_SKILLS: ['luta', 'pontaria', 'atletismo', 'acrobacia', 'reflexos', 'furtividade', 'intimidacao', 'percepcao', 'tatica', 'medicina'],
+
+    // Generate combat skills HTML for combat tab
+    generateCombatSkillsHTML() {
+        const grid = document.getElementById('combatSkillsGrid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+
+        this.COMBAT_SKILLS.forEach(skillId => {
+            const skill = Calculations.SKILLS.find(s => s.id === skillId);
+            if (!skill) return;
+
+            const div = document.createElement('div');
+            div.className = 'combat-skill-item';
+            div.dataset.skillId = skillId;
+            div.innerHTML = `
+                <span class="combat-skill-name">${skill.name}</span>
+                <span class="combat-skill-attr">${skill.attr}</span>
+                <span class="combat-skill-total" data-combat-skill="${skillId}">+0</span>
+            `;
+            grid.appendChild(div);
+        });
+    },
+
+    // Update combat skills display
+    updateCombatSkills() {
+        if (!this.currentCharacter) return;
+
+        this.COMBAT_SKILLS.forEach(skillId => {
+            const total = Calculations.calculateSkillTotal(this.currentCharacter, skillId);
+            const el = document.querySelector(`[data-combat-skill="${skillId}"]`);
+            if (el) {
+                el.textContent = (total >= 0 ? '+' : '') + total;
+            }
+        });
+    },
+
     // Handle portrait upload
     handlePortraitUpload(e) {
         const file = e.target.files[0];
@@ -647,6 +687,9 @@ const Sheet = {
                 totalEl.textContent = (total >= 0 ? '+' : '') + total;
             }
         });
+
+        // Update combat skills in combat tab
+        this.updateCombatSkills();
 
         // Update trained skills list in principal tab
         this.updateTrainedSkillsList();
