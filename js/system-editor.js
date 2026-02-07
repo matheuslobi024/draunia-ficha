@@ -1010,10 +1010,10 @@ const SystemEditor = {
         
         try {
             if (this.isNewSystem) {
-                await API.saveCustomSystem(system);
+                await API.saveCustomSystem(system.id, system);
                 SystemManager.customSystems[system.id] = system;
             } else {
-                await API.saveCustomSystem(system);
+                await API.saveCustomSystem(system.id, system);
                 SystemManager.customSystems[system.id] = system;
             }
             
