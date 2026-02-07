@@ -9,16 +9,20 @@ const App = {
     
     // Initialize application
     async init() {
+        console.log('[App] init() iniciando...');
         // Show loading state
         this.showLoading(true);
         
         // Initialize Firebase Auth
         await Auth.init();
+        console.log('[App] Auth inicializado');
         
         // Initialize System Manager
         await SystemManager.init();
+        console.log('[App] SystemManager inicializado');
         
         this.bindAuthEvents();
+        console.log('[App] bindAuthEvents() concluído');
         this.bindNavEvents();
         Sheet.init();
         
@@ -32,6 +36,7 @@ const App = {
         await this.checkAuthState();
         this.initialized = true;
         this.showLoading(false);
+        console.log('[App] init() concluído');
     },
 
     // Show/hide loading
@@ -90,8 +95,14 @@ const App = {
         
         // Manage systems button
         const manageSysBtn = document.getElementById('manageSysBtn');
+        console.log('[App] manageSysBtn encontrado:', manageSysBtn);
         if (manageSysBtn) {
-            manageSysBtn.addEventListener('click', () => SystemManager.showManager());
+            manageSysBtn.addEventListener('click', () => {
+                console.log('[App] Botão Gerenciar Sistemas clicado');
+                SystemManager.showManager();
+            });
+        } else {
+            console.error('[App] ERRO: manageSysBtn NÃO encontrado!');
         }
     },
 
