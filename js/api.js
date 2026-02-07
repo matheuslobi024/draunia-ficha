@@ -275,18 +275,22 @@ const API = {
     },
     
     async saveCustomSystem(systemId, systemData) {
+        console.log('[API.saveCustomSystem] Called with:', { systemId, systemData });
+        
         if (!this.currentUser) throw new Error('Não autenticado');
         if (!systemId) throw new Error('ID do sistema não fornecido');
         if (!systemData) throw new Error('Dados do sistema não fornecidos');
         
         try {
-            systemData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+            // Create a copy to avoid modifying the original
+            const dataToSave = { ...systemData };
+            dataToSave.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
             
             await db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('systems')
                 .doc(systemId)
-                .set(systemData, { merge: true });
+                .set(dataToSave, { merge: true });
             
             return { success: true };
         } catch (error) {

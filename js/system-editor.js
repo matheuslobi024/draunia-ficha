@@ -87,6 +87,7 @@ const SystemEditor = {
     
     // Initialize editor
     init() {
+        console.log('[SystemEditor] Version 2.0 - 2026-02-07');
         this.bindNavigation();
         this.bindTabs();
         this.bindToggles();
@@ -447,6 +448,12 @@ const SystemEditor = {
         }
         
         const sys = this.currentSystem;
+        
+        // Ensure config exists
+        if (!sys.config) {
+            console.warn('[SystemEditor] sys.config was undefined, creating empty config');
+            sys.config = {};
+        }
         
         // Basic info
         sys.name = this.getVal('sysName') || 'Sistema Sem Nome';
@@ -1004,7 +1011,11 @@ const SystemEditor = {
     
     // Save system
     async save() {
+        console.log('[SystemEditor.save] Starting save...');
+        console.log('[SystemEditor.save] currentSystem:', this.currentSystem);
+        
         const system = this.collectFormData();
+        console.log('[SystemEditor.save] collectFormData returned:', system);
         
         if (!system) {
             alert('Erro: Sistema não está carregado. Tente novamente.');
@@ -1025,6 +1036,7 @@ const SystemEditor = {
         }
         
         try {
+            console.log('[SystemEditor.save] Calling API.saveCustomSystem with:', system.id, system);
             if (this.isNewSystem) {
                 await API.saveCustomSystem(system.id, system);
                 SystemManager.customSystems[system.id] = system;
