@@ -684,7 +684,7 @@ const Sheet = {
                 grid.appendChild(div);
             });
         } else {
-            // Reals&Scripts style skills with training levels
+            // Realms&Scripts style skills with training levels
             grid.className = 'skills-grid';
             skills.forEach(skill => {
                 const div = document.createElement('div');
@@ -831,7 +831,7 @@ const Sheet = {
                 bonusEl.textContent = '';
             }
         } else {
-            // Reals&Scripts race bonus
+            // Realms&Scripts race bonus
             const raceInfo = race ? Calculations.RACE_BONUSES[race] : null;
             if (raceInfo) {
                 bonusEl.innerHTML = `
@@ -859,7 +859,7 @@ const Sheet = {
             // D&D 5e calculations
             this.updateDndCalculations();
         } else {
-            // Reals&Scripts calculations
+            // Realms&Scripts calculations
             this.updateRsCalculations();
         }
 
@@ -873,7 +873,7 @@ const Sheet = {
         this.updateRaceBonus();
     },
 
-    // Reals&Scripts specific calculations
+    // Realms&Scripts specific calculations
     updateRsCalculations() {
         const calc = Calculations.updateAllCalculations(this.currentCharacter);
 
@@ -1052,7 +1052,7 @@ const Sheet = {
                 </div>
             `).join('');
         } else {
-            // Reals&Scripts trained skills
+            // Realms&Scripts trained skills
             const trained = Calculations.getTrainedSkills(this.currentCharacter);
             
             if (trained.length === 0) {

@@ -358,7 +358,7 @@ const Calculations = {
         };
     },
     
-    // ========== REALS&SCRIPTS RULES ===========
+    // ========== Realms&Scripts RULES ===========
     // Skill definitions with attribute mappings
     // armorPenalty = true significa que tem penalidade de carga (armadura média -2, pesada -5)
     SKILLS: [

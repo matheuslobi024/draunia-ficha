@@ -340,7 +340,7 @@ const App = {
             el.closest('.defense-box')?.classList.toggle('hidden', !config.hasDodge);
         });
         
-        // Show/hide Damage Reduction (Reals&Scripts only)
+        // Show/hide Damage Reduction (Realms&Scripts only)
         document.querySelectorAll('.damage-reduction, [data-card-id="combat-reduction"]').forEach(el => {
             el.classList.toggle('hidden', !config.hasFusions);
         });

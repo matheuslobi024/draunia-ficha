@@ -12,7 +12,7 @@ const SystemManager = {
     defaultSystems: {
         'realsscripts': {
             id: 'realsscripts',
-            name: 'Reals&Scripts',
+            name: 'Realms&Scripts',
             description: 'Sistema original com Fusões, PA, atributos personalizados e mecânicas únicas de Draunia.',
             icon: 'fa-scroll',
             isBuiltIn: true,

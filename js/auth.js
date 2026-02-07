@@ -150,7 +150,7 @@ const Auth = {
         
         // Add system-specific defaults
         if (config.attrType === 'realsscripts' || systemId === 'realsscripts') {
-            // Reals&Scripts attributes
+            // Realms&Scripts attributes
             baseData.attrFor = 0;
             baseData.attrCon = 0;
             baseData.attrVon = 0;
@@ -158,7 +158,7 @@ const Auth = {
             baseData.attrInt = 0;
             baseData.attrAgi = 0;
             
-            // Default HP/PE/Sanity for Reals&Scripts
+            // Default HP/PE/Sanity for Realms&Scripts
             baseData.currentHp = 20;
             baseData.currentPE = 6;
             baseData.sanity = 20;

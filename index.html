@@ -174,7 +174,7 @@
                         <label class="toggle-label">
                             <span>Tipo de Atributos</span>
                             <select id="attrType">
-                                <option value="realsscripts">Reals&Scripts (FOR, CON, VON, CAR, INT, AGI)</option>
+                                <option value="realsscripts">Realms&Scripts (FOR, CON, VON, CAR, INT, AGI)</option>
                                 <option value="dnd">D&D Clássico (FOR, DES, CON, INT, SAB, CAR)</option>
                                 <option value="custom">Personalizado</option>
                             </select>
@@ -226,7 +226,7 @@
                         <label class="toggle-label">
                             <span>Fórmula de HP Máximo</span>
                             <select id="hpFormula">
-                                <option value="realsscripts">Reals&Scripts: (Coração × 20) + (Nível × CON)</option>
+                                <option value="realsscripts">Realms&Scripts: (Coração × 20) + (Nível × CON)</option>
                                 <option value="dnd">D&D: Dado de Vida + mod. CON por nível</option>
                                 <option value="levelcon">Nível × CON</option>
                                 <option value="levelonly">Apenas Nível × Multiplicador</option>
@@ -286,7 +286,7 @@
                             <label class="toggle-label">
                                 <span>Fórmula de PE Máximo</span>
                                 <select id="peFormula">
-                                    <option value="realsscripts">Reals&Scripts: (Cérebro × 6) + (Nível × VON)</option>
+                                    <option value="realsscripts">Realms&Scripts: (Cérebro × 6) + (Nível × VON)</option>
                                     <option value="simple">Simples: Nível × Multiplicador</option>
                                     <option value="attr">Baseado em Atributo</option>
                                     <option value="attrlevel">Atributo + (Nível × Mult)</option>
@@ -456,7 +456,7 @@
                             <label class="toggle-label">
                                 <span>Fórmula de PA</span>
                                 <select id="paFormula">
-                                    <option value="realsscripts">Reals&Scripts: AGI + Nível + 4</option>
+                                    <option value="realsscripts">Realms&Scripts: AGI + Nível + 4</option>
                                     <option value="flat">Valor Fixo</option>
                                     <option value="attr">Baseado em Atributo</option>
                                     <option value="custom">Personalizado</option>
@@ -517,7 +517,7 @@
                         <div class="form-group">
                             <label>Tipos de Fusão disponíveis (uma por linha: Nome, Efeito)</label>
                             <textarea id="fusionTypes" placeholder="Coração, Aumenta HP&#10;Cérebro, Aumenta PE&#10;Olhos, Melhora Percepção"></textarea>
-                            <small class="form-hint">Use Reals&Scripts padrão ou personalize</small>
+                            <small class="form-hint">Use Realms&Scripts padrão ou personalize</small>
                         </div>
                     </div>
                 </div>
@@ -532,7 +532,7 @@
                             <label class="toggle-label">
                                 <span>Fórmula de CA</span>
                                 <select id="caFormula">
-                                    <option value="realsscripts">Reals&Scripts: 10 + Bônus de Armadura</option>
+                                    <option value="realsscripts">Realms&Scripts: 10 + Bônus de Armadura</option>
                                     <option value="dnd">D&D: 10 + mod. DES + Armadura</option>
                                     <option value="flatbase">Base Fixa + mod. Atributo</option>
                                     <option value="custom">Personalizado</option>
@@ -578,7 +578,7 @@
                                 <label class="toggle-label">
                                     <span>Fórmula de Esquiva</span>
                                     <select id="dodgeFormula">
-                                        <option value="realsscripts">Reals&Scripts: CA + Reflexos</option>
+                                        <option value="realsscripts">Realms&Scripts: CA + Reflexos</option>
                                         <option value="dexbased">10 + mod. DES</option>
                                         <option value="custom">Personalizado</option>
                                     </select>
@@ -600,7 +600,7 @@
                                 <span>Fórmula de Iniciativa</span>
                                 <select id="initiativeFormula">
                                     <option value="dex">D&D: mod. DES</option>
-                                    <option value="agi">Reals&Scripts: AGI</option>
+                                    <option value="agi">Realms&Scripts: AGI</option>
                                     <option value="skill">Baseado em Perícia</option>
                                     <option value="custom">Personalizado</option>
                                 </select>
@@ -703,7 +703,7 @@
                         <label class="toggle-label">
                             <span>Sistema de Perícias</span>
                             <select id="skillSystem">
-                                <option value="realsscripts">Reals&Scripts (Níveis: Treinada, Veterana, Expert)</option>
+                                <option value="realsscripts">Realms&Scripts (Níveis: Treinada, Veterana, Expert)</option>
                                 <option value="dnd">D&D (Proficiência + Expertise)</option>
                                 <option value="ranks">Ranks Livres (pontos por nível)</option>
                                 <option value="simple">Simples (apenas proficiente ou não)</option>
@@ -730,7 +730,7 @@
                         <label class="toggle-label">
                             <span>Lista de Perícias</span>
                             <select id="skillList">
-                                <option value="realsscripts">Reals&Scripts (28 perícias)</option>
+                                <option value="realsscripts">Realms&Scripts (28 perícias)</option>
                                 <option value="dnd">D&D 5e (18 perícias)</option>
                                 <option value="minimal">Mínima (6 perícias básicas)</option>
                                 <option value="custom">Personalizado</option>
@@ -958,8 +958,8 @@
                                 <div class="form-group">
                                     <label>Raça</label>
                                     <select id="charRace" data-field="charRace">
-                                        <!-- Reals&Scripts Races -->
-                                        <optgroup label="Reals&Scripts" id="racesRealsscripts">
+                                        <!-- Realms&Scripts Races -->
+                                        <optgroup label="Realms&Scripts" id="racesRealsscripts">
                                             <option value="">Selecione...</option>
                                             <option value="humano">Humano</option>
                                             <option value="elfo">Elfo</option>
@@ -1034,7 +1034,7 @@
                                     <span id="hitDiceDisplay" class="calculated-small">d10</span>
                                 </div>
                             </div>
-                            <!-- Reals&Scripts PN Row -->
+                            <!-- Realms&Scripts PN Row -->
                             <div class="info-row rs-only" id="pnRow">
                                 <div class="form-group">
                                     <label>PN Disponíveis</label>
@@ -1442,7 +1442,7 @@
                         </div>
                     </div>
 
-                    <!-- Ataques Reals&Scripts -->
+                    <!-- Ataques Realms&Scripts -->
                     <div class="attacks-section draggable-card rs-only" data-card-id="combat-attacks">
                         <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
                         <h3><i class="fas fa-crosshairs"></i> Ataques</h3>
@@ -1523,7 +1523,7 @@
                         <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
                         <div class="skills-header">
                             <h2><i class="fas fa-star"></i> Perícias</h2>
-                            <!-- Legenda Reals&Scripts -->
+                            <!-- Legenda Realms&Scripts -->
                             <div class="skill-legend rs-only">
                                 <span class="legend-item"><span class="dot untrained"></span> Sem Treino (+0)</span>
                                 <span class="legend-item"><span class="dot trained"></span> Treinada (+1)</span>
@@ -1550,7 +1550,7 @@
                         </div>
                     </div>
 
-                    <!-- Fusões (Reals&Scripts only) -->
+                    <!-- Fusões (Realms&Scripts only) -->
                     <div class="fusions-section draggable-card rs-only" data-card-id="fusions">
                         <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
                         <h3><i class="fas fa-dna"></i> Fusões</h3>
@@ -1992,7 +1992,7 @@
                                 </div>
                                 <select id="sysBaseTemplate" style="width: 200px;">
                                     <option value="">Nenhum (criar do zero)</option>
-                                    <option value="realsscripts">Reals&Scripts</option>
+                                    <option value="realsscripts">Realms&Scripts</option>
                                     <option value="dnd5e">D&D 5e</option>
                                 </select>
                             </div>
@@ -2014,7 +2014,7 @@
                             <div class="sys-form-group">
                                 <label>Preset de Atributos</label>
                                 <select id="sysAttrPreset" onchange="SystemEditor.onAttrPresetChange()">
-                                    <option value="realsscripts">Reals&Scripts (FOR, CON, VON, CAR, INT, AGI)</option>
+                                    <option value="realsscripts">Realms&Scripts (FOR, CON, VON, CAR, INT, AGI)</option>
                                     <option value="dnd">D&D 5e (FOR, DES, CON, INT, SAB, CAR)</option>
                                     <option value="custom">Personalizado</option>
                                 </select>
@@ -2107,7 +2107,7 @@
                                 <span class="sys-formula-var" title="PE máximo" onclick="SystemEditor.copyVar('maxPE')">maxPE</span>
                             </div>
                             <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
-                                <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Fusões (Reals&Scripts):</strong>
+                                <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Fusões (Realms&Scripts):</strong>
                                 <span class="sys-formula-var" title="Nível de fusão do coração" onclick="SystemEditor.copyVar('fusaoCoracao')">fusaoCoracao</span>
                                 <span class="sys-formula-var" title="Nível de fusão do cérebro" onclick="SystemEditor.copyVar('fusaoCerebro')">fusaoCerebro</span>
                                 <span class="sys-formula-var" title="Nível de fusão dos olhos" onclick="SystemEditor.copyVar('fusaoOlhos')">fusaoOlhos</span>
@@ -2154,7 +2154,7 @@
                                 <div class="sys-form-group">
                                     <label>Fórmula de HP Máximo</label>
                                     <select id="sysHpFormula">
-                                        <option value="realsscripts">Reals&Scripts: (Coração × 20) + (Nível × CON)</option>
+                                        <option value="realsscripts">Realms&Scripts: (Coração × 20) + (Nível × CON)</option>
                                         <option value="dnd">D&D: Dado de Vida + mod. CON por nível</option>
                                         <option value="levelcon">Nível × CON</option>
                                         <option value="levelonly">Apenas Nível × Multiplicador</option>
@@ -2218,7 +2218,7 @@
                                         <div class="sys-form-group">
                                             <label>Fórmula</label>
                                             <select id="sysPEFormula">
-                                                <option value="realsscripts">Reals&Scripts: (Cérebro × 6) + (Nível × VON)</option>
+                                                <option value="realsscripts">Realms&Scripts: (Cérebro × 6) + (Nível × VON)</option>
                                                 <option value="simple">Nível × Multiplicador</option>
                                                 <option value="attr">Baseado em Atributo</option>
                                                 <option value="custom">Personalizado</option>
@@ -2317,7 +2317,7 @@
                                         <div class="sys-form-group">
                                             <label>Fórmula</label>
                                             <select id="sysPAFormula">
-                                                <option value="realsscripts">Reals&Scripts: AGI + Nível + 4</option>
+                                                <option value="realsscripts">Realms&Scripts: AGI + Nível + 4</option>
                                                 <option value="flat">Valor Fixo</option>
                                                 <option value="attr">Baseado em Atributo</option>
                                                 <option value="custom">Personalizado</option>
@@ -2453,7 +2453,7 @@
                                     <label>Preset de Raças</label>
                                     <select id="sysRacePreset" onchange="SystemEditor.onRacePresetChange()">
                                         <option value="none">Nenhum (criar do zero)</option>
-                                        <option value="realsscripts">Reals&Scripts (Humano, Elfo, Anão...)</option>
+                                        <option value="realsscripts">Realms&Scripts (Humano, Elfo, Anão...)</option>
                                         <option value="dnd">D&D 5e (27 raças)</option>
                                     </select>
                                 </div>
@@ -2504,7 +2504,7 @@
                                 <div class="sys-form-group">
                                     <label>Sistema de Perícias</label>
                                     <select id="sysSkillSystem">
-                                        <option value="realsscripts">Reals&Scripts (Treino 0-3)</option>
+                                        <option value="realsscripts">Realms&Scripts (Treino 0-3)</option>
                                         <option value="dnd">D&D (Proficiência/Expertise)</option>
                                         <option value="ranks">Ranks (pontos por nível)</option>
                                         <option value="percent">Percentual (0-100%)</option>
@@ -2514,7 +2514,7 @@
                                     <label>Preset de Perícias</label>
                                     <select id="sysSkillPreset" onchange="SystemEditor.onSkillPresetChange()">
                                         <option value="none">Nenhum (criar do zero)</option>
-                                        <option value="realsscripts">Reals&Scripts (36 perícias)</option>
+                                        <option value="realsscripts">Realms&Scripts (36 perícias)</option>
                                         <option value="dnd">D&D 5e (18 perícias)</option>
                                     </select>
                                 </div>
@@ -2569,7 +2569,7 @@
                                 <div class="sys-form-group">
                                     <label>Fórmula de CA</label>
                                     <select id="sysCAFormula">
-                                        <option value="realsscripts">Reals&Scripts: 10 + Bônus Armadura</option>
+                                        <option value="realsscripts">Realms&Scripts: 10 + Bônus Armadura</option>
                                         <option value="dnd">D&D: 10 + mod. DES + Armadura</option>
                                         <option value="flatbase">Base Fixa + Atributo</option>
                                         <option value="custom">Personalizado</option>
@@ -2610,7 +2610,7 @@
                                     <div class="sys-form-group">
                                         <label>Fórmula de Esquiva</label>
                                         <select id="sysDodgeFormula">
-                                            <option value="realsscripts">Reals&Scripts: CA + Reflexos</option>
+                                            <option value="realsscripts">Realms&Scripts: CA + Reflexos</option>
                                             <option value="dexbased">10 + mod. DES</option>
                                             <option value="custom">Personalizado</option>
                                         </select>
@@ -2642,7 +2642,7 @@
                                     <label>Fórmula de Iniciativa</label>
                                     <select id="sysInitFormula">
                                         <option value="dex">D&D: mod. DES</option>
-                                        <option value="agi">Reals&Scripts: AGI</option>
+                                        <option value="agi">Realms&Scripts: AGI</option>
                                         <option value="skill">Baseado em Perícia</option>
                                         <option value="custom">Personalizado</option>
                                     </select>
@@ -2699,7 +2699,7 @@
                                 <div class="sys-toggle-row">
                                     <div class="sys-toggle-info">
                                         <span>Sistema possui Fusões</span>
-                                        <small>Órgãos, Ossos, Músculos - único do Reals&Scripts</small>
+                                        <small>Órgãos, Ossos, Músculos - único do Realms&Scripts</small>
                                     </div>
                                     <label class="sys-toggle">
                                         <input type="checkbox" id="sysHasFusions">
