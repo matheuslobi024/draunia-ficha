@@ -1773,10 +1773,6 @@
                             <i class="fas fa-th-list"></i>
                             <span>Campos</span>
                         </div>
-                        <div class="sys-nav-item" data-panel="formulas">
-                            <i class="fas fa-calculator"></i>
-                            <span>Fórmulas</span>
-                        </div>
                     </div>
                 </nav>
                 
@@ -1945,8 +1941,9 @@
                             </div>
                         </div>
                         
-                        <div class="sys-form-section" id="sysCustomAttrsSection">
+                        <div class="sys-form-section hidden" id="sysCustomAttrsSection">
                             <h3><i class="fas fa-edit"></i> Atributos Personalizados</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 1rem;">Defina os atributos do seu sistema. Cada atributo precisa de nome, abreviação (3 letras) e valor padrão.</p>
                             <div class="sys-list-container" id="sysAttrsList">
                                 <!-- Rendered by JS -->
                             </div>
@@ -2239,7 +2236,7 @@
                             </div>
                         </div>
                         
-                        <div class="sys-form-section" id="sysClassesListSection" style="display:none;">
+                        <div class="sys-form-section" id="sysClassesListSection">
                             <h3><i class="fas fa-list"></i> Lista de Classes</h3>
                             <div class="sys-table-editor">
                                 <table class="sys-table" id="sysClassesTable">
@@ -2418,6 +2415,19 @@
                                         <option value="custom">Personalizado</option>
                                     </select>
                                 </div>
+                                
+                                <div id="sysCACustom" class="hidden">
+                                    <div class="sys-formula-builder">
+                                        <input type="text" id="sysCACustomFormula" class="sys-formula-input" placeholder="Ex: 10 + desMod + armorBonus">
+                                        <div class="sys-formula-vars">
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'baseAC')">baseAC</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'desMod')">desMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'agiMod')">agiMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'armorBonus')">armorBonus</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'shieldBonus')">shieldBonus</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="sys-form-section">
@@ -2442,6 +2452,18 @@
                                             <option value="custom">Personalizado</option>
                                         </select>
                                     </div>
+                                    
+                                    <div id="sysDodgeCustom" class="hidden">
+                                        <div class="sys-formula-builder">
+                                            <input type="text" id="sysDodgeCustomFormula" class="sys-formula-input" placeholder="Ex: ca + reflexos">
+                                            <div class="sys-formula-vars">
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'ca')">ca</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'reflexos')">reflexos</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'desMod')">desMod</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'agiMod')">agiMod</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2458,6 +2480,18 @@
                                         <option value="skill">Baseado em Perícia</option>
                                         <option value="custom">Personalizado</option>
                                     </select>
+                                </div>
+                                
+                                <div id="sysInitCustom" class="hidden">
+                                    <div class="sys-formula-builder">
+                                        <input type="text" id="sysInitCustomFormula" class="sys-formula-input" placeholder="Ex: desMod + nivel">
+                                        <div class="sys-formula-vars">
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'desMod')">desMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'agiMod')">agiMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'nivel')">nivel</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'profBonus')">profBonus</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2628,54 +2662,6 @@
                 </div>
                 
                 <!-- ==================== FÓRMULAS ==================== -->
-                <div class="sys-panel" id="panel-formulas">
-                    <div class="sys-editor-content-header">
-                        <div>
-                            <h2><i class="fas fa-calculator"></i> Fórmulas Avançadas</h2>
-                            <p>Configure fórmulas personalizadas</p>
-                        </div>
-                    </div>
-                    <div class="sys-editor-content-body">
-                        <div class="sys-form-section">
-                            <h3><i class="fas fa-code"></i> Editor de Fórmulas</h3>
-                            <p style="color: var(--text-muted);">
-                                Defina fórmulas personalizadas para cálculos do sistema.
-                                Use JavaScript válido com as variáveis disponíveis.
-                            </p>
-                            
-                            <div class="sys-form-group">
-                                <label>Fórmula Selecionada</label>
-                                <select id="sysFormulaSelect">
-                                    <option value="hp">HP Máximo</option>
-                                    <option value="pe">PE Máximo</option>
-                                    <option value="ca">Classe de Armadura</option>
-                                    <option value="initiative">Iniciativa</option>
-                                    <option value="dodge">Esquiva</option>
-                                    <option value="pa">Pontos de Ação</option>
-                                </select>
-                            </div>
-                            
-                            <div class="sys-formula-builder">
-                                <input type="text" id="sysFormulaEditor" class="sys-formula-input" placeholder="Selecione uma fórmula acima...">
-                                <div class="sys-formula-vars" id="sysFormulaVars">
-                                    <span class="sys-formula-var">level</span>
-                                    <span class="sys-formula-var">con</span>
-                                    <span class="sys-formula-var">for</span>
-                                    <span class="sys-formula-var">dex</span>
-                                    <span class="sys-formula-var">int</span>
-                                    <span class="sys-formula-var">wis</span>
-                                    <span class="sys-formula-var">cha</span>
-                                    <span class="sys-formula-var">hitDie</span>
-                                    <span class="sys-formula-var">profBonus</span>
-                                </div>
-                                <div class="sys-formula-preview" id="sysFormulaPreview">
-                                    <span>Resultado com valores de exemplo: </span>
-                                    <strong>?</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </main>
         </div>
     </div>

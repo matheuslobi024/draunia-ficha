@@ -241,6 +241,30 @@ const SystemEditor = {
                 document.getElementById('sysCustomModSection')?.classList.toggle('hidden', modCalc.value !== 'custom');
             });
         }
+        
+        // CA formula change
+        const caFormula = document.getElementById('sysCAFormula');
+        if (caFormula) {
+            caFormula.addEventListener('change', () => {
+                document.getElementById('sysCACustom')?.classList.toggle('hidden', caFormula.value !== 'custom');
+            });
+        }
+        
+        // Dodge formula change
+        const dodgeFormula = document.getElementById('sysDodgeFormula');
+        if (dodgeFormula) {
+            dodgeFormula.addEventListener('change', () => {
+                document.getElementById('sysDodgeCustom')?.classList.toggle('hidden', dodgeFormula.value !== 'custom');
+            });
+        }
+        
+        // Initiative formula change
+        const initFormula = document.getElementById('sysInitFormula');
+        if (initFormula) {
+            initFormula.addEventListener('change', () => {
+                document.getElementById('sysInitCustom')?.classList.toggle('hidden', initFormula.value !== 'custom');
+            });
+        }
     },
     
     // Bind icon picker
@@ -332,6 +356,13 @@ const SystemEditor = {
         this.setVal('sysAttrMax', cfg.attrMax || 20);
         this.setVal('sysAttrPointLimit', cfg.attrPointLimit || 0);
         
+        // Load custom attributes if any
+        if (cfg.attrType === 'custom' && cfg.customAttrs) {
+            this.renderAttrsTable(cfg.customAttrs);
+        }
+        // Trigger preset change to show/hide section
+        this.onAttrPresetChange();
+        
         // HP
         this.setVal('sysHpFormula', cfg.hpFormula || 'realsscripts');
         this.setVal('sysHpBase', cfg.hpBase || 10);
@@ -354,9 +385,12 @@ const SystemEditor = {
         
         // Combat
         this.setVal('sysCAFormula', cfg.caFormula || 'realsscripts');
+        this.setVal('sysCACustomFormula', cfg.caCustomFormula || '');
         this.setChecked('sysHasDodge', cfg.hasDodge === true);
         this.setVal('sysDodgeFormula', cfg.dodgeFormula || 'realsscripts');
+        this.setVal('sysDodgeCustomFormula', cfg.dodgeCustomFormula || '');
         this.setVal('sysInitFormula', cfg.initiativeFormula || 'agi');
+        this.setVal('sysInitCustomFormula', cfg.initCustomFormula || '');
         this.setChecked('sysHasSaves', cfg.hasSavingThrows === true);
         this.setChecked('sysHasFusions', cfg.hasFusions === true);
         
@@ -416,6 +450,7 @@ const SystemEditor = {
         cfg.attrMin = parseInt(this.getVal('sysAttrMin')) || 1;
         cfg.attrMax = parseInt(this.getVal('sysAttrMax')) || 20;
         cfg.attrPointLimit = parseInt(this.getVal('sysAttrPointLimit')) || 0;
+        cfg.customAttrs = this.collectAttrsTable();
         
         // HP
         cfg.hpFormula = this.getVal('sysHpFormula');
@@ -439,9 +474,12 @@ const SystemEditor = {
         
         // Combat
         cfg.caFormula = this.getVal('sysCAFormula');
+        cfg.caCustomFormula = this.getVal('sysCACustomFormula');
         cfg.hasDodge = this.getChecked('sysHasDodge');
         cfg.dodgeFormula = this.getVal('sysDodgeFormula');
+        cfg.dodgeCustomFormula = this.getVal('sysDodgeCustomFormula');
         cfg.initiativeFormula = this.getVal('sysInitFormula');
+        cfg.initCustomFormula = this.getVal('sysInitCustomFormula');
         cfg.hasSavingThrows = this.getChecked('sysHasSaves');
         cfg.hasFusions = this.getChecked('sysHasFusions');
         
@@ -449,15 +487,15 @@ const SystemEditor = {
         cfg.hasClasses = this.getChecked('sysHasClasses');
         cfg.classAffectsHP = this.getChecked('sysClassAffectsHP');
         cfg.allowMulticlass = this.getChecked('sysAllowMulticlass');
-        cfg.classes = this.collectClassesTable();
+        cfg.classes = this.collectClassesTable().filter(c => c.name);
         
         // Races
         cfg.hasRaces = this.getChecked('sysHasRaces');
-        cfg.races = this.collectRacesTable();
+        cfg.races = this.collectRacesTable().filter(r => r.name);
         
         // Skills
         cfg.skillSystem = this.getVal('sysSkillSystem');
-        cfg.skills = this.collectSkillsTable();
+        cfg.skills = this.collectSkillsTable().filter(s => s.name);
         
         // Magic
         cfg.hasMagic = this.getChecked('sysHasMagic');
@@ -542,6 +580,16 @@ const SystemEditor = {
         // Modifier calc section
         const modCalc = document.getElementById('sysModifierCalc')?.value;
         document.getElementById('sysCustomModSection')?.classList.toggle('hidden', modCalc !== 'custom');
+        
+        // Combat custom formula sections
+        const caFormula = document.getElementById('sysCAFormula')?.value;
+        document.getElementById('sysCACustom')?.classList.toggle('hidden', caFormula !== 'custom');
+        
+        const dodgeFormula = document.getElementById('sysDodgeFormula')?.value;
+        document.getElementById('sysDodgeCustom')?.classList.toggle('hidden', dodgeFormula !== 'custom');
+        
+        const initFormula = document.getElementById('sysInitFormula')?.value;
+        document.getElementById('sysInitCustom')?.classList.toggle('hidden', initFormula !== 'custom');
     },
     
     // Update overview panel
@@ -624,7 +672,7 @@ const SystemEditor = {
             hitDie: parseInt(row.querySelector('[data-field="hitDie"]')?.value) || 8,
             primaryAttr: row.querySelector('[data-field="primaryAttr"]')?.value || 'STR',
             spellcaster: row.querySelector('[data-field="spellcaster"]')?.checked || false
-        })).filter(c => c.name);
+        })); // Keep all rows, filter only on save
     },
     
     // Add class row
@@ -672,7 +720,7 @@ const SystemEditor = {
             name: row.querySelector('[data-field="name"]')?.value || '',
             bonuses: row.querySelector('[data-field="bonuses"]')?.value || '',
             traits: row.querySelector('[data-field="traits"]')?.value || ''
-        })).filter(r => r.name);
+        })); // Keep all rows, filter only on save
     },
     
     // Add race row
@@ -725,7 +773,7 @@ const SystemEditor = {
             name: row.querySelector('[data-field="name"]')?.value || '',
             attr: row.querySelector('[data-field="attr"]')?.value || 'FOR',
             armorPenalty: row.querySelector('[data-field="armorPenalty"]')?.checked || false
-        })).filter(s => s.name);
+        })); // Keep all rows, filter only on save
     },
     
     // Add skill row
@@ -748,8 +796,39 @@ const SystemEditor = {
     onAttrPresetChange() {
         const preset = this.getVal('sysAttrPreset');
         const section = document.getElementById('sysCustomAttrsSection');
-        if (section) {
-            section.style.display = preset === 'custom' ? 'block' : 'none';
+        
+        if (preset === 'custom') {
+            section?.classList.remove('hidden');
+            // Se não há atributos, iniciar com alguns vazios
+            const currentAttrs = this.collectAttrsTable();
+            if (currentAttrs.length === 0) {
+                this.renderAttrsTable([]);
+            }
+        } else {
+            section?.classList.add('hidden');
+            
+            // Carregar preset de atributos
+            if (preset === 'dnd') {
+                const dndAttrs = [
+                    { name: 'Força', abbr: 'FOR', default: 10 },
+                    { name: 'Destreza', abbr: 'DES', default: 10 },
+                    { name: 'Constituição', abbr: 'CON', default: 10 },
+                    { name: 'Inteligência', abbr: 'INT', default: 10 },
+                    { name: 'Sabedoria', abbr: 'SAB', default: 10 },
+                    { name: 'Carisma', abbr: 'CAR', default: 10 }
+                ];
+                this.renderAttrsTable(dndAttrs);
+            } else if (preset === 'realsscripts') {
+                const rsAttrs = [
+                    { name: 'Força', abbr: 'FOR', default: 0 },
+                    { name: 'Constituição', abbr: 'CON', default: 0 },
+                    { name: 'Vontade', abbr: 'VON', default: 0 },
+                    { name: 'Carisma', abbr: 'CAR', default: 0 },
+                    { name: 'Inteligência', abbr: 'INT', default: 0 },
+                    { name: 'Agilidade', abbr: 'AGI', default: 0 }
+                ];
+                this.renderAttrsTable(rsAttrs);
+            }
         }
         this.hasUnsavedChanges = true;
     },
@@ -813,10 +892,53 @@ const SystemEditor = {
         }
     },
     
-    // Add attribute
+    // ========== CUSTOM ATTRIBUTES ==========
+    
+    // Render custom attributes list
+    renderAttrsTable(attrs) {
+        const container = document.getElementById('sysAttrsList');
+        if (!container) return;
+        
+        if (!attrs || attrs.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Nenhum atributo definido. Clique em "Adicionar Atributo" para começar.</p>';
+            return;
+        }
+        
+        container.innerHTML = attrs.map((attr, i) => `
+            <div class="sys-attr-item" data-index="${i}">
+                <input type="text" value="${attr.name || ''}" data-field="name" placeholder="Nome do Atributo">
+                <input type="text" value="${attr.abbr || ''}" data-field="abbr" class="attr-abbr" placeholder="ABR" maxlength="3">
+                <input type="number" value="${attr.default || 10}" data-field="default" class="attr-default" min="1" max="100">
+                <button onclick="SystemEditor.removeAttribute(${i})" title="Remover">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    },
+    
+    // Collect custom attributes from list
+    collectAttrsTable() {
+        const items = document.querySelectorAll('#sysAttrsList .sys-attr-item[data-index]');
+        return Array.from(items).map(item => ({
+            name: item.querySelector('[data-field="name"]')?.value || '',
+            abbr: (item.querySelector('[data-field="abbr"]')?.value || '').toUpperCase(),
+            default: parseInt(item.querySelector('[data-field="default"]')?.value) || 10
+        })).filter(a => a.name && a.abbr);
+    },
+    
+    // Add custom attribute
     addAttribute() {
-        // TODO: Implement custom attribute list
-        console.log('Add attribute');
+        const attrs = this.collectAttrsTable();
+        attrs.push({ name: '', abbr: '', default: 10 });
+        this.renderAttrsTable(attrs);
+        this.hasUnsavedChanges = true;
+    },
+    
+    // Remove custom attribute
+    removeAttribute(index) {
+        const attrs = this.collectAttrsTable();
+        attrs.splice(index, 1);
+        this.renderAttrsTable(attrs);
         this.hasUnsavedChanges = true;
     },
     
