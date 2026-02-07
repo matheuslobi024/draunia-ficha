@@ -1,5 +1,39 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+<!--
+    ╔══════════════════════════════════════════════════════════════════════╗
+    ║                     FICHA DE RPG - DRAUNIA                           ║
+    ╠══════════════════════════════════════════════════════════════════════╣
+    ║  ÍNDICE DO DOCUMENTO                                                 ║
+    ╠══════════════════════════════════════════════════════════════════════╣
+    ║                                                                      ║
+    ║  MODALS (Sobreposições) #region linha 63                             ║
+    ║    64   - Login/Register Modal                                       ║
+    ║    104  - Character Select Modal                                     ║
+    ║    123  - System Select Modal                                        ║
+    ║    142  - System Editor Modal (legado)                               ║
+    ║    876  - Systems Manager Modal                                      ║
+    ║                                                                      ║
+    ║  TELAS PRINCIPAIS #region linha 898                                  ║
+    ║    941  - TELA PRINCIPAL (atributos, recursos)                       ║
+    ║    1331 - TELA DE COMBATE (ataques, CA)                              ║
+    ║    1496 - TELA DE PERÍCIAS E FUSÕES                                  ║
+    ║    1676 - TELA DE HISTÓRIA (background)                              ║
+    ║                                                                      ║
+    ║  SYSTEM EDITOR FULL-SCREEN #region linha 1758                        ║
+    ║    1840 - Main Content Area                                          ║
+    ║    (Painéis: Visão Geral, Informações, Atributos, Recursos,         ║
+    ║     Classes, Raças, Perícias, Combate, Magias, Campos)              ║
+    ║                                                                      ║
+    ║  SCRIPTS                                                             ║
+    ║    2820 - Scripts JavaScript                                         ║
+    ║                                                                      ║
+    ║  COMPONENTES SEPARADOS (em /components/)                             ║
+    ║    components/system-editor.html - Backup do editor de sistemas      ║
+    ║                                                                      ║
+    ║  Use #region para navegar/colapsar seções no VS Code                 ║
+    ╚══════════════════════════════════════════════════════════════════════╝
+-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8,7 +42,9 @@
     <meta name="theme-color" content="#0d0d15">
     <title>Ficha de RPG - Draunia</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/system-editor.css">
+    <link rel="stylesheet" href="css/system-editor-base.css">
+    <link rel="stylesheet" href="css/system-editor-forms.css">
+    <link rel="stylesheet" href="css/system-editor-mobile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDKs -->
@@ -17,6 +53,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
+    <!-- #region MODAIS DE AUTENTICAÇÃO E SELEÇÃO -->
     <!-- Login/Register Modal -->
     <div id="authModal" class="modal">
         <div class="modal-content">
@@ -849,7 +886,9 @@
             </div>
         </div>
     </div>
+    <!-- #endregion MODAIS DE AUTENTICAÇÃO E SELEÇÃO -->
 
+    <!-- #region CONTEÚDO PRINCIPAL (FICHA) -->
     <!-- Main Content -->
     <div id="mainContent" class="hidden">
         <!-- Header -->
@@ -1707,7 +1746,9 @@
             </div>
         </main>
     </div>
+    <!-- #endregion CONTEÚDO PRINCIPAL (FICHA) -->
 
+    <!-- #region SYSTEM EDITOR FULL-SCREEN -->
     <!-- ========== FULL-SCREEN SYSTEM EDITOR ========== -->
     <div id="systemEditorScreen">
         <div class="sys-editor-layout">
@@ -1994,57 +2035,57 @@
                         <div class="sys-form-section">
                             <h3><i class="fas fa-info-circle"></i> Referência de Variáveis para Fórmulas</h3>
                             <p style="color: var(--text-muted); margin-bottom: 1rem;">
-                                Clique em uma variável para ver sua descrição. Use estas em fórmulas personalizadas.
+                                Clique em uma variável para copiar seu nome. Use estas em fórmulas personalizadas.
                             </p>
                             <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px;">
                                 <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Atributos Base:</strong>
-                                <span class="sys-formula-var" title="Força">for</span>
-                                <span class="sys-formula-var" title="Constituição">con</span>
-                                <span class="sys-formula-var" title="Vontade (R&S)">von</span>
-                                <span class="sys-formula-var" title="Carisma">car / cha</span>
-                                <span class="sys-formula-var" title="Inteligência">int</span>
-                                <span class="sys-formula-var" title="Agilidade (R&S)">agi</span>
-                                <span class="sys-formula-var" title="Destreza (D&D)">des / dex</span>
-                                <span class="sys-formula-var" title="Sabedoria (D&D)">sab / wis</span>
+                                <span class="sys-formula-var" title="Força" onclick="SystemEditor.copyVar('for')">for</span>
+                                <span class="sys-formula-var" title="Constituição" onclick="SystemEditor.copyVar('con')">con</span>
+                                <span class="sys-formula-var" title="Vontade (R&S)" onclick="SystemEditor.copyVar('von')">von</span>
+                                <span class="sys-formula-var" title="Carisma" onclick="SystemEditor.copyVar('cha')">car / cha</span>
+                                <span class="sys-formula-var" title="Inteligência" onclick="SystemEditor.copyVar('int')">int</span>
+                                <span class="sys-formula-var" title="Agilidade (R&S)" onclick="SystemEditor.copyVar('agi')">agi</span>
+                                <span class="sys-formula-var" title="Destreza (D&D)" onclick="SystemEditor.copyVar('dex')">des / dex</span>
+                                <span class="sys-formula-var" title="Sabedoria (D&D)" onclick="SystemEditor.copyVar('wis')">sab / wis</span>
                             </div>
                             <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
                                 <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Modificadores:</strong>
-                                <span class="sys-formula-var" title="Modificador de Força">forMod</span>
-                                <span class="sys-formula-var" title="Modificador de Constituição">conMod</span>
-                                <span class="sys-formula-var" title="Modificador de Vontade">vonMod</span>
-                                <span class="sys-formula-var" title="Modificador de Carisma">chaMod</span>
-                                <span class="sys-formula-var" title="Modificador de Inteligência">intMod</span>
-                                <span class="sys-formula-var" title="Modificador de Agilidade">agiMod</span>
-                                <span class="sys-formula-var" title="Modificador de Destreza">desMod / dexMod</span>
-                                <span class="sys-formula-var" title="Modificador de Sabedoria">sabMod / wisMod</span>
+                                <span class="sys-formula-var" title="Modificador de Força" onclick="SystemEditor.copyVar('forMod')">forMod</span>
+                                <span class="sys-formula-var" title="Modificador de Constituição" onclick="SystemEditor.copyVar('conMod')">conMod</span>
+                                <span class="sys-formula-var" title="Modificador de Vontade" onclick="SystemEditor.copyVar('vonMod')">vonMod</span>
+                                <span class="sys-formula-var" title="Modificador de Carisma" onclick="SystemEditor.copyVar('chaMod')">chaMod</span>
+                                <span class="sys-formula-var" title="Modificador de Inteligência" onclick="SystemEditor.copyVar('intMod')">intMod</span>
+                                <span class="sys-formula-var" title="Modificador de Agilidade" onclick="SystemEditor.copyVar('agiMod')">agiMod</span>
+                                <span class="sys-formula-var" title="Modificador de Destreza" onclick="SystemEditor.copyVar('dexMod')">desMod / dexMod</span>
+                                <span class="sys-formula-var" title="Modificador de Sabedoria" onclick="SystemEditor.copyVar('wisMod')">sabMod / wisMod</span>
                             </div>
                             <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
                                 <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Personagem:</strong>
-                                <span class="sys-formula-var" title="Nível do personagem">level</span>
-                                <span class="sys-formula-var" title="Bônus de proficiência">profBonus</span>
-                                <span class="sys-formula-var" title="Dado de vida da classe">hitDie</span>
-                                <span class="sys-formula-var" title="HP máximo">maxHP</span>
-                                <span class="sys-formula-var" title="PE máximo">maxPE</span>
+                                <span class="sys-formula-var" title="Nível do personagem" onclick="SystemEditor.copyVar('level')">level</span>
+                                <span class="sys-formula-var" title="Bônus de proficiência" onclick="SystemEditor.copyVar('profBonus')">profBonus</span>
+                                <span class="sys-formula-var" title="Dado de vida da classe" onclick="SystemEditor.copyVar('hitDie')">hitDie</span>
+                                <span class="sys-formula-var" title="HP máximo" onclick="SystemEditor.copyVar('maxHP')">maxHP</span>
+                                <span class="sys-formula-var" title="PE máximo" onclick="SystemEditor.copyVar('maxPE')">maxPE</span>
                             </div>
                             <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
                                 <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Fusões (Reals&Scripts):</strong>
-                                <span class="sys-formula-var" title="Nível de fusão do coração">fusaoCoracao</span>
-                                <span class="sys-formula-var" title="Nível de fusão do cérebro">fusaoCerebro</span>
-                                <span class="sys-formula-var" title="Nível de fusão dos olhos">fusaoOlhos</span>
-                                <span class="sys-formula-var" title="Nível de fusão do braço">fusaoBraco</span>
-                                <span class="sys-formula-var" title="Nível de fusão do osso">fusaoOsso</span>
-                                <span class="sys-formula-var" title="Nível de fusão do músculo">fusaoMusculo</span>
-                                <span class="sys-formula-var" title="Nível de fusão da perna">fusaoPerna</span>
+                                <span class="sys-formula-var" title="Nível de fusão do coração" onclick="SystemEditor.copyVar('fusaoCoracao')">fusaoCoracao</span>
+                                <span class="sys-formula-var" title="Nível de fusão do cérebro" onclick="SystemEditor.copyVar('fusaoCerebro')">fusaoCerebro</span>
+                                <span class="sys-formula-var" title="Nível de fusão dos olhos" onclick="SystemEditor.copyVar('fusaoOlhos')">fusaoOlhos</span>
+                                <span class="sys-formula-var" title="Nível de fusão do braço" onclick="SystemEditor.copyVar('fusaoBraco')">fusaoBraco</span>
+                                <span class="sys-formula-var" title="Nível de fusão do osso" onclick="SystemEditor.copyVar('fusaoOsso')">fusaoOsso</span>
+                                <span class="sys-formula-var" title="Nível de fusão do músculo" onclick="SystemEditor.copyVar('fusaoMusculo')">fusaoMusculo</span>
+                                <span class="sys-formula-var" title="Nível de fusão da perna" onclick="SystemEditor.copyVar('fusaoPerna')">fusaoPerna</span>
                             </div>
                             <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
                                 <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Combate:</strong>
-                                <span class="sys-formula-var" title="Classe de Armadura base">baseAC</span>
-                                <span class="sys-formula-var" title="Classe de Armadura total">ca / ac</span>
-                                <span class="sys-formula-var" title="Bônus de armadura">armorBonus</span>
-                                <span class="sys-formula-var" title="Bônus de escudo">shieldBonus</span>
-                                <span class="sys-formula-var" title="Bônus de esquiva">dodgeBonus</span>
-                                <span class="sys-formula-var" title="Bônus de reflexos">reflexos</span>
-                                <span class="sys-formula-var" title="Bônus de perícia">skillBonus</span>
+                                <span class="sys-formula-var" title="Classe de Armadura base" onclick="SystemEditor.copyVar('baseAC')">baseAC</span>
+                                <span class="sys-formula-var" title="Classe de Armadura total" onclick="SystemEditor.copyVar('ac')">ca / ac</span>
+                                <span class="sys-formula-var" title="Bônus de armadura" onclick="SystemEditor.copyVar('armorBonus')">armorBonus</span>
+                                <span class="sys-formula-var" title="Bônus de escudo" onclick="SystemEditor.copyVar('shieldBonus')">shieldBonus</span>
+                                <span class="sys-formula-var" title="Bônus de esquiva" onclick="SystemEditor.copyVar('dodgeBonus')">dodgeBonus</span>
+                                <span class="sys-formula-var" title="Bônus de reflexos" onclick="SystemEditor.copyVar('reflexos')">reflexos</span>
+                                <span class="sys-formula-var" title="Bônus de perícia" onclick="SystemEditor.copyVar('skillBonus')">skillBonus</span>
                             </div>
                         </div>
                     </div>
@@ -2550,8 +2591,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2767,6 +2806,7 @@
             </div>
         </div>
     </div>
+    <!-- #endregion SYSTEM EDITOR FULL-SCREEN -->
 
     <!-- Scripts - Ordem importante! -->
     <script src="js/firebase-config.js"></script>

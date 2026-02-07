@@ -907,6 +907,24 @@ const SystemEditor = {
         }
     },
     
+    // Copy variable name to clipboard (for reference section)
+    copyVar(varName) {
+        navigator.clipboard.writeText(varName).then(() => {
+            // Show brief feedback
+            if (typeof showNotification === 'function') {
+                showNotification(`Copiado: ${varName}`, 'success');
+            }
+        }).catch(() => {
+            // Fallback
+            const temp = document.createElement('input');
+            temp.value = varName;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+        });
+    },
+    
     // ========== CUSTOM ATTRIBUTES ==========
     
     // Render custom attributes list
