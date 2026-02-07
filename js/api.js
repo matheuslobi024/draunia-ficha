@@ -275,16 +275,29 @@ const API = {
     },
     
     async saveCustomSystem(systemId, systemData) {
-        console.log('[API.saveCustomSystem] Called with:', { systemId, systemData });
+        console.log('[API.saveCustomSystem] Called with systemId:', systemId);
+        console.log('[API.saveCustomSystem] systemData type:', typeof systemData);
+        console.log('[API.saveCustomSystem] systemData:', JSON.stringify(systemData, null, 2).substring(0, 500));
         
-        if (!this.currentUser) throw new Error('Não autenticado');
-        if (!systemId) throw new Error('ID do sistema não fornecido');
-        if (!systemData) throw new Error('Dados do sistema não fornecidos');
+        if (!this.currentUser) {
+            console.error('[API.saveCustomSystem] Not authenticated');
+            throw new Error('Não autenticado');
+        }
+        if (!systemId) {
+            console.error('[API.saveCustomSystem] No systemId provided');
+            throw new Error('ID do sistema não fornecido');
+        }
+        if (!systemData || typeof systemData !== 'object') {
+            console.error('[API.saveCustomSystem] Invalid systemData:', systemData);
+            throw new Error('Dados do sistema não fornecidos ou inválidos');
+        }
         
         try {
-            // Create a copy to avoid modifying the original
-            const dataToSave = { ...systemData };
+            // Create a plain object copy to avoid any prototype issues
+            const dataToSave = JSON.parse(JSON.stringify(systemData));
             dataToSave.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+            
+            console.log('[API.saveCustomSystem] Saving to Firestore...');
             
             await db.collection('users')
                 .doc(this.currentUser.uid)
@@ -292,9 +305,13 @@ const API = {
                 .doc(systemId)
                 .set(dataToSave, { merge: true });
             
+            console.log('[API.saveCustomSystem] Save successful');
             return { success: true };
         } catch (error) {
-            console.error('Erro ao salvar sistema:', error);
+            console.error('[API.saveCustomSystem] Firestore error:', error);
+            console.error('[API.saveCustomSystem] Error name:', error?.name);
+            console.error('[API.saveCustomSystem] Error message:', error?.message);
+            console.error('[API.saveCustomSystem] Error stack:', error?.stack);
             throw error;
         }
     },
