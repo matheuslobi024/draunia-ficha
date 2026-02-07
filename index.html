@@ -146,6 +146,7 @@
                         <div class="form-group">
                             <label>Atributos Personalizados (separados por vírgula)</label>
                             <input type="text" id="customAttrs" placeholder="Ex: FOR, DES, CON, INT, SAB, CAR">
+                            <small class="form-hint">Use siglas de 3 letras maiúsculas</small>
                         </div>
                     </div>
                     <div class="toggle-group">
@@ -153,14 +154,29 @@
                             <span>Limite de Pontos de Atributo</span>
                             <input type="number" id="attrPointLimit" value="8" min="0">
                         </label>
+                        <small class="form-hint">0 = sem limite (distribuição livre)</small>
                     </div>
                     <div class="toggle-group">
                         <label class="toggle-label">
                             <span>Cálculo de Modificador</span>
                             <select id="modifierCalc">
                                 <option value="direct">Direto (valor = modificador)</option>
-                                <option value="dnd">D&D ((valor - 10) / 2)</option>
+                                <option value="dnd">D&D ((valor - 10) / 2, arredonda para baixo)</option>
+                                <option value="half">Metade (valor / 2)</option>
+                                <option value="minus5">Subtração (valor - 5)</option>
                             </select>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <label class="toggle-label">
+                            <span>Valor Mínimo de Atributo</span>
+                            <input type="number" id="attrMinValue" value="1" min="0">
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <label class="toggle-label">
+                            <span>Valor Máximo de Atributo</span>
+                            <input type="number" id="attrMaxValue" value="20" min="1">
                         </label>
                     </div>
                 </div>
@@ -174,6 +190,8 @@
                             <select id="hpFormula">
                                 <option value="realsscripts">Reals&Scripts: (Coração × 20) + (Nível × CON)</option>
                                 <option value="dnd">D&D: Dado de Vida + mod. CON por nível</option>
+                                <option value="levelcon">Nível × CON</option>
+                                <option value="levelonly">Apenas Nível × Multiplicador</option>
                                 <option value="flat">Fixo por Nível</option>
                                 <option value="custom">Personalizado</option>
                             </select>
@@ -183,18 +201,29 @@
                         <div class="form-group">
                             <label>Fórmula Personalizada</label>
                             <input type="text" id="customHpFormula" placeholder="Ex: (level * 10) + (con * 2)">
-                            <small>Variáveis: level, con, for, agi, int, von, car, dex, wis, cha</small>
+                            <small class="form-hint">Variáveis: level, con, for, agi, int, von, car, dex, wis, cha, hitDie</small>
                         </div>
+                        <div class="formula-preview" id="hpFormulaPreview"></div>
                     </div>
                     <div id="flatHpSection" class="custom-formula-section hidden">
-                        <div class="form-group">
-                            <label>HP Base (Nível 1)</label>
-                            <input type="number" id="flatHpBase" value="10" min="1">
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label>HP Base (Nível 1)</label>
+                                <input type="number" id="flatHpBase" value="10" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>HP por Nível Adicional</label>
+                                <input type="number" id="flatHpPerLevel" value="5" min="0">
+                            </div>
                         </div>
+                        <div class="formula-preview">Ex: Nível 5 = 10 + (4 × 5) = <strong>30 HP</strong></div>
+                    </div>
+                    <div id="levelOnlyHpSection" class="custom-formula-section hidden">
                         <div class="form-group">
-                            <label>HP por Nível Adicional</label>
-                            <input type="number" id="flatHpPerLevel" value="5" min="0">
+                            <label>Multiplicador por Nível</label>
+                            <input type="number" id="hpLevelMultiplier" value="10" min="1">
                         </div>
+                        <div class="formula-preview">Ex: Nível 5 × 10 = <strong>50 HP</strong></div>
                     </div>
                 </div>
 
@@ -212,7 +241,7 @@
                         <div class="toggle-group">
                             <label class="toggle-label">
                                 <span>Nome dos Pontos</span>
-                                <input type="text" id="energyName" value="PE" placeholder="PE, Mana, Ki...">
+                                <input type="text" id="energyName" value="PE" placeholder="PE, Mana, Ki, Foco...">
                             </label>
                         </div>
                         <div class="toggle-group">
@@ -222,6 +251,7 @@
                                     <option value="realsscripts">Reals&Scripts: (Cérebro × 6) + (Nível × VON)</option>
                                     <option value="simple">Simples: Nível × Multiplicador</option>
                                     <option value="attr">Baseado em Atributo</option>
+                                    <option value="attrlevel">Atributo + (Nível × Mult)</option>
                                     <option value="custom">Personalizado</option>
                                 </select>
                             </label>
@@ -231,21 +261,62 @@
                                 <label>Multiplicador por Nível</label>
                                 <input type="number" id="peMultiplier" value="5" min="1">
                             </div>
+                            <div class="formula-preview">Ex: Nível 5 × 5 = <strong>25 PE</strong></div>
                         </div>
                         <div id="attrPeSection" class="custom-formula-section hidden">
-                            <div class="form-group">
-                                <label>Atributo Base</label>
-                                <select id="peAttr">
-                                    <option value="int">INT</option>
-                                    <option value="wis">SAB</option>
-                                    <option value="cha">CAR</option>
-                                    <option value="von">VON</option>
-                                </select>
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label>Atributo Base</label>
+                                    <select id="peAttr">
+                                        <option value="int">INT (Inteligência)</option>
+                                        <option value="wis">SAB (Sabedoria)</option>
+                                        <option value="cha">CAR (Carisma)</option>
+                                        <option value="von">VON (Vontade)</option>
+                                        <option value="con">CON (Constituição)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Multiplicador</label>
+                                    <input type="number" id="peAttrMultiplier" value="2" min="1">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Multiplicador</label>
-                                <input type="number" id="peAttrMultiplier" value="2" min="1">
+                            <div class="formula-preview">Ex: INT 14 × 2 = <strong>28 PE</strong></div>
+                        </div>
+                        <div id="attrLevelPeSection" class="custom-formula-section hidden">
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label>Atributo Base</label>
+                                    <select id="peLevelAttr">
+                                        <option value="int">INT</option>
+                                        <option value="wis">SAB</option>
+                                        <option value="cha">CAR</option>
+                                        <option value="von">VON</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Mult. Atributo</label>
+                                    <input type="number" id="peLevelAttrMultiplier" value="1" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label>Mult. Nível</label>
+                                    <input type="number" id="peLevelMultiplier" value="3" min="1">
+                                </div>
                             </div>
+                            <div class="formula-preview">Ex: (INT 14 × 1) + (Nível 5 × 3) = <strong>29 PE</strong></div>
+                        </div>
+                        <div id="customPeSection" class="custom-formula-section hidden">
+                            <div class="form-group">
+                                <label>Fórmula Personalizada</label>
+                                <input type="text" id="customPeFormula" placeholder="Ex: (level * 5) + (int * 2)">
+                                <small class="form-hint">Variáveis: level, int, wis, cha, von, con</small>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="peRegenPerRest">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Regenera completamente após descanso longo</span>
                         </div>
                     </div>
                 </div>
@@ -262,11 +333,17 @@
                     </div>
                     <div id="sanityConfig">
                         <div class="toggle-group">
+                            <label class="toggle-label">
+                                <span>Nome do Recurso</span>
+                                <input type="text" id="sanityName" value="Sanidade" placeholder="Sanidade, Stress, Corrupção...">
+                            </label>
+                        </div>
+                        <div class="toggle-group">
                             <label class="toggle-switch">
                                 <input type="checkbox" id="sanityHasMax">
                                 <span class="slider"></span>
                             </label>
-                            <span>Sanidade tem valor máximo</span>
+                            <span>Possui valor máximo calculado</span>
                         </div>
                         <div id="sanityMaxConfig" class="hidden">
                             <div class="toggle-group">
@@ -275,6 +352,7 @@
                                     <select id="sanityFormula">
                                         <option value="dnd">D&D: SAB × 5</option>
                                         <option value="flat">Valor Fixo</option>
+                                        <option value="attr">Atributo × Multiplicador</option>
                                         <option value="custom">Personalizado</option>
                                     </select>
                                 </label>
@@ -285,6 +363,36 @@
                                     <input type="number" id="flatSanity" value="100" min="1">
                                 </div>
                             </div>
+                            <div id="attrSanitySection" class="custom-formula-section hidden">
+                                <div class="form-group-row">
+                                    <div class="form-group">
+                                        <label>Atributo</label>
+                                        <select id="sanityAttr">
+                                            <option value="wis">SAB</option>
+                                            <option value="cha">CAR</option>
+                                            <option value="von">VON</option>
+                                            <option value="con">CON</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Multiplicador</label>
+                                        <input type="number" id="sanityAttrMultiplier" value="5" min="1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="customSanitySection" class="custom-formula-section hidden">
+                                <div class="form-group">
+                                    <label>Fórmula Personalizada</label>
+                                    <input type="text" id="customSanityFormula" placeholder="Ex: (wis * 5) + (level * 2)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="sanityCanGoNegative">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Sanidade pode ficar negativa</span>
                         </div>
                     </div>
                 </div>
@@ -302,10 +410,17 @@
                     <div id="actionPointsConfig" class="hidden">
                         <div class="toggle-group">
                             <label class="toggle-label">
+                                <span>Nome dos Pontos</span>
+                                <input type="text" id="paName" value="PA" placeholder="PA, Ações, AP...">
+                            </label>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-label">
                                 <span>Fórmula de PA</span>
                                 <select id="paFormula">
                                     <option value="realsscripts">Reals&Scripts: AGI + Nível + 4</option>
                                     <option value="flat">Valor Fixo</option>
+                                    <option value="attr">Baseado em Atributo</option>
                                     <option value="custom">Personalizado</option>
                                 </select>
                             </label>
@@ -315,6 +430,37 @@
                                 <label>PA por Turno</label>
                                 <input type="number" id="flatPa" value="3" min="1">
                             </div>
+                        </div>
+                        <div id="attrPaSection" class="custom-formula-section hidden">
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label>Atributo</label>
+                                    <select id="paAttr">
+                                        <option value="agi">AGI</option>
+                                        <option value="dex">DES</option>
+                                        <option value="wis">SAB</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Base</label>
+                                    <input type="number" id="paBase" value="4" min="0">
+                                </div>
+                            </div>
+                            <div class="formula-preview">Ex: 4 + AGI 3 = <strong>7 PA</strong></div>
+                        </div>
+                        <div id="customPaSection" class="custom-formula-section hidden">
+                            <div class="form-group">
+                                <label>Fórmula Personalizada</label>
+                                <input type="text" id="customPaFormula" placeholder="Ex: agi + level + 4">
+                                <small class="form-hint">Variáveis: level, agi, dex, for, con</small>
+                            </div>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="paAffectedByArmor" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Armadura pesada reduz PA</span>
                         </div>
                     </div>
                 </div>
@@ -329,37 +475,133 @@
                         </label>
                         <span>Sistema possui Fusões (Órgãos, Ossos, Músculos)</span>
                     </div>
+                    <div id="fusionsConfig" class="hidden">
+                        <div class="form-group">
+                            <label>Tipos de Fusão disponíveis (uma por linha: Nome, Efeito)</label>
+                            <textarea id="fusionTypes" placeholder="Coração, Aumenta HP&#10;Cérebro, Aumenta PE&#10;Olhos, Melhora Percepção"></textarea>
+                            <small class="form-hint">Use Reals&Scripts padrão ou personalize</small>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Defesas -->
+                <!-- Combate e Defesas -->
                 <div class="system-section">
-                    <h3><i class="fas fa-shield-alt"></i> Defesas</h3>
-                    <div class="toggle-group">
-                        <label class="toggle-label">
-                            <span>Fórmula de CA (Classe de Armadura)</span>
-                            <select id="caFormula">
-                                <option value="realsscripts">Reals&Scripts: 10 + Bônus de Armadura</option>
-                                <option value="dnd">D&D: 10 + mod. DES + Armadura</option>
-                                <option value="flat">Valor Base Fixo</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div class="toggle-group">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="hasDodge">
-                            <span class="slider"></span>
-                        </label>
-                        <span>Sistema possui Esquiva separada</span>
-                    </div>
-                    <div id="dodgeConfig" class="hidden">
+                    <h3><i class="fas fa-shield-alt"></i> Combate e Defesas</h3>
+                    
+                    <div class="subsection">
+                        <h4>Classe de Armadura (CA)</h4>
                         <div class="toggle-group">
                             <label class="toggle-label">
-                                <span>Fórmula de Esquiva</span>
-                                <select id="dodgeFormula">
-                                    <option value="realsscripts">Reals&Scripts: CA + Reflexos</option>
+                                <span>Fórmula de CA</span>
+                                <select id="caFormula">
+                                    <option value="realsscripts">Reals&Scripts: 10 + Bônus de Armadura</option>
+                                    <option value="dnd">D&D: 10 + mod. DES + Armadura</option>
+                                    <option value="flatbase">Base Fixa + mod. Atributo</option>
                                     <option value="custom">Personalizado</option>
                                 </select>
                             </label>
+                        </div>
+                        <div id="flatBaseCaSection" class="custom-formula-section hidden">
+                            <div class="form-group-row">
+                                <div class="form-group">
+                                    <label>CA Base</label>
+                                    <input type="number" id="caBase" value="10" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Atributo</label>
+                                    <select id="caAttr">
+                                        <option value="dex">DES</option>
+                                        <option value="agi">AGI</option>
+                                        <option value="con">CON</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="customCaSection" class="custom-formula-section hidden">
+                            <div class="form-group">
+                                <label>Fórmula Personalizada</label>
+                                <input type="text" id="customCaFormula" placeholder="Ex: 10 + dexMod + armorBonus">
+                                <small class="form-hint">Variáveis: dexMod, armorBonus, shieldBonus, level</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="subsection">
+                        <h4>Esquiva</h4>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hasDodge">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Sistema possui Esquiva separada</span>
+                        </div>
+                        <div id="dodgeConfig" class="hidden">
+                            <div class="toggle-group">
+                                <label class="toggle-label">
+                                    <span>Fórmula de Esquiva</span>
+                                    <select id="dodgeFormula">
+                                        <option value="realsscripts">Reals&Scripts: CA + Reflexos</option>
+                                        <option value="dexbased">10 + mod. DES</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div id="customDodgeSection" class="custom-formula-section hidden">
+                                <div class="form-group">
+                                    <label>Fórmula Personalizada</label>
+                                    <input type="text" id="customDodgeFormula" placeholder="Ex: ca + reflexos">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="subsection">
+                        <h4>Iniciativa</h4>
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <span>Fórmula de Iniciativa</span>
+                                <select id="initiativeFormula">
+                                    <option value="dex">D&D: mod. DES</option>
+                                    <option value="agi">Reals&Scripts: AGI</option>
+                                    <option value="skill">Baseado em Perícia</option>
+                                    <option value="custom">Personalizado</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div id="skillInitSection" class="custom-formula-section hidden">
+                            <div class="form-group">
+                                <label>Perícia de Iniciativa</label>
+                                <input type="text" id="initSkill" value="iniciativa" placeholder="Nome da perícia">
+                            </div>
+                        </div>
+                        <div id="customInitSection" class="custom-formula-section hidden">
+                            <div class="form-group">
+                                <label>Fórmula Personalizada</label>
+                                <input type="text" id="customInitFormula" placeholder="Ex: dexMod + profBonus">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="subsection">
+                        <h4>Testes de Resistência</h4>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hasSavingThrows">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Sistema possui Testes de Resistência (Saving Throws)</span>
+                        </div>
+                        <div id="savingThrowsConfig" class="hidden">
+                            <div class="toggle-group">
+                                <label class="toggle-label">
+                                    <span>Tipo de Resistência</span>
+                                    <select id="savingThrowType">
+                                        <option value="dnd">D&D: 6 atributos com proficiência</option>
+                                        <option value="three">3 Tipos: Fortitude, Reflexos, Vontade</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -380,11 +622,38 @@
                                 <input type="checkbox" id="classAffectsHp" checked>
                                 <span class="slider"></span>
                             </label>
-                            <span>Classe afeta HP (Dado de Vida)</span>
+                            <span>Classe define Dado de Vida (HP)</span>
                         </div>
-                        <div class="form-group">
-                            <label>Classes Disponíveis (uma por linha: Nome, DadoVida)</label>
-                            <textarea id="classList" placeholder="Guerreiro, 10&#10;Mago, 6&#10;Ladino, 8"></textarea>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="classAffectsSpellcasting">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Classe define atributo de conjuração</span>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="allowMulticlass">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Permite multiclasse</span>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <span>Lista de Classes</span>
+                                <select id="classListType">
+                                    <option value="dnd">D&D 5e (12 classes)</option>
+                                    <option value="simple">Simples (Guerreiro, Mago, Ladino)</option>
+                                    <option value="custom">Personalizado</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div id="customClassSection" class="custom-formula-section hidden">
+                            <div class="form-group">
+                                <label>Classes (uma por linha: Nome, DadoVida, AtributoMagia)</label>
+                                <textarea id="classList" placeholder="Guerreiro, d10, -&#10;Mago, d6, INT&#10;Clérigo, d8, SAB&#10;Ladino, d8, -"></textarea>
+                                <small class="form-hint">Use "-" para classes sem magia</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -396,11 +665,28 @@
                         <label class="toggle-label">
                             <span>Sistema de Perícias</span>
                             <select id="skillSystem">
-                                <option value="realsscripts">Reals&Scripts (Níveis de Treino)</option>
-                                <option value="dnd">D&D (Proficiência)</option>
-                                <option value="ranks">Ranks Livres</option>
+                                <option value="realsscripts">Reals&Scripts (Níveis: Treinada, Veterana, Expert)</option>
+                                <option value="dnd">D&D (Proficiência + Expertise)</option>
+                                <option value="ranks">Ranks Livres (pontos por nível)</option>
+                                <option value="simple">Simples (apenas proficiente ou não)</option>
                             </select>
                         </label>
+                    </div>
+                    <div id="ranksConfig" class="custom-formula-section hidden">
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label>Pontos por Nível</label>
+                                <input type="number" id="skillPointsPerLevel" value="4" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>+ Atributo</label>
+                                <select id="skillPointsAttr">
+                                    <option value="int">INT</option>
+                                    <option value="wis">SAB</option>
+                                    <option value="none">Nenhum</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="toggle-group">
                         <label class="toggle-label">
@@ -408,13 +694,20 @@
                             <select id="skillList">
                                 <option value="realsscripts">Reals&Scripts (28 perícias)</option>
                                 <option value="dnd">D&D 5e (18 perícias)</option>
+                                <option value="minimal">Mínima (6 perícias básicas)</option>
                                 <option value="custom">Personalizado</option>
                             </select>
                         </label>
                     </div>
+                    <div id="customSkillSection" class="custom-formula-section hidden">
+                        <div class="form-group">
+                            <label>Perícias (uma por linha: Nome, Atributo)</label>
+                            <textarea id="customSkillList" placeholder="Atletismo, FOR&#10;Furtividade, DES&#10;Arcanismo, INT&#10;Percepção, SAB&#10;Persuasão, CAR"></textarea>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Espaços de Magia -->
+                <!-- Sistema de Magia -->
                 <div class="system-section">
                     <h3><i class="fas fa-magic"></i> Sistema de Magia</h3>
                     <div class="toggle-group">
@@ -423,6 +716,99 @@
                             <span class="slider"></span>
                         </label>
                         <span>Sistema possui Espaços de Magia (Spell Slots)</span>
+                    </div>
+                    <div id="spellSlotsConfig" class="hidden">
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <span>Tipo de Sistema de Magia</span>
+                                <select id="spellSlotSystem">
+                                    <option value="dnd">D&D 5e (Spell Slots por nível)</option>
+                                    <option value="points">Pontos de Magia (usa PE)</option>
+                                    <option value="perday">Magias por Dia</option>
+                                    <option value="custom">Personalizado</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <span>Nível máximo de magia</span>
+                                <select id="maxSpellLevel">
+                                    <option value="9">9º Círculo (D&D padrão)</option>
+                                    <option value="6">6º Círculo</option>
+                                    <option value="5">5º Círculo</option>
+                                    <option value="3">3º Círculo</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hasCantrips" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Possui Truques/Cantrips (magias sem custo)</span>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hasRituals">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Possui sistema de Rituais</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opções Avançadas -->
+                <div class="system-section collapsible">
+                    <h3 class="section-toggle"><i class="fas fa-cog"></i> Opções Avançadas <i class="fas fa-chevron-down"></i></h3>
+                    <div class="section-content hidden">
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hasEncumbrance">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Sistema de carga/peso</span>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hasAdvantage">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Vantagem/Desvantagem nos dados</span>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hasInspiration">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Sistema de Inspiração</span>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hasDeathSaves">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Testes de Morte (Death Saves)</span>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <span>Descanso Curto restaura</span>
+                                <select id="shortRestRestore">
+                                    <option value="hitdice">Dados de Vida (D&D)</option>
+                                    <option value="partial">Parte do HP</option>
+                                    <option value="none">Nada</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <span>Descanso Longo restaura</span>
+                                <select id="longRestRestore">
+                                    <option value="full">HP e recursos completos</option>
+                                    <option value="hp">Apenas HP</option>
+                                    <option value="partial">Parte dos recursos</option>
+                                </select>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -453,7 +839,7 @@
             </div>
             
             <div class="modal-buttons-row">
-                <button class="btn-secondary" onclick="SystemManager.closeManager()">
+                <button class="btn-secondary" onclick="SystemManager.backToCharacters()">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </button>
                 <button class="btn-primary" onclick="SystemManager.createNew()">

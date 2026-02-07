@@ -1,6 +1,305 @@
 // ========== CALCULATIONS MODULE ==========
 
 const Calculations = {
+    
+    // ========== D&D 5E RULES ==========
+    
+    // D&D 5e Ability Score Modifier Table
+    // Score 1 = -5, Score 10-11 = 0, Score 20-21 = +5, Score 30 = +10
+    DND_MODIFIER_TABLE: {
+        1: -5, 2: -4, 3: -4, 4: -3, 5: -3, 6: -2, 7: -2, 8: -1, 9: -1,
+        10: 0, 11: 0, 12: 1, 13: 1, 14: 2, 15: 2, 16: 3, 17: 3, 18: 4, 19: 4,
+        20: 5, 21: 5, 22: 6, 23: 6, 24: 7, 25: 7, 26: 8, 27: 8, 28: 9, 29: 9, 30: 10
+    },
+    
+    // Proficiency Bonus by Level
+    DND_PROFICIENCY_BONUS: {
+        1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3, 8: 3,
+        9: 4, 10: 4, 11: 4, 12: 4, 13: 5, 14: 5, 15: 5, 16: 5,
+        17: 6, 18: 6, 19: 6, 20: 6
+    },
+    
+    // Hit Dice by Class
+    DND_HIT_DICE: {
+        'barbarian': 12,
+        'bard': 8,
+        'cleric': 8,
+        'druid': 8,
+        'fighter': 10,
+        'monk': 8,
+        'paladin': 10,
+        'ranger': 10,
+        'rogue': 8,
+        'sorcerer': 6,
+        'warlock': 8,
+        'wizard': 6
+    },
+    
+    // D&D 5e Skills with associated attributes
+    DND_SKILLS: [
+        // Strength
+        { id: 'athletics', name: 'Atletismo', attr: 'STR', description: 'Escalar, nadar, saltar' },
+        // Dexterity
+        { id: 'acrobatics', name: 'Acrobacia', attr: 'DEX', description: 'Equilíbrio, manobras acrobáticas' },
+        { id: 'sleightOfHand', name: 'Prestidigitação', attr: 'DEX', description: 'Furtar, esconder objetos' },
+        { id: 'stealth', name: 'Furtividade', attr: 'DEX', description: 'Esconder-se, mover-se silenciosamente' },
+        // Intelligence
+        { id: 'arcana', name: 'Arcanismo', attr: 'INT', description: 'Conhecimento de magia e planos' },
+        { id: 'history', name: 'História', attr: 'INT', description: 'Eventos históricos, civilizações' },
+        { id: 'investigation', name: 'Investigação', attr: 'INT', description: 'Procurar pistas, deduzir' },
+        { id: 'nature', name: 'Natureza', attr: 'INT', description: 'Plantas, animais, clima' },
+        { id: 'religion', name: 'Religião', attr: 'INT', description: 'Deuses, rituais, símbolos' },
+        // Wisdom
+        { id: 'animalHandling', name: 'Lidar com Animais', attr: 'WIS', description: 'Acalmar, controlar montarias' },
+        { id: 'insight', name: 'Intuição', attr: 'WIS', description: 'Detectar mentiras, ler intenções' },
+        { id: 'medicine', name: 'Medicina', attr: 'WIS', description: 'Estabilizar, diagnosticar' },
+        { id: 'perception', name: 'Percepção', attr: 'WIS', description: 'Notar detalhes, detectar' },
+        { id: 'survival', name: 'Sobrevivência', attr: 'WIS', description: 'Rastrear, caçar, prever clima' },
+        // Charisma
+        { id: 'deception', name: 'Enganação', attr: 'CHA', description: 'Mentir, disfarçar-se' },
+        { id: 'intimidation', name: 'Intimidação', attr: 'CHA', description: 'Ameaçar, coagir' },
+        { id: 'performance', name: 'Atuação', attr: 'CHA', description: 'Dançar, cantar, atuar' },
+        { id: 'persuasion', name: 'Persuasão', attr: 'CHA', description: 'Convencer, negociar' }
+    ],
+    
+    // D&D 5e Standard Array for Point Buy reference
+    DND_STANDARD_ARRAY: [15, 14, 13, 12, 10, 8],
+    
+    // D&D 5e Difficulty Classes
+    DND_DIFFICULTY_CLASS: {
+        'veryEasy': 5,
+        'easy': 10,
+        'medium': 15,
+        'hard': 20,
+        'veryHard': 25,
+        'nearlyImpossible': 30
+    },
+    
+    // D&D 5e Armor Types
+    DND_ARMOR: {
+        // Light Armor
+        'padded': { type: 'light', baseAC: 11, maxDex: null, stealthDisadvantage: true },
+        'leather': { type: 'light', baseAC: 11, maxDex: null, stealthDisadvantage: false },
+        'studdedLeather': { type: 'light', baseAC: 12, maxDex: null, stealthDisadvantage: false },
+        // Medium Armor
+        'hide': { type: 'medium', baseAC: 12, maxDex: 2, stealthDisadvantage: false },
+        'chainShirt': { type: 'medium', baseAC: 13, maxDex: 2, stealthDisadvantage: false },
+        'scaleMail': { type: 'medium', baseAC: 14, maxDex: 2, stealthDisadvantage: true },
+        'breastplate': { type: 'medium', baseAC: 14, maxDex: 2, stealthDisadvantage: false },
+        'halfPlate': { type: 'medium', baseAC: 15, maxDex: 2, stealthDisadvantage: true },
+        // Heavy Armor
+        'ringMail': { type: 'heavy', baseAC: 14, maxDex: 0, stealthDisadvantage: true },
+        'chainMail': { type: 'heavy', baseAC: 16, maxDex: 0, stealthDisadvantage: true },
+        'splint': { type: 'heavy', baseAC: 17, maxDex: 0, stealthDisadvantage: true },
+        'plate': { type: 'heavy', baseAC: 18, maxDex: 0, stealthDisadvantage: true }
+    },
+    
+    // D&D 5e Spellcasting Ability by Class
+    DND_SPELLCASTING_ABILITY: {
+        'bard': 'CHA',
+        'cleric': 'WIS',
+        'druid': 'WIS',
+        'paladin': 'CHA',
+        'ranger': 'WIS',
+        'sorcerer': 'CHA',
+        'warlock': 'CHA',
+        'wizard': 'INT'
+    },
+    
+    // D&D 5e Spell Slots by Level (Full Casters)
+    DND_SPELL_SLOTS_FULL: {
+        1:  [2,0,0,0,0,0,0,0,0],
+        2:  [3,0,0,0,0,0,0,0,0],
+        3:  [4,2,0,0,0,0,0,0,0],
+        4:  [4,3,0,0,0,0,0,0,0],
+        5:  [4,3,2,0,0,0,0,0,0],
+        6:  [4,3,3,0,0,0,0,0,0],
+        7:  [4,3,3,1,0,0,0,0,0],
+        8:  [4,3,3,2,0,0,0,0,0],
+        9:  [4,3,3,3,1,0,0,0,0],
+        10: [4,3,3,3,2,0,0,0,0],
+        11: [4,3,3,3,2,1,0,0,0],
+        12: [4,3,3,3,2,1,0,0,0],
+        13: [4,3,3,3,2,1,1,0,0],
+        14: [4,3,3,3,2,1,1,0,0],
+        15: [4,3,3,3,2,1,1,1,0],
+        16: [4,3,3,3,2,1,1,1,0],
+        17: [4,3,3,3,2,1,1,1,1],
+        18: [4,3,3,3,3,1,1,1,1],
+        19: [4,3,3,3,3,2,1,1,1],
+        20: [4,3,3,3,3,2,2,1,1]
+    },
+    
+    // Calculate D&D modifier from ability score
+    calculateDndModifier(score) {
+        score = parseInt(score) || 10;
+        return Math.floor((score - 10) / 2);
+    },
+    
+    // Get D&D attribute value (FOR=STR, DES=DEX, CON=CON, INT=INT, SAB=WIS, CAR=CHA)
+    getDndAttrValue(charData, attrName) {
+        const attrMap = {
+            'STR': charData.dndStr || 10,
+            'DEX': charData.dndDex || 10,
+            'CON': charData.dndCon || 10,
+            'INT': charData.dndInt || 10,
+            'WIS': charData.dndWis || 10,
+            'CHA': charData.dndCha || 10
+        };
+        return parseInt(attrMap[attrName]) || 10;
+    },
+    
+    // Calculate D&D Max HP: Hit Die max at level 1 + (avg HD + CON mod) × (level - 1)
+    calculateDndMaxHP(charData) {
+        const className = (charData.dndClass || 'fighter').toLowerCase();
+        const hitDie = this.DND_HIT_DICE[className] || 10;
+        const level = parseInt(charData.charLevel) || 1;
+        const conMod = this.calculateDndModifier(charData.dndCon);
+        
+        // Level 1: max hit die + CON mod
+        // Levels 2+: average of hit die (rounded up) + CON mod per level
+        const avgHitDie = Math.ceil(hitDie / 2) + 1;
+        const firstLevelHP = hitDie + conMod;
+        const additionalHP = (level - 1) * (avgHitDie + conMod);
+        
+        return Math.max(1, firstLevelHP + additionalHP);
+    },
+    
+    // Calculate D&D Proficiency Bonus
+    calculateDndProficiencyBonus(charData) {
+        const level = Math.min(20, Math.max(1, parseInt(charData.charLevel) || 1));
+        return this.DND_PROFICIENCY_BONUS[level] || 2;
+    },
+    
+    // Calculate D&D Armor Class
+    calculateDndAC(charData) {
+        const dexMod = this.calculateDndModifier(charData.dndDex);
+        const armorType = charData.dndArmorType || 'none';
+        const shieldBonus = charData.dndHasShield ? 2 : 0;
+        
+        if (armorType === 'none') {
+            // Unarmored: 10 + DEX modifier
+            return 10 + dexMod + shieldBonus;
+        }
+        
+        const armor = this.DND_ARMOR[armorType];
+        if (!armor) return 10 + dexMod + shieldBonus;
+        
+        let ac = armor.baseAC;
+        
+        if (armor.maxDex === null) {
+            // Light armor: full DEX
+            ac += dexMod;
+        } else if (armor.maxDex === 0) {
+            // Heavy armor: no DEX
+        } else {
+            // Medium armor: limited DEX
+            ac += Math.min(dexMod, armor.maxDex);
+        }
+        
+        return ac + shieldBonus;
+    },
+    
+    // Calculate D&D Initiative
+    calculateDndInitiative(charData) {
+        return this.calculateDndModifier(charData.dndDex);
+    },
+    
+    // Calculate D&D Skill Total
+    calculateDndSkillTotal(charData, skillId) {
+        const skill = this.DND_SKILLS.find(s => s.id === skillId);
+        if (!skill) return 0;
+        
+        const attrMod = this.calculateDndModifier(this.getDndAttrValue(charData, skill.attr));
+        const profBonus = this.calculateDndProficiencyBonus(charData);
+        
+        // Check if proficient
+        const proficient = charData.dndSkillProficiencies && charData.dndSkillProficiencies[skillId];
+        // Check if expertise (double proficiency)
+        const expertise = charData.dndSkillExpertise && charData.dndSkillExpertise[skillId];
+        
+        if (expertise) {
+            return attrMod + (profBonus * 2);
+        } else if (proficient) {
+            return attrMod + profBonus;
+        }
+        return attrMod;
+    },
+    
+    // Calculate D&D Passive Perception
+    calculateDndPassivePerception(charData) {
+        return 10 + this.calculateDndSkillTotal(charData, 'perception');
+    },
+    
+    // Calculate D&D Saving Throw
+    calculateDndSavingThrow(charData, attr) {
+        const attrMod = this.calculateDndModifier(this.getDndAttrValue(charData, attr));
+        const profBonus = this.calculateDndProficiencyBonus(charData);
+        
+        // Check if proficient in this save
+        const proficient = charData.dndSaveProficiencies && charData.dndSaveProficiencies[attr];
+        
+        return proficient ? attrMod + profBonus : attrMod;
+    },
+    
+    // Calculate D&D Spell Save DC
+    calculateDndSpellDC(charData) {
+        const className = (charData.dndClass || '').toLowerCase();
+        const spellAttr = this.DND_SPELLCASTING_ABILITY[className];
+        if (!spellAttr) return 0;
+        
+        const attrMod = this.calculateDndModifier(this.getDndAttrValue(charData, spellAttr));
+        const profBonus = this.calculateDndProficiencyBonus(charData);
+        
+        return 8 + attrMod + profBonus;
+    },
+    
+    // Calculate D&D Spell Attack Bonus
+    calculateDndSpellAttack(charData) {
+        const className = (charData.dndClass || '').toLowerCase();
+        const spellAttr = this.DND_SPELLCASTING_ABILITY[className];
+        if (!spellAttr) return 0;
+        
+        const attrMod = this.calculateDndModifier(this.getDndAttrValue(charData, spellAttr));
+        const profBonus = this.calculateDndProficiencyBonus(charData);
+        
+        return attrMod + profBonus;
+    },
+    
+    // Get D&D Spell Slots for character level (full caster)
+    getDndSpellSlots(charData) {
+        const level = Math.min(20, Math.max(1, parseInt(charData.charLevel) || 1));
+        return this.DND_SPELL_SLOTS_FULL[level] || [0,0,0,0,0,0,0,0,0];
+    },
+    
+    // Calculate D&D Carrying Capacity (STR × 15 lbs)
+    calculateDndCarryingCapacity(charData) {
+        const str = parseInt(charData.dndStr) || 10;
+        return str * 15;
+    },
+    
+    // Update all D&D calculations
+    updateDndCalculations(charData) {
+        return {
+            maxHp: this.calculateDndMaxHP(charData),
+            proficiencyBonus: this.calculateDndProficiencyBonus(charData),
+            armorClass: this.calculateDndAC(charData),
+            initiative: this.calculateDndInitiative(charData),
+            passivePerception: this.calculateDndPassivePerception(charData),
+            spellDC: this.calculateDndSpellDC(charData),
+            spellAttack: this.calculateDndSpellAttack(charData),
+            spellSlots: this.getDndSpellSlots(charData),
+            carryingCapacity: this.calculateDndCarryingCapacity(charData),
+            strMod: this.calculateDndModifier(charData.dndStr),
+            dexMod: this.calculateDndModifier(charData.dndDex),
+            conMod: this.calculateDndModifier(charData.dndCon),
+            intMod: this.calculateDndModifier(charData.dndInt),
+            wisMod: this.calculateDndModifier(charData.dndWis),
+            chaMod: this.calculateDndModifier(charData.dndCha)
+        };
+    },
+    
+    // ========== REALS&SCRIPTS RULES ===========
     // Skill definitions with attribute mappings
     // armorPenalty = true significa que tem penalidade de carga (armadura média -2, pesada -5)
     SKILLS: [

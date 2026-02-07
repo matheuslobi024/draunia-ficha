@@ -40,8 +40,8 @@ const SystemManager = {
         },
         'dnd5e': {
             id: 'dnd5e',
-            name: 'Sistema Clássico',
-            description: 'Baseado em D&D 5e, com atributos tradicionais e mecânicas simplificadas.',
+            name: 'D&D 5e Clássico',
+            description: 'Sistema completo baseado em D&D 5e: 6 atributos (FOR, DES, CON, INT, SAB, CAR), modificadores calculados automaticamente, bônus de proficiência por nível, 18 perícias, classes com dados de vida, CA, iniciativa, spell slots e regras oficiais.',
             icon: 'fa-dragon',
             isBuiltIn: true,
             config: {
@@ -50,9 +50,8 @@ const SystemManager = {
                 modifierCalc: 'dnd',
                 hpFormula: 'dnd',
                 hasEnergyPoints: false,
-                hasSanity: true,
-                sanityHasMax: true,
-                sanityFormula: 'dnd',
+                hasSanity: false,
+                sanityHasMax: false,
                 hasActionPoints: false,
                 hasFusions: false,
                 caFormula: 'dnd',
@@ -61,7 +60,11 @@ const SystemManager = {
                 classAffectsHp: true,
                 skillSystem: 'dnd',
                 skillList: 'dnd',
-                hasSpellSlots: true
+                hasSpellSlots: true,
+                hasSavingThrows: true,
+                hasProficiencyBonus: true,
+                hasPassivePerception: true,
+                hasAdvantageDisadvantage: true
             }
         }
     },
@@ -98,98 +101,163 @@ const SystemManager = {
         return this.getAllSystems()[systemId] || this.defaultSystems['realsscripts'];
     },
     
+    // Helper to toggle sections based on select value
+    toggleSectionByValue(selectId, sectionMap) {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        
+        select.addEventListener('change', () => {
+            Object.entries(sectionMap).forEach(([value, sectionId]) => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.classList.toggle('hidden', select.value !== value);
+                }
+            });
+        });
+    },
+    
+    // Helper to toggle section based on checkbox
+    toggleSectionByCheckbox(checkboxId, sectionId, inverse = false) {
+        const checkbox = document.getElementById(checkboxId);
+        const section = document.getElementById(sectionId);
+        if (!checkbox || !section) return;
+        
+        checkbox.addEventListener('change', () => {
+            const show = inverse ? !checkbox.checked : checkbox.checked;
+            section.classList.toggle('hidden', !show);
+        });
+    },
+    
     // Bind editor form events
     bindEditorEvents() {
-        // Attribute type change
-        const attrType = document.getElementById('attrType');
-        if (attrType) {
-            attrType.addEventListener('change', () => {
-                const customSection = document.getElementById('customAttrsSection');
-                customSection.classList.toggle('hidden', attrType.value !== 'custom');
-            });
-        }
+        // Attribute type
+        this.toggleSectionByValue('attrType', { 'custom': 'customAttrsSection' });
         
-        // HP formula change
+        // HP formula
         const hpFormula = document.getElementById('hpFormula');
         if (hpFormula) {
             hpFormula.addEventListener('change', () => {
-                document.getElementById('customHpSection').classList.toggle('hidden', hpFormula.value !== 'custom');
-                document.getElementById('flatHpSection').classList.toggle('hidden', hpFormula.value !== 'flat');
+                document.getElementById('customHpSection')?.classList.toggle('hidden', hpFormula.value !== 'custom');
+                document.getElementById('flatHpSection')?.classList.toggle('hidden', hpFormula.value !== 'flat');
+                document.getElementById('levelOnlyHpSection')?.classList.toggle('hidden', hpFormula.value !== 'levelonly');
             });
         }
         
-        // Energy points toggle
-        const hasEnergyPoints = document.getElementById('hasEnergyPoints');
-        if (hasEnergyPoints) {
-            hasEnergyPoints.addEventListener('change', () => {
-                document.getElementById('energyPointsConfig').classList.toggle('hidden', !hasEnergyPoints.checked);
-            });
-        }
+        // Energy points
+        this.toggleSectionByCheckbox('hasEnergyPoints', 'energyPointsConfig');
         
-        // PE formula change
+        // PE formula
         const peFormula = document.getElementById('peFormula');
         if (peFormula) {
             peFormula.addEventListener('change', () => {
-                document.getElementById('simplePeSection').classList.toggle('hidden', peFormula.value !== 'simple');
-                document.getElementById('attrPeSection').classList.toggle('hidden', peFormula.value !== 'attr');
+                document.getElementById('simplePeSection')?.classList.toggle('hidden', peFormula.value !== 'simple');
+                document.getElementById('attrPeSection')?.classList.toggle('hidden', peFormula.value !== 'attr');
+                document.getElementById('attrLevelPeSection')?.classList.toggle('hidden', peFormula.value !== 'attrlevel');
+                document.getElementById('customPeSection')?.classList.toggle('hidden', peFormula.value !== 'custom');
             });
         }
         
-        // Sanity toggle
-        const hasSanity = document.getElementById('hasSanity');
-        if (hasSanity) {
-            hasSanity.addEventListener('change', () => {
-                document.getElementById('sanityConfig').classList.toggle('hidden', !hasSanity.checked);
-            });
-        }
+        // Sanity
+        this.toggleSectionByCheckbox('hasSanity', 'sanityConfig');
+        this.toggleSectionByCheckbox('sanityHasMax', 'sanityMaxConfig');
         
-        // Sanity max toggle
-        const sanityHasMax = document.getElementById('sanityHasMax');
-        if (sanityHasMax) {
-            sanityHasMax.addEventListener('change', () => {
-                document.getElementById('sanityMaxConfig').classList.toggle('hidden', !sanityHasMax.checked);
-            });
-        }
-        
-        // Sanity formula change
+        // Sanity formula
         const sanityFormula = document.getElementById('sanityFormula');
         if (sanityFormula) {
             sanityFormula.addEventListener('change', () => {
-                document.getElementById('flatSanitySection').classList.toggle('hidden', sanityFormula.value !== 'flat');
+                document.getElementById('flatSanitySection')?.classList.toggle('hidden', sanityFormula.value !== 'flat');
+                document.getElementById('attrSanitySection')?.classList.toggle('hidden', sanityFormula.value !== 'attr');
+                document.getElementById('customSanitySection')?.classList.toggle('hidden', sanityFormula.value !== 'custom');
             });
         }
         
-        // Action points toggle
-        const hasActionPoints = document.getElementById('hasActionPoints');
-        if (hasActionPoints) {
-            hasActionPoints.addEventListener('change', () => {
-                document.getElementById('actionPointsConfig').classList.toggle('hidden', !hasActionPoints.checked);
-            });
-        }
+        // Action points
+        this.toggleSectionByCheckbox('hasActionPoints', 'actionPointsConfig');
         
-        // PA formula change
+        // PA formula
         const paFormula = document.getElementById('paFormula');
         if (paFormula) {
             paFormula.addEventListener('change', () => {
-                document.getElementById('flatPaSection').classList.toggle('hidden', paFormula.value !== 'flat');
+                document.getElementById('flatPaSection')?.classList.toggle('hidden', paFormula.value !== 'flat');
+                document.getElementById('attrPaSection')?.classList.toggle('hidden', paFormula.value !== 'attr');
+                document.getElementById('customPaSection')?.classList.toggle('hidden', paFormula.value !== 'custom');
             });
         }
         
-        // Dodge toggle
-        const hasDodge = document.getElementById('hasDodge');
-        if (hasDodge) {
-            hasDodge.addEventListener('change', () => {
-                document.getElementById('dodgeConfig').classList.toggle('hidden', !hasDodge.checked);
+        // Fusões
+        this.toggleSectionByCheckbox('hasFusions', 'fusionsConfig');
+        
+        // CA formula
+        const caFormula = document.getElementById('caFormula');
+        if (caFormula) {
+            caFormula.addEventListener('change', () => {
+                document.getElementById('flatBaseCaSection')?.classList.toggle('hidden', caFormula.value !== 'flatbase');
+                document.getElementById('customCaSection')?.classList.toggle('hidden', caFormula.value !== 'custom');
             });
         }
         
-        // Classes toggle
-        const hasClasses = document.getElementById('hasClasses');
-        if (hasClasses) {
-            hasClasses.addEventListener('change', () => {
-                document.getElementById('classesConfig').classList.toggle('hidden', !hasClasses.checked);
+        // Dodge
+        this.toggleSectionByCheckbox('hasDodge', 'dodgeConfig');
+        
+        // Dodge formula
+        const dodgeFormula = document.getElementById('dodgeFormula');
+        if (dodgeFormula) {
+            dodgeFormula.addEventListener('change', () => {
+                document.getElementById('customDodgeSection')?.classList.toggle('hidden', dodgeFormula.value !== 'custom');
             });
         }
+        
+        // Initiative formula
+        const initFormula = document.getElementById('initiativeFormula');
+        if (initFormula) {
+            initFormula.addEventListener('change', () => {
+                document.getElementById('skillInitSection')?.classList.toggle('hidden', initFormula.value !== 'skill');
+                document.getElementById('customInitSection')?.classList.toggle('hidden', initFormula.value !== 'custom');
+            });
+        }
+        
+        // Saving throws
+        this.toggleSectionByCheckbox('hasSavingThrows', 'savingThrowsConfig');
+        
+        // Classes
+        this.toggleSectionByCheckbox('hasClasses', 'classesConfig');
+        
+        // Class list type
+        const classListType = document.getElementById('classListType');
+        if (classListType) {
+            classListType.addEventListener('change', () => {
+                document.getElementById('customClassSection')?.classList.toggle('hidden', classListType.value !== 'custom');
+            });
+        }
+        
+        // Skill system
+        const skillSystem = document.getElementById('skillSystem');
+        if (skillSystem) {
+            skillSystem.addEventListener('change', () => {
+                document.getElementById('ranksConfig')?.classList.toggle('hidden', skillSystem.value !== 'ranks');
+            });
+        }
+        
+        // Skill list
+        const skillList = document.getElementById('skillList');
+        if (skillList) {
+            skillList.addEventListener('change', () => {
+                document.getElementById('customSkillSection')?.classList.toggle('hidden', skillList.value !== 'custom');
+            });
+        }
+        
+        // Spell slots
+        this.toggleSectionByCheckbox('hasSpellSlots', 'spellSlotsConfig');
+        
+        // Collapsible sections
+        document.querySelectorAll('.system-section.collapsible .section-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const section = toggle.closest('.system-section');
+                const content = section.querySelector('.section-content');
+                section.classList.toggle('open');
+                content?.classList.toggle('hidden');
+            });
+        });
     },
     
     // Show systems manager modal
@@ -295,20 +363,25 @@ const SystemManager = {
             features.push('6 Atributos: FOR, CON, VON, CAR, INT, AGI');
         } else if (config.attrType === 'dnd') {
             features.push('6 Atributos: FOR, DES, CON, INT, SAB, CAR');
+            features.push('Modificadores D&D ((attr-10)/2)');
         }
         
         if (config.hasFusions) features.push('Fusões');
         if (config.hasActionPoints) features.push('Pontos de Ação (PA)');
         if (config.hasEnergyPoints) features.push(`${config.energyName || 'PE'}`);
         if (config.hasSanity) features.push('Sanidade');
-        if (config.hasClasses) features.push('Classes');
+        if (config.hasClasses) features.push('Classes com Dados de Vida');
         if (config.hasSpellSlots) features.push('Espaços de Magia');
+        if (config.hasProficiencyBonus) features.push('Bônus de Proficiência');
+        if (config.hasSavingThrows) features.push('Testes de Resistência');
+        if (config.hasPassivePerception) features.push('Percepção Passiva');
+        if (config.skillSystem === 'dnd') features.push('18 Perícias D&D');
         
         if (features.length === 0) return '';
         
         return `
             <ul class="system-features">
-                ${features.slice(0, 4).map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}
+                ${features.slice(0, 6).map(f => `<li><i class="fas fa-check"></i> ${f}</li>`).join('')}
             </ul>
         `;
     },
@@ -374,168 +447,424 @@ const SystemManager = {
     resetEditorForm() {
         this.setEditorReadOnly(false);
         
-        document.getElementById('systemName').value = '';
-        document.getElementById('systemDescription').value = '';
-        document.getElementById('systemIcon').value = 'fa-dice-d20';
-        document.getElementById('attrType').value = 'realsscripts';
-        document.getElementById('attrPointLimit').value = '8';
-        document.getElementById('modifierCalc').value = 'direct';
-        document.getElementById('hpFormula').value = 'realsscripts';
-        document.getElementById('hasEnergyPoints').checked = true;
-        document.getElementById('energyName').value = 'PE';
-        document.getElementById('peFormula').value = 'realsscripts';
-        document.getElementById('hasSanity').checked = true;
-        document.getElementById('sanityHasMax').checked = false;
-        document.getElementById('hasActionPoints').checked = false;
-        document.getElementById('hasFusions').checked = false;
-        document.getElementById('caFormula').value = 'realsscripts';
-        document.getElementById('hasDodge').checked = false;
-        document.getElementById('hasClasses').checked = false;
-        document.getElementById('skillSystem').value = 'realsscripts';
-        document.getElementById('skillList').value = 'realsscripts';
-        document.getElementById('hasSpellSlots').checked = false;
+        // Basic info
+        this.setVal('systemName', '');
+        this.setVal('systemDescription', '');
+        this.setVal('systemIcon', 'fa-dice-d20');
         
-        // Hide conditional sections
-        document.getElementById('customAttrsSection').classList.add('hidden');
-        document.getElementById('customHpSection').classList.add('hidden');
-        document.getElementById('flatHpSection').classList.add('hidden');
-        document.getElementById('energyPointsConfig').classList.remove('hidden');
-        document.getElementById('simplePeSection').classList.add('hidden');
-        document.getElementById('attrPeSection').classList.add('hidden');
-        document.getElementById('sanityConfig').classList.remove('hidden');
-        document.getElementById('sanityMaxConfig').classList.add('hidden');
-        document.getElementById('actionPointsConfig').classList.add('hidden');
-        document.getElementById('flatPaSection').classList.add('hidden');
-        document.getElementById('dodgeConfig').classList.add('hidden');
-        document.getElementById('classesConfig').classList.add('hidden');
+        // Attributes
+        this.setVal('attrType', 'realsscripts');
+        this.setVal('attrPointLimit', '8');
+        this.setVal('attrMinValue', '1');
+        this.setVal('attrMaxValue', '10');
+        this.setVal('modifierCalc', 'direct');
+        this.setVal('customAttrs', '');
+        
+        // HP
+        this.setVal('hpFormula', 'realsscripts');
+        this.setVal('customHpFormula', '');
+        this.setVal('flatHpBase', '10');
+        this.setVal('flatHpPerLevel', '5');
+        this.setVal('hpPerLevel', '6');
+        
+        // Energy points
+        this.setChecked('hasEnergyPoints', true);
+        this.setVal('energyName', 'PE');
+        this.setVal('peFormula', 'simple');
+        this.setVal('peMultiplier', '5');
+        this.setVal('peAttr', 'von');
+        this.setVal('peAttrMultiplier', '2');
+        this.setVal('peLevelAttr', 'von');
+        this.setVal('peLevelAttrMultiplier', '1');
+        this.setVal('peLevelMultiplier', '5');
+        this.setVal('customPeFormula', '');
+        this.setChecked('peRegenPerRest', false);
+        
+        // Sanity
+        this.setChecked('hasSanity', true);
+        this.setVal('sanityName', 'Sanidade');
+        this.setChecked('sanityHasMax', false);
+        this.setVal('sanityFormula', 'flat');
+        this.setVal('flatSanity', '100');
+        this.setVal('sanityAttr', 'von');
+        this.setVal('sanityAttrMultiplier', '10');
+        this.setVal('customSanityFormula', '');
+        this.setChecked('sanityCanGoNegative', false);
+        
+        // Action points
+        this.setChecked('hasActionPoints', false);
+        this.setVal('paName', 'PA');
+        this.setVal('paFormula', 'flat');
+        this.setVal('flatPa', '3');
+        this.setVal('paAttr', 'agi');
+        this.setVal('paBase', '4');
+        this.setVal('customPaFormula', '');
+        this.setChecked('paAffectedByArmor', false);
+        
+        // Fusões
+        this.setChecked('hasFusions', false);
+        this.setVal('fusionTypes', 'Arcana,Divina,Natural,Sombria');
+        
+        // Combat
+        this.setVal('caFormula', 'base10agi');
+        this.setVal('caBase', '10');
+        this.setVal('caAttr', 'agi');
+        this.setVal('customCaFormula', '');
+        
+        this.setChecked('hasDodge', false);
+        this.setVal('dodgeFormula', 'agi');
+        this.setVal('dodgeAttr', 'agi');
+        this.setVal('customDodgeFormula', '');
+        
+        this.setVal('initiativeFormula', 'attr');
+        this.setVal('initiativeAttr', 'agi');
+        this.setVal('initSkill', '');
+        this.setVal('customInitFormula', '');
+        
+        this.setChecked('hasSavingThrows', false);
+        this.setVal('savingThrowType', 'three');
+        
+        // Classes
+        this.setChecked('hasClasses', false);
+        this.setChecked('classAffectsHp', false);
+        this.setChecked('classAffectsSpellcasting', false);
+        this.setChecked('allowMulticlass', false);
+        this.setVal('classListType', 'freeform');
+        this.setVal('classList', '');
+        
+        // Skills
+        this.setVal('skillSystem', 'points');
+        this.setVal('skillPointsPerLevel', '4');
+        this.setVal('skillPointsAttr', 'int');
+        this.setVal('skillList', 'realsscripts');
+        this.setVal('customSkillList', '');
+        
+        // Magic
+        this.setChecked('hasSpellSlots', false);
+        this.setVal('spellSlotSystem', 'dnd');
+        this.setVal('maxSpellLevel', '9');
+        this.setChecked('hasCantrips', false);
+        this.setChecked('hasRituals', false);
+        
+        // Advanced
+        this.setChecked('hasEncumbrance', false);
+        this.setChecked('hasAdvantage', false);
+        this.setChecked('hasInspiration', false);
+        this.setChecked('hasDeathSaves', false);
+        this.setVal('shortRestRestore', 'hitdice');
+        this.setVal('longRestRestore', 'full');
+        
+        // Hide all conditional sections
+        const hiddenSections = [
+            'customAttrsSection', 'customHpSection', 'flatHpSection', 'levelOnlyHpSection',
+            'simplePeSection', 'attrPeSection', 'attrLevelPeSection', 'customPeSection',
+            'sanityMaxConfig', 'flatSanitySection', 'attrSanitySection', 'customSanitySection',
+            'actionPointsConfig', 'flatPaSection', 'attrPaSection', 'customPaSection',
+            'fusionsConfig', 'flatBaseCaSection', 'customCaSection',
+            'dodgeConfig', 'customDodgeSection', 'skillInitSection', 'customInitSection',
+            'savingThrowsConfig', 'classesConfig', 'customClassSection',
+            'ranksConfig', 'customSkillSection', 'spellSlotsConfig'
+        ];
+        hiddenSections.forEach(id => this.showSection(id, false));
+        
+        // Show sections that should be visible by default
+        this.showSection('energyPointsConfig', true);
+        this.showSection('sanityConfig', true);
+    },
+
+    // Helper functions for form manipulation
+    // Helper to set value safely
+    setVal(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
     },
     
-    // Load system data into editor
+    setChecked(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.checked = !!value;
+    },
+    
+    showSection(id, show = true) {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !show);
+    },
+    
     loadSystemIntoEditor(system) {
         this.resetEditorForm();
         
-        const config = system.config || {};
+        const c = system.config || {};
         
-        document.getElementById('systemName').value = system.name || '';
-        document.getElementById('systemDescription').value = system.description || '';
-        document.getElementById('systemIcon').value = system.icon || 'fa-dice-d20';
+        this.setVal('systemName', system.name || '');
+        this.setVal('systemDescription', system.description || '');
+        this.setVal('systemIcon', system.icon || 'fa-dice-d20');
         
         // Attributes
-        document.getElementById('attrType').value = config.attrType || 'realsscripts';
-        document.getElementById('attrPointLimit').value = config.attrPointLimit || 8;
-        document.getElementById('modifierCalc').value = config.modifierCalc || 'direct';
-        if (config.attrType === 'custom') {
-            document.getElementById('customAttrsSection').classList.remove('hidden');
-            document.getElementById('customAttrs').value = config.customAttrs || '';
-        }
+        this.setVal('attrType', c.attrType || 'realsscripts');
+        this.setVal('attrPointLimit', c.attrPointLimit || 8);
+        this.setVal('attrMinValue', c.attrMinValue || 1);
+        this.setVal('attrMaxValue', c.attrMaxValue || 10);
+        this.setVal('modifierCalc', c.modifierCalc || 'direct');
+        this.setVal('customAttrs', c.customAttrs || '');
+        this.showSection('customAttrsSection', c.attrType === 'custom');
         
         // HP
-        document.getElementById('hpFormula').value = config.hpFormula || 'realsscripts';
-        if (config.hpFormula === 'custom') {
-            document.getElementById('customHpSection').classList.remove('hidden');
-            document.getElementById('customHpFormula').value = config.customHpFormula || '';
-        } else if (config.hpFormula === 'flat') {
-            document.getElementById('flatHpSection').classList.remove('hidden');
-            document.getElementById('flatHpBase').value = config.flatHpBase || 10;
-            document.getElementById('flatHpPerLevel').value = config.flatHpPerLevel || 5;
-        }
+        this.setVal('hpFormula', c.hpFormula || 'realsscripts');
+        this.setVal('customHpFormula', c.customHpFormula || '');
+        this.setVal('flatHpBase', c.flatHpBase || 10);
+        this.setVal('flatHpPerLevel', c.flatHpPerLevel || 5);
+        this.setVal('hpPerLevel', c.hpPerLevel || 6);
+        this.showSection('customHpSection', c.hpFormula === 'custom');
+        this.showSection('flatHpSection', c.hpFormula === 'flat');
+        this.showSection('levelOnlyHpSection', c.hpFormula === 'levelonly');
         
         // Energy Points
-        document.getElementById('hasEnergyPoints').checked = config.hasEnergyPoints !== false;
-        document.getElementById('energyPointsConfig').classList.toggle('hidden', !config.hasEnergyPoints);
-        document.getElementById('energyName').value = config.energyName || 'PE';
-        document.getElementById('peFormula').value = config.peFormula || 'realsscripts';
+        this.setChecked('hasEnergyPoints', c.hasEnergyPoints !== false);
+        this.showSection('energyPointsConfig', c.hasEnergyPoints !== false);
+        this.setVal('energyName', c.energyName || 'PE');
+        this.setVal('peFormula', c.peFormula || 'simple');
+        this.setVal('peMultiplier', c.peMultiplier || 5);
+        this.setVal('peAttr', c.peAttr || 'von');
+        this.setVal('peAttrMultiplier', c.peAttrMultiplier || 2);
+        this.setVal('peLevelAttr', c.peLevelAttr || 'von');
+        this.setVal('peLevelAttrMultiplier', c.peLevelAttrMultiplier || 1);
+        this.setVal('peLevelMultiplier', c.peLevelMultiplier || 5);
+        this.setVal('customPeFormula', c.customPeFormula || '');
+        this.setChecked('peRegenPerRest', c.peRegenPerRest);
+        this.showSection('simplePeSection', c.peFormula === 'simple');
+        this.showSection('attrPeSection', c.peFormula === 'attr');
+        this.showSection('attrLevelPeSection', c.peFormula === 'attrlevel');
+        this.showSection('customPeSection', c.peFormula === 'custom');
         
         // Sanity
-        document.getElementById('hasSanity').checked = config.hasSanity !== false;
-        document.getElementById('sanityConfig').classList.toggle('hidden', !config.hasSanity);
-        document.getElementById('sanityHasMax').checked = config.sanityHasMax || false;
-        document.getElementById('sanityMaxConfig').classList.toggle('hidden', !config.sanityHasMax);
+        this.setChecked('hasSanity', c.hasSanity !== false);
+        this.showSection('sanityConfig', c.hasSanity !== false);
+        this.setVal('sanityName', c.sanityName || 'Sanidade');
+        this.setChecked('sanityHasMax', c.sanityHasMax);
+        this.showSection('sanityMaxConfig', c.sanityHasMax);
+        this.setVal('sanityFormula', c.sanityFormula || 'flat');
+        this.setVal('flatSanity', c.flatSanity || 100);
+        this.setVal('sanityAttr', c.sanityAttr || 'von');
+        this.setVal('sanityAttrMultiplier', c.sanityAttrMultiplier || 10);
+        this.setVal('customSanityFormula', c.customSanityFormula || '');
+        this.setChecked('sanityCanGoNegative', c.sanityCanGoNegative);
+        this.showSection('flatSanitySection', c.sanityFormula === 'flat');
+        this.showSection('attrSanitySection', c.sanityFormula === 'attr');
+        this.showSection('customSanitySection', c.sanityFormula === 'custom');
         
         // Action Points
-        document.getElementById('hasActionPoints').checked = config.hasActionPoints || false;
-        document.getElementById('actionPointsConfig').classList.toggle('hidden', !config.hasActionPoints);
-        document.getElementById('paFormula').value = config.paFormula || 'realsscripts';
+        this.setChecked('hasActionPoints', c.hasActionPoints);
+        this.showSection('actionPointsConfig', c.hasActionPoints);
+        this.setVal('paName', c.paName || 'PA');
+        this.setVal('paFormula', c.paFormula || 'flat');
+        this.setVal('flatPa', c.flatPa || 3);
+        this.setVal('paAttr', c.paAttr || 'agi');
+        this.setVal('paBase', c.paBase || 4);
+        this.setVal('customPaFormula', c.customPaFormula || '');
+        this.setChecked('paAffectedByArmor', c.paAffectedByArmor);
+        this.showSection('flatPaSection', c.paFormula === 'flat');
+        this.showSection('attrPaSection', c.paFormula === 'attr');
+        this.showSection('customPaSection', c.paFormula === 'custom');
         
         // Fusions
-        document.getElementById('hasFusions').checked = config.hasFusions || false;
+        this.setChecked('hasFusions', c.hasFusions);
+        this.showSection('fusionsConfig', c.hasFusions);
+        this.setVal('fusionTypes', c.fusionTypes || 'Arcana,Divina,Natural,Sombria');
         
-        // Defenses
-        document.getElementById('caFormula').value = config.caFormula || 'realsscripts';
-        document.getElementById('hasDodge').checked = config.hasDodge || false;
-        document.getElementById('dodgeConfig').classList.toggle('hidden', !config.hasDodge);
+        // Combat - CA
+        this.setVal('caFormula', c.caFormula || 'base10agi');
+        this.setVal('caBase', c.caBase || 10);
+        this.setVal('caAttr', c.caAttr || 'agi');
+        this.setVal('customCaFormula', c.customCaFormula || '');
+        this.showSection('flatBaseCaSection', c.caFormula === 'flatbase');
+        this.showSection('customCaSection', c.caFormula === 'custom');
+        
+        // Combat - Dodge
+        this.setChecked('hasDodge', c.hasDodge);
+        this.showSection('dodgeConfig', c.hasDodge);
+        this.setVal('dodgeFormula', c.dodgeFormula || 'agi');
+        this.setVal('dodgeAttr', c.dodgeAttr || 'agi');
+        this.setVal('customDodgeFormula', c.customDodgeFormula || '');
+        this.showSection('customDodgeSection', c.dodgeFormula === 'custom');
+        
+        // Combat - Initiative
+        this.setVal('initiativeFormula', c.initiativeFormula || 'attr');
+        this.setVal('initiativeAttr', c.initiativeAttr || 'agi');
+        this.setVal('initSkill', c.initSkill || '');
+        this.setVal('customInitFormula', c.customInitFormula || '');
+        this.showSection('skillInitSection', c.initiativeFormula === 'skill');
+        this.showSection('customInitSection', c.initiativeFormula === 'custom');
+        
+        // Combat - Saving Throws
+        this.setChecked('hasSavingThrows', c.hasSavingThrows);
+        this.showSection('savingThrowsConfig', c.hasSavingThrows);
+        this.setVal('savingThrowType', c.savingThrowType || 'three');
         
         // Classes
-        document.getElementById('hasClasses').checked = config.hasClasses || false;
-        document.getElementById('classesConfig').classList.toggle('hidden', !config.hasClasses);
-        if (config.hasClasses) {
-            document.getElementById('classAffectsHp').checked = config.classAffectsHp !== false;
-            document.getElementById('classList').value = config.classList || '';
-        }
+        this.setChecked('hasClasses', c.hasClasses);
+        this.showSection('classesConfig', c.hasClasses);
+        this.setChecked('classAffectsHp', c.classAffectsHp);
+        this.setChecked('classAffectsSpellcasting', c.classAffectsSpellcasting);
+        this.setChecked('allowMulticlass', c.allowMulticlass);
+        this.setVal('classListType', c.classListType || 'freeform');
+        this.setVal('classList', c.classList || '');
+        this.showSection('customClassSection', c.classListType === 'custom');
         
         // Skills
-        document.getElementById('skillSystem').value = config.skillSystem || 'realsscripts';
-        document.getElementById('skillList').value = config.skillList || 'realsscripts';
+        this.setVal('skillSystem', c.skillSystem || 'points');
+        this.setVal('skillPointsPerLevel', c.skillPointsPerLevel || 4);
+        this.setVal('skillPointsAttr', c.skillPointsAttr || 'int');
+        this.showSection('ranksConfig', c.skillSystem === 'ranks');
+        this.setVal('skillList', c.skillList || 'realsscripts');
+        this.setVal('customSkillList', c.customSkillList || '');
+        this.showSection('customSkillSection', c.skillList === 'custom');
         
-        // Spell Slots
-        document.getElementById('hasSpellSlots').checked = config.hasSpellSlots || false;
+        // Magic
+        this.setChecked('hasSpellSlots', c.hasSpellSlots);
+        this.showSection('spellSlotsConfig', c.hasSpellSlots);
+        this.setVal('spellSlotSystem', c.spellSlotSystem || 'dnd');
+        this.setVal('maxSpellLevel', c.maxSpellLevel || 9);
+        this.setChecked('hasCantrips', c.hasCantrips);
+        this.setChecked('hasRituals', c.hasRituals);
+        
+        // Advanced options
+        this.setChecked('hasEncumbrance', c.hasEncumbrance);
+        this.setChecked('hasAdvantage', c.hasAdvantage);
+        this.setChecked('hasInspiration', c.hasInspiration);
+        this.setChecked('hasDeathSaves', c.hasDeathSaves);
+        this.setVal('shortRestRestore', c.shortRestRestore || 'hitdice');
+        this.setVal('longRestRestore', c.longRestRestore || 'full');
+    },
+    // Helper to get value safely
+    getVal(id, fallback = '') {
+        const el = document.getElementById(id);
+        return el ? el.value : fallback;
     },
     
-    // Collect data from editor form
+    getChecked(id, fallback = false) {
+        const el = document.getElementById(id);
+        return el ? el.checked : fallback;
+    },
+    
+    getNum(id, fallback = 0) {
+        const el = document.getElementById(id);
+        return el ? (parseInt(el.value) || fallback) : fallback;
+    },
+    
     collectEditorData() {
-        const name = document.getElementById('systemName').value.trim();
+        const name = document.getElementById('systemName')?.value.trim();
         if (!name) {
             alert('Por favor, insira um nome para o sistema.');
             return null;
         }
         
         const config = {
-            attrType: document.getElementById('attrType').value,
-            attrPointLimit: parseInt(document.getElementById('attrPointLimit').value) || 0,
-            modifierCalc: document.getElementById('modifierCalc').value,
-            customAttrs: document.getElementById('customAttrs').value,
+            // Atributos
+            attrType: this.getVal('attrType', 'realsscripts'),
+            attrPointLimit: this.getNum('attrPointLimit', 0),
+            attrMinValue: this.getNum('attrMinValue', 1),
+            attrMaxValue: this.getNum('attrMaxValue', 10),
+            modifierCalc: this.getVal('modifierCalc', 'subtract5'),
+            customAttrs: this.getVal('customAttrs'),
             
-            hpFormula: document.getElementById('hpFormula').value,
-            customHpFormula: document.getElementById('customHpFormula').value,
-            flatHpBase: parseInt(document.getElementById('flatHpBase').value) || 10,
-            flatHpPerLevel: parseInt(document.getElementById('flatHpPerLevel').value) || 5,
+            // HP
+            hpFormula: this.getVal('hpFormula', 'levelcon'),
+            customHpFormula: this.getVal('customHpFormula'),
+            flatHpBase: this.getNum('flatHpBase', 10),
+            flatHpPerLevel: this.getNum('flatHpPerLevel', 5),
+            hpPerLevel: this.getNum('hpPerLevel', 6),
             
-            hasEnergyPoints: document.getElementById('hasEnergyPoints').checked,
-            energyName: document.getElementById('energyName').value || 'PE',
-            peFormula: document.getElementById('peFormula').value,
-            peMultiplier: parseInt(document.getElementById('peMultiplier').value) || 5,
-            peAttr: document.getElementById('peAttr').value,
-            peAttrMultiplier: parseInt(document.getElementById('peAttrMultiplier').value) || 2,
+            // Energy points
+            hasEnergyPoints: this.getChecked('hasEnergyPoints'),
+            energyName: this.getVal('energyName', 'PE'),
+            peFormula: this.getVal('peFormula', 'simple'),
+            peMultiplier: this.getNum('peMultiplier', 5),
+            peAttr: this.getVal('peAttr', 'von'),
+            peAttrMultiplier: this.getNum('peAttrMultiplier', 2),
+            peLevelAttr: this.getVal('peLevelAttr', 'von'),
+            peLevelAttrMultiplier: this.getNum('peLevelAttrMultiplier', 1),
+            peLevelMultiplier: this.getNum('peLevelMultiplier', 5),
+            customPeFormula: this.getVal('customPeFormula'),
+            peRegenPerRest: this.getChecked('peRegenPerRest'),
             
-            hasSanity: document.getElementById('hasSanity').checked,
-            sanityHasMax: document.getElementById('sanityHasMax').checked,
-            sanityFormula: document.getElementById('sanityFormula').value,
-            flatSanity: parseInt(document.getElementById('flatSanity').value) || 100,
+            // Sanity
+            hasSanity: this.getChecked('hasSanity'),
+            sanityName: this.getVal('sanityName', 'Sanidade'),
+            sanityHasMax: this.getChecked('sanityHasMax'),
+            sanityFormula: this.getVal('sanityFormula', 'flat'),
+            flatSanity: this.getNum('flatSanity', 100),
+            sanityAttr: this.getVal('sanityAttr', 'von'),
+            sanityAttrMultiplier: this.getNum('sanityAttrMultiplier', 10),
+            customSanityFormula: this.getVal('customSanityFormula'),
+            sanityCanGoNegative: this.getChecked('sanityCanGoNegative'),
             
-            hasActionPoints: document.getElementById('hasActionPoints').checked,
-            paFormula: document.getElementById('paFormula').value,
-            flatPa: parseInt(document.getElementById('flatPa').value) || 3,
+            // Action points
+            hasActionPoints: this.getChecked('hasActionPoints'),
+            paName: this.getVal('paName', 'PA'),
+            paFormula: this.getVal('paFormula', 'flat'),
+            flatPa: this.getNum('flatPa', 3),
+            paAttr: this.getVal('paAttr', 'agi'),
+            paBase: this.getNum('paBase', 4),
+            customPaFormula: this.getVal('customPaFormula'),
+            paAffectedByArmor: this.getChecked('paAffectedByArmor'),
             
-            hasFusions: document.getElementById('hasFusions').checked,
+            // Fusões
+            hasFusions: this.getChecked('hasFusions'),
+            fusionTypes: this.getVal('fusionTypes', 'Arcana,Divina,Natural,Sombria'),
             
-            caFormula: document.getElementById('caFormula').value,
-            hasDodge: document.getElementById('hasDodge').checked,
-            dodgeFormula: document.getElementById('dodgeFormula').value,
+            // Combat
+            caFormula: this.getVal('caFormula', 'base10agi'),
+            caBase: this.getNum('caBase', 10),
+            caAttr: this.getVal('caAttr', 'agi'),
+            customCaFormula: this.getVal('customCaFormula'),
             
-            hasClasses: document.getElementById('hasClasses').checked,
-            classAffectsHp: document.getElementById('classAffectsHp').checked,
-            classList: document.getElementById('classList').value,
+            hasDodge: this.getChecked('hasDodge'),
+            dodgeFormula: this.getVal('dodgeFormula', 'agi'),
+            dodgeAttr: this.getVal('dodgeAttr', 'agi'),
+            customDodgeFormula: this.getVal('customDodgeFormula'),
             
-            skillSystem: document.getElementById('skillSystem').value,
-            skillList: document.getElementById('skillList').value,
+            initiativeFormula: this.getVal('initiativeFormula', 'attr'),
+            initiativeAttr: this.getVal('initiativeAttr', 'agi'),
+            initSkill: this.getVal('initSkill'),
+            customInitFormula: this.getVal('customInitFormula'),
             
-            hasSpellSlots: document.getElementById('hasSpellSlots').checked
+            hasSavingThrows: this.getChecked('hasSavingThrows'),
+            savingThrowType: this.getVal('savingThrowType', 'three'),
+            
+            // Classes
+            hasClasses: this.getChecked('hasClasses'),
+            classAffectsHp: this.getChecked('classAffectsHp'),
+            classAffectsSpellcasting: this.getChecked('classAffectsSpellcasting'),
+            allowMulticlass: this.getChecked('allowMulticlass'),
+            classListType: this.getVal('classListType', 'freeform'),
+            classList: this.getVal('classList'),
+            
+            // Skills
+            skillSystem: this.getVal('skillSystem', 'points'),
+            skillPointsPerLevel: this.getNum('skillPointsPerLevel', 5),
+            skillPointsAttr: this.getVal('skillPointsAttr', 'int'),
+            skillList: this.getVal('skillList', 'realsscripts'),
+            customSkillList: this.getVal('customSkillList'),
+            
+            // Magic
+            hasSpellSlots: this.getChecked('hasSpellSlots'),
+            spellSlotSystem: this.getVal('spellSlotSystem', 'dnd'),
+            maxSpellLevel: this.getNum('maxSpellLevel', 9),
+            hasCantrips: this.getChecked('hasCantrips'),
+            hasRituals: this.getChecked('hasRituals'),
+            
+            // Advanced options
+            hasEncumbrance: this.getChecked('hasEncumbrance'),
+            hasAdvantage: this.getChecked('hasAdvantage'),
+            hasInspiration: this.getChecked('hasInspiration'),
+            hasDeathSaves: this.getChecked('hasDeathSaves'),
+            shortRestRestore: this.getVal('shortRestRestore', 'hitdice'),
+            longRestRestore: this.getVal('longRestRestore', 'full')
         };
         
         return {
             name: name,
-            description: document.getElementById('systemDescription').value.trim(),
-            icon: document.getElementById('systemIcon').value,
+            description: (document.getElementById('systemDescription')?.value || '').trim(),
+            icon: this.getVal('systemIcon', 'fa-dice-d20'),
             isBuiltIn: false,
             config: config
         };
@@ -617,13 +946,16 @@ const SystemManager = {
         document.getElementById('systemEditorModal').classList.add('hidden');
         this.currentEditingSystem = null;
         this.setEditorReadOnly(false);
-        // Mostrar o manager ou o characterModal
-        const managerModal = document.getElementById('systemsManagerModal');
-        const charModal = document.getElementById('characterModal');
-        if (managerModal && !managerModal.classList.contains('hidden')) {
-            // Manager já está visível, não precisa fazer nada
-        } else if (charModal) {
-            charModal.classList.remove('hidden');
-        }
+        // Sempre volta pro manager de sistemas
+        this.showManager();
+    },
+    
+    // Back to character modal (for Voltar button in manager)
+    backToCharacters() {
+        console.log('[SystemManager] backToCharacters() chamado');
+        document.getElementById('systemsManagerModal').classList.add('hidden');
+        document.getElementById('systemSelectModal').classList.add('hidden');
+        document.getElementById('systemEditorModal').classList.add('hidden');
+        document.getElementById('characterModal').classList.remove('hidden');
     }
 };

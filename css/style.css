@@ -2764,9 +2764,83 @@ input.vital-single {
     border: 1px dashed var(--border-color);
 }
 
-.custom-formula-section small {
+.custom-formula-section small,
+.form-hint {
     color: var(--text-muted);
     font-size: 0.75rem;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+/* Formula preview */
+.formula-preview {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.formula-preview strong {
+    color: var(--accent-secondary);
+}
+
+/* Form group row */
+.form-group-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group-row .form-group {
+    flex: 1;
+}
+
+/* Subsections */
+.subsection {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.subsection:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.subsection h4 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+/* Collapsible sections */
+.system-section.collapsible .section-toggle {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.system-section.collapsible .section-toggle:hover {
+    color: var(--accent-primary);
+}
+
+.system-section.collapsible .section-toggle .fa-chevron-down {
+    transition: transform 0.3s;
+    font-size: 0.8rem;
+}
+
+.system-section.collapsible.open .section-toggle .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.section-content {
+    margin-top: 1rem;
 }
 
 /* System Editor Footer */
