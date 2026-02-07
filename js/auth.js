@@ -95,11 +95,12 @@ const Auth = {
         }
     },
 
-    // Get default character data
-    getDefaultCharacterData() {
-        return {
+    // Get default character data based on system
+    getDefaultCharacterData(systemId = 'realsscripts') {
+        const baseData = {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            system: systemId,
             
             // Basic Info
             charName: 'Novo Personagem',
@@ -107,38 +108,6 @@ const Auth = {
             charLevel: 1,
             levelPoints: 0,
             portrait: '',
-            
-            // Attributes
-            attrFor: 0,
-            attrCon: 0,
-            attrVon: 0,
-            attrCar: 0,
-            attrInt: 0,
-            attrAgi: 0,
-            
-            // Combat
-            currentHp: 20,
-            currentPE: 6,
-            sanity: 20,
-            
-            // Fusions - Organs
-            fusionBrain: '1',
-            fusionHeart: '1',
-            fusionEyes: 'normal',
-            
-            // Fusions - Bones
-            fusionBoneArms: '0',
-            fusionBoneHead: '0',
-            fusionBoneBack: '0',
-            fusionBoneChest: '0',
-            fusionBoneLegs: '0',
-            
-            // Fusions - Muscles
-            fusionMuscleArms: '0',
-            fusionMuscleHead: '0',
-            fusionMuscleBack: '0',
-            fusionMuscleChest: '0',
-            fusionMuscleLegs: '0',
             
             // Equipment
             armorType: 'none',
@@ -174,5 +143,71 @@ const Auth = {
             notes: '',
             quickNotes: ''
         };
+        
+        // Get system config
+        const system = SystemManager.getSystem(systemId);
+        const config = system.config || {};
+        
+        // Add system-specific defaults
+        if (config.attrType === 'realsscripts' || systemId === 'realsscripts') {
+            // Reals&Scripts attributes
+            baseData.attrFor = 0;
+            baseData.attrCon = 0;
+            baseData.attrVon = 0;
+            baseData.attrCar = 0;
+            baseData.attrInt = 0;
+            baseData.attrAgi = 0;
+            
+            // Default HP/PE/Sanity for Reals&Scripts
+            baseData.currentHp = 20;
+            baseData.currentPE = 6;
+            baseData.sanity = 20;
+            
+            // Fusions - Organs
+            baseData.fusionBrain = '1';
+            baseData.fusionHeart = '1';
+            baseData.fusionEyes = 'normal';
+            
+            // Fusions - Bones
+            baseData.fusionBoneArms = '0';
+            baseData.fusionBoneHead = '0';
+            baseData.fusionBoneBack = '0';
+            baseData.fusionBoneChest = '0';
+            baseData.fusionBoneLegs = '0';
+            
+            // Fusions - Muscles
+            baseData.fusionMuscleArms = '0';
+            baseData.fusionMuscleHead = '0';
+            baseData.fusionMuscleBack = '0';
+            baseData.fusionMuscleChest = '0';
+            baseData.fusionMuscleLegs = '0';
+        } else if (config.attrType === 'dnd' || systemId === 'dnd5e') {
+            // D&D attributes (base 10)
+            baseData.dndStr = 10;
+            baseData.dndDex = 10;
+            baseData.dndCon = 10;
+            baseData.dndInt = 10;
+            baseData.dndWis = 10;
+            baseData.dndCha = 10;
+            
+            // D&D class
+            baseData.dndClass = '';
+            
+            // D&D HP/Sanity
+            baseData.dndCurrentHp = 10;
+            baseData.dndSanity = 50;
+            
+            // Spell slots
+            baseData.dndSlot1 = 0;
+            baseData.dndSlot2 = 0;
+            baseData.dndSlot3 = 0;
+            baseData.dndSlot4 = 0;
+            baseData.dndSlot5 = 0;
+            
+            // Skill proficiencies
+            baseData.dndSkillProficiencies = {};
+        }
+        
+        return baseData;
     }
 };

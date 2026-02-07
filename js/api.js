@@ -250,5 +250,63 @@ const API = {
             console.error('Erro ao deletar personagem:', error);
             throw error;
         }
+    },
+    
+    // ================== CUSTOM SYSTEMS ==================
+    
+    async getCustomSystems() {
+        if (!this.currentUser) return {};
+        
+        try {
+            const snapshot = await db.collection('users')
+                .doc(this.currentUser.uid)
+                .collection('systems')
+                .get();
+            
+            const systems = {};
+            snapshot.docs.forEach(doc => {
+                systems[doc.id] = doc.data();
+            });
+            return systems;
+        } catch (error) {
+            console.error('Erro ao carregar sistemas:', error);
+            return {};
+        }
+    },
+    
+    async saveCustomSystem(systemId, systemData) {
+        if (!this.currentUser) throw new Error('Não autenticado');
+        
+        try {
+            systemData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+            
+            await db.collection('users')
+                .doc(this.currentUser.uid)
+                .collection('systems')
+                .doc(systemId)
+                .set(systemData, { merge: true });
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Erro ao salvar sistema:', error);
+            throw error;
+        }
+    },
+    
+    async deleteCustomSystem(systemId) {
+        if (!this.currentUser) throw new Error('Não autenticado');
+        
+        try {
+            await db.collection('users')
+                .doc(this.currentUser.uid)
+                .collection('systems')
+                .doc(systemId)
+                .delete();
+            
+            return { success: true };
+        } catch (error) {
+            console.error('Erro ao deletar sistema:', error);
+            throw error;
+        }
     }
 };

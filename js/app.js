@@ -3,6 +3,8 @@
 
 const App = {
     currentCharacterId: null,
+    currentSystem: null,
+    pendingNewCharacter: false,
     initialized: false,
     
     // Initialize application
@@ -12,6 +14,9 @@ const App = {
         
         // Initialize Firebase Auth
         await Auth.init();
+        
+        // Initialize System Manager
+        await SystemManager.init();
         
         this.bindAuthEvents();
         this.bindNavEvents();
@@ -71,16 +76,22 @@ const App = {
             logoutBtn.addEventListener('click', () => this.handleLogout());
         }
 
-        // New character button
+        // New character button - now shows system select first
         const newCharBtn = document.getElementById('newCharacterBtn');
         if (newCharBtn) {
-            newCharBtn.addEventListener('click', () => this.createNewCharacter());
+            newCharBtn.addEventListener('click', () => this.showSystemSelect());
         }
 
         // Switch character button
         const switchCharBtn = document.getElementById('switchCharBtn');
         if (switchCharBtn) {
             switchCharBtn.addEventListener('click', () => this.showCharacterModal());
+        }
+        
+        // Manage systems button
+        const manageSysBtn = document.getElementById('manageSysBtn');
+        if (manageSysBtn) {
+            manageSysBtn.addEventListener('click', () => SystemManager.showManager());
         }
     },
 
@@ -212,22 +223,113 @@ const App = {
 
         if (character) {
             this.currentCharacterId = charId;
+            this.currentSystem = character.system || 'realsscripts';
             Sheet.loadCharacter(character, charId);
+            this.applySystemToUI(this.currentSystem);
             document.getElementById('characterModal').classList.add('hidden');
             document.getElementById('mainContent').classList.remove('hidden');
         }
     },
 
-    // Create new character
-    async createNewCharacter() {
+    // Show system select modal
+    showSystemSelect() {
+        this.pendingNewCharacter = true;
+        SystemManager.showSystemSelect();
+    },
+    
+    // Show system editor from select modal
+    showSystemEditor() {
+        SystemManager.createNew();
+    },
+    
+    // Cancel system select
+    cancelSystemSelect() {
+        this.pendingNewCharacter = false;
+        document.getElementById('systemSelectModal').classList.add('hidden');
+        document.getElementById('characterModal').classList.remove('hidden');
+    },
+    
+    // Select system and create character
+    async selectSystem(systemId) {
+        this.currentSystem = systemId;
+        document.getElementById('systemSelectModal').classList.add('hidden');
+        
+        if (this.pendingNewCharacter) {
+            this.pendingNewCharacter = false;
+            await this.createNewCharacterWithSystem(systemId);
+        }
+    },
+    
+    // Create new character with selected system
+    async createNewCharacterWithSystem(systemId) {
         const newChar = await Auth.createNewCharacter();
         if (newChar) {
             this.currentCharacterId = newChar.id;
-            const defaultData = Auth.getDefaultCharacterData();
+            this.currentSystem = systemId;
+            
+            const defaultData = Auth.getDefaultCharacterData(systemId);
+            defaultData.system = systemId;
+            
             Sheet.loadCharacter(defaultData, newChar.id);
+            this.applySystemToUI(systemId);
+            
             document.getElementById('characterModal').classList.add('hidden');
             document.getElementById('mainContent').classList.remove('hidden');
         }
+    },
+
+    // Create new character (legacy, defaults to realsscripts)
+    async createNewCharacter() {
+        await this.createNewCharacterWithSystem('realsscripts');
+    },
+    
+    // Apply system-specific UI changes
+    applySystemToUI(systemId) {
+        const system = SystemManager.getSystem(systemId);
+        const config = system.config || {};
+        
+        // Hide/show elements based on system
+        document.querySelectorAll('.system-realsscripts').forEach(el => {
+            el.classList.toggle('hidden', systemId !== 'realsscripts' && config.attrType !== 'realsscripts');
+        });
+        
+        document.querySelectorAll('.system-dnd5e').forEach(el => {
+            el.classList.toggle('hidden', systemId !== 'dnd5e' && config.attrType !== 'dnd');
+        });
+        
+        // Show/hide PA section
+        const paElements = document.querySelectorAll('.pa-box, [data-field="currentPA"]');
+        paElements.forEach(el => {
+            if (el.closest('.vital-box')) {
+                el.closest('.vital-box').classList.toggle('hidden', !config.hasActionPoints);
+            }
+        });
+        
+        // Show/hide Fusions section
+        const fusionElements = document.querySelectorAll('.fusions-section, [data-card-id="fusions"]');
+        fusionElements.forEach(el => {
+            el.classList.toggle('hidden', !config.hasFusions);
+        });
+        
+        // Show/hide Dodge
+        const dodgeElements = document.querySelectorAll('#dodge').forEach(el => {
+            el.closest('.defense-box')?.classList.toggle('hidden', !config.hasDodge);
+        });
+        
+        // Show/hide Damage Reduction (Reals&Scripts only)
+        document.querySelectorAll('.damage-reduction, [data-card-id="combat-reduction"]').forEach(el => {
+            el.classList.toggle('hidden', !config.hasFusions);
+        });
+        
+        // Update energy points name
+        if (config.energyName && config.energyName !== 'PE') {
+            document.querySelectorAll('.pe-box label, .pe-compact label').forEach(el => {
+                el.textContent = config.energyName;
+            });
+        }
+        
+        // Store current system for calculations
+        Calculations.currentSystem = systemId;
     },
 
     // Delete character
@@ -243,6 +345,11 @@ const App = {
     // Get current character ID
     getCurrentCharacterId() {
         return this.currentCharacterId;
+    },
+    
+    // Get current system
+    getCurrentSystem() {
+        return this.currentSystem;
     }
 };
 
