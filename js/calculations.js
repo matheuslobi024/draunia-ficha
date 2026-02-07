@@ -408,35 +408,35 @@ const Calculations = {
         'heavy': { ca: 7, weight: 7, skillPenalty: -5, paPenalty: -3 }
     },
 
-    // Race bonuses info
+    // Race bonuses info (Realms&Scripts)
     RACE_BONUSES: {
         'humano': {
             name: 'Humano',
-            attrs: 'Sem bônus (0 em todos)',
+            fusion: 'Nenhuma fusão inata',
             special: '+2 Perícias Extras (qualquer)',
             skills: 'Coringas (escolhe 2 de qualquer)',
-            description: 'Versatilidade: capacidade de se especializar em qualquer área'
+            description: 'Versatilidade: capacidade de se especializar em praticamente qualquer área'
         },
         'elfo': {
             name: 'Elfo',
-            attrs: 'FOR-1, CON-1, INT+1, VON+2, DES+2',
-            special: 'Olhos Fundidos desde nascimento',
+            fusion: 'Olhos Fundidos desde nascimento',
+            special: 'Pode usar Funções que necessitam do Id ou propriedade específica de objeto',
             skills: 'Herbalismo, Primeiros Socorros, Concentração',
-            description: 'Capacidade de manipular javatons mais facilmente pelas orelhas alongadas'
+            description: 'Orelhas alongadas facilitam manipulação de javacons'
         },
         'anao': {
             name: 'Anão',
-            attrs: 'FOR+2, CON+1, DES-1, CAR-2',
-            special: 'Músculos dos Braços Fundidos desde nascimento',
+            fusion: 'Músculos dos Braços Fundidos desde nascimento',
+            special: 'Força sobre-humana nos braços',
             skills: 'Engenharia, Mineração, Intimidação',
-            description: 'Força sobre-humana nos braços, afinidade com engenharia'
+            description: 'Afinidade natural para mecânica e construção'
         },
         'demonio': {
             name: 'Demônio',
-            attrs: 'FOR+1, CON+1, VON+1, CAR-1',
-            special: 'Fusão temporária de pernas (1x/dia)',
+            fusion: 'Fusão temporária aos músculos das pernas (1x/dia)',
+            special: 'Fuga rápida ou ataque poderoso (1x por dia)',
             skills: 'Escolhe 1: Sobrevivência, Cultura ou Percepção',
-            description: 'Pode fundir javatons às pernas temporariamente para fuga rápida ou ataque poderoso'
+            description: 'Chifres permitem fusão temporária de javacons'
         }
     },
 

@@ -837,7 +837,7 @@ const Sheet = {
                 bonusEl.innerHTML = `
                     <div class="race-bonus-card">
                         <div class="race-name"><strong>★ ${raceInfo.name}</strong></div>
-                        <div class="race-attrs"><i class="fas fa-dice-d20"></i> ${raceInfo.attrs}</div>
+                        <div class="race-fusion"><i class="fas fa-dna"></i> ${raceInfo.fusion}</div>
                         <div class="race-special"><i class="fas fa-star"></i> ${raceInfo.special}</div>
                         <div class="race-skills"><i class="fas fa-book"></i> ${raceInfo.skills}</div>
                         <div class="race-desc"><small>${raceInfo.description}</small></div>
