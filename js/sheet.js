@@ -144,10 +144,16 @@ const Sheet = {
             addItemBtn.addEventListener('click', () => this.addInventoryItem());
         }
 
-        // Add attack button
+        // Add attack button (R&S)
         const addAttackBtn = document.getElementById('addAttackBtn');
         if (addAttackBtn) {
             addAttackBtn.addEventListener('click', () => this.addAttack());
+        }
+
+        // Add attack button (D&D)
+        const addDndAttackBtn = document.getElementById('addDndAttackBtn');
+        if (addDndAttackBtn) {
+            addDndAttackBtn.addEventListener('click', () => this.addDndAttack());
         }
     },
 
@@ -222,8 +228,9 @@ const Sheet = {
         // Collect inventory
         this.collectInventory();
 
-        // Collect attacks
+        // Collect attacks (both systems)
         this.collectAttacks();
+        this.collectDndAttacks();
 
         // Update timestamp
         this.currentCharacter.updatedAt = new Date().toISOString();
@@ -273,6 +280,24 @@ const Sheet = {
         this.currentCharacter.attacks = attacks;
     },
 
+    // Collect D&D attacks
+    collectDndAttacks() {
+        const attacks = [];
+        document.querySelectorAll('#dndAttacksBody tr').forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            if (inputs.length >= 4) {
+                attacks.push({
+                    name: inputs[0].value,
+                    attackBonus: inputs[1].value,
+                    damage: inputs[2].value,
+                    range: inputs[3].value,
+                    properties: inputs[4]?.value || ''
+                });
+            }
+        });
+        this.currentCharacter.dndAttacks = attacks;
+    },
+
     // Load character data into form
     loadCharacter(character, charId = null) {
         this.currentCharacter = character;
@@ -312,8 +337,9 @@ const Sheet = {
         // Load inventory
         this.loadInventory();
 
-        // Load attacks
+        // Load attacks (both systems)
         this.loadAttacks();
+        this.loadDndAttacks();
 
         // Sync vital values to main tab
         const currentHpMain = document.getElementById('currentHpMain');
@@ -430,9 +456,56 @@ const Sheet = {
         tbody.appendChild(tr);
     },
 
-    // Add new attack
+    // Add new attack (R&S)
     addAttack() {
         this.addAttackHTML();
+    },
+
+    // Add new attack (D&D)
+    addDndAttack() {
+        this.addDndAttackHTML();
+    },
+
+    // Add D&D attack HTML
+    addDndAttackHTML(attack = {}) {
+        const tbody = document.getElementById('dndAttacksBody');
+        if (!tbody) return;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" value="${attack.name || ''}" placeholder="Espada Longa"></td>
+            <td><input type="text" value="${attack.attackBonus || ''}" placeholder="+5"></td>
+            <td><input type="text" value="${attack.damage || ''}" placeholder="1d8+3 cortante"></td>
+            <td><input type="text" value="${attack.range || ''}" placeholder="1,5m"></td>
+            <td><input type="text" value="${attack.properties || ''}" placeholder="Versátil (1d10)"></td>
+            <td><button class="btn-remove" onclick="Sheet.removeDndAttack(this)"><i class="fas fa-times"></i></button></td>
+        `;
+
+        // Bind events
+        tr.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => this.onFieldChange());
+        });
+
+        tbody.appendChild(tr);
+    },
+
+    // Remove D&D attack
+    removeDndAttack(btn) {
+        btn.closest('tr').remove();
+        this.onFieldChange();
+    },
+
+    // Load D&D attacks
+    loadDndAttacks() {
+        const tbody = document.getElementById('dndAttacksBody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+        
+        const attacks = this.currentCharacter.dndAttacks || [];
+        attacks.forEach(attack => {
+            this.addDndAttackHTML(attack);
+        });
     },
 
     // Remove attack

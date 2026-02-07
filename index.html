@@ -41,7 +41,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0d0d15">
     <title>Ficha de RPG - Draunia</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=3">
     <link rel="stylesheet" href="css/system-editor-base.css">
     <link rel="stylesheet" href="css/system-editor-forms.css">
     <link rel="stylesheet" href="css/system-editor-mobile.css">
@@ -1136,7 +1136,8 @@
                                         <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndStr', 1)"><i class="fas fa-plus"></i></button>
                                     </div>
                                     <div class="dnd-save">
-                                        <input type="checkbox" id="saveStr" data-field="saveProfStr" class="save-prof">
+                                        <input type="checkbox" id="saveStr" data-field="saveProfStr" class="save-prof" title="Proficiência em Salvaguarda">
+                                        <span class="dnd-save-label">TR</span>
                                         <span id="saveStrVal">+0</span>
                                     </div>
                                 </div>
@@ -1149,7 +1150,8 @@
                                         <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndDex', 1)"><i class="fas fa-plus"></i></button>
                                     </div>
                                     <div class="dnd-save">
-                                        <input type="checkbox" id="saveDex" data-field="saveProfDex" class="save-prof">
+                                        <input type="checkbox" id="saveDex" data-field="saveProfDex" class="save-prof" title="Proficiência em Salvaguarda">
+                                        <span class="dnd-save-label">TR</span>
                                         <span id="saveDexVal">+0</span>
                                     </div>
                                 </div>
@@ -1162,7 +1164,8 @@
                                         <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndCon', 1)"><i class="fas fa-plus"></i></button>
                                     </div>
                                     <div class="dnd-save">
-                                        <input type="checkbox" id="saveCon" data-field="saveProfCon" class="save-prof">
+                                        <input type="checkbox" id="saveCon" data-field="saveProfCon" class="save-prof" title="Proficiência em Salvaguarda">
+                                        <span class="dnd-save-label">TR</span>
                                         <span id="saveConVal">+0</span>
                                     </div>
                                 </div>
@@ -1175,7 +1178,8 @@
                                         <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndInt', 1)"><i class="fas fa-plus"></i></button>
                                     </div>
                                     <div class="dnd-save">
-                                        <input type="checkbox" id="saveInt" data-field="saveProfInt" class="save-prof">
+                                        <input type="checkbox" id="saveInt" data-field="saveProfInt" class="save-prof" title="Proficiência em Salvaguarda">
+                                        <span class="dnd-save-label">TR</span>
                                         <span id="saveIntVal">+0</span>
                                     </div>
                                 </div>
@@ -1188,7 +1192,8 @@
                                         <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndWis', 1)"><i class="fas fa-plus"></i></button>
                                     </div>
                                     <div class="dnd-save">
-                                        <input type="checkbox" id="saveWis" data-field="saveProfWis" class="save-prof">
+                                        <input type="checkbox" id="saveWis" data-field="saveProfWis" class="save-prof" title="Proficiência em Salvaguarda">
+                                        <span class="dnd-save-label">TR</span>
                                         <span id="saveWisVal">+0</span>
                                     </div>
                                 </div>
@@ -1201,7 +1206,8 @@
                                         <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndCha', 1)"><i class="fas fa-plus"></i></button>
                                     </div>
                                     <div class="dnd-save">
-                                        <input type="checkbox" id="saveCha" data-field="saveProfCha" class="save-prof">
+                                        <input type="checkbox" id="saveCha" data-field="saveProfCha" class="save-prof" title="Proficiência em Salvaguarda">
+                                        <span class="dnd-save-label">TR</span>
                                         <span id="saveChaVal">+0</span>
                                     </div>
                                 </div>
@@ -1439,8 +1445,8 @@
                         </div>
                     </div>
 
-                    <!-- Ataques -->
-                    <div class="attacks-section draggable-card" data-card-id="combat-attacks">
+                    <!-- Ataques Reals&Scripts -->
+                    <div class="attacks-section draggable-card rs-only" data-card-id="combat-attacks">
                         <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
                         <h3><i class="fas fa-crosshairs"></i> Ataques</h3>
                         <div class="attacks-table-container">
@@ -1463,6 +1469,32 @@
                                 </tbody>
                             </table>
                             <button id="addAttackBtn" class="btn-add-item">
+                                <i class="fas fa-plus"></i> Adicionar Ataque
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ataques D&D 5e -->
+                    <div class="attacks-section draggable-card dnd-only" data-card-id="combat-attacks-dnd">
+                        <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                        <h3><i class="fas fa-crosshairs"></i> Ataques e Magias</h3>
+                        <div class="attacks-table-container">
+                            <table class="attacks-table dnd-attacks-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Ataque</th>
+                                        <th>Dano/Tipo</th>
+                                        <th>Alcance</th>
+                                        <th>Propriedades</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dndAttacksBody">
+                                    <!-- Ataques D&D serão gerados por JS -->
+                                </tbody>
+                            </table>
+                            <button id="addDndAttackBtn" class="btn-add-item">
                                 <i class="fas fa-plus"></i> Adicionar Ataque
                             </button>
                         </div>
@@ -1494,7 +1526,8 @@
                         <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
                         <div class="skills-header">
                             <h2><i class="fas fa-star"></i> Perícias</h2>
-                            <div class="skill-legend">
+                            <!-- Legenda Reals&Scripts -->
+                            <div class="skill-legend rs-only">
                                 <span class="legend-item"><span class="dot untrained"></span> Sem Treino (+0)</span>
                                 <span class="legend-item"><span class="dot trained"></span> Treinada (+1)</span>
                                 <span class="legend-item"><span class="dot veteran"></span> Veterana (+3)</span>
@@ -1505,14 +1538,23 @@
                                     <input type="text" id="skillSearchInput" placeholder="Buscar...">
                                 </div>
                             </div>
+                            <!-- Legenda D&D 5e -->
+                            <div class="skill-legend dnd-only">
+                                <span class="legend-item"><input type="checkbox" disabled> Proficiente (+Bônus)</span>
+                                <span class="legend-item"><input type="checkbox" checked disabled> <input type="checkbox" checked disabled> Expertise (×2)</span>
+                                <div class="skill-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="skillSearchInputDnd" placeholder="Buscar...">
+                                </div>
+                            </div>
                         </div>
                         <div class="skills-grid" id="skillsGrid">
                             <!-- Skills serão geradas por JS -->
                         </div>
                     </div>
 
-                    <!-- Fusões -->
-                    <div class="fusions-section draggable-card" data-card-id="fusions">
+                    <!-- Fusões (Reals&Scripts only) -->
+                    <div class="fusions-section draggable-card rs-only" data-card-id="fusions">
                         <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
                         <h3><i class="fas fa-dna"></i> Fusões</h3>
                         
@@ -2815,7 +2857,7 @@
     <script src="js/calculations.js"></script>
     <script src="js/system-manager.js"></script>
     <script src="js/system-editor.js?v=2"></script>
-    <script src="js/sheet.js"></script>
+    <script src="js/sheet.js?v=2"></script>
     <script src="js/layout.js"></script>
     <script src="js/app.js"></script>
 </body>

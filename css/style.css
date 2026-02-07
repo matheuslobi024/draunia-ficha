@@ -587,34 +587,67 @@ textarea {
     min-height: 1.2rem;
 }
 
-/* Attributes */
+/* ========== ATTRIBUTES - UNIFIED DESIGN ========== */
 .attributes-compact {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .attr-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
+    background: linear-gradient(135deg, var(--bg-input) 0%, var(--bg-card) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.75rem 0.5rem;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.attr-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-primary);
+    opacity: 0.5;
+}
+
+.attr-item:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
 }
 
 .attr-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.25rem;
 }
 
 .attr-input {
-    width: 60px !important;
+    width: 48px !important;
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.1rem;
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-primary);
 }
 
-/* D&D Attributes */
+.attr-input:focus {
+    outline: none;
+}
+
+/* D&D Visibility Toggles */
 .dnd-only { display: none; }
 .rs-only { display: block; }
 body.system-dnd .dnd-only { display: block; }
@@ -624,9 +657,16 @@ body.system-dnd #racesDnd { display: block; }
 body:not(.system-dnd) #racesRealsscripts { display: block; }
 body:not(.system-dnd) #racesDnd { display: none; }
 
+/* Flex elements visibility */
+.skill-legend.rs-only { display: flex; }
+.skill-legend.dnd-only { display: none; }
+body.system-dnd .skill-legend.dnd-only { display: flex; }
+body.system-dnd .skill-legend.rs-only { display: none; }
+
+/* ========== D&D ATTRIBUTES - ENHANCED DESIGN ========== */
 .dnd-attributes-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
 }
 
@@ -634,64 +674,124 @@ body:not(.system-dnd) #racesDnd { display: none; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 0.5rem;
+    background: linear-gradient(145deg, var(--bg-input) 0%, rgba(108, 92, 231, 0.05) 100%);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1rem 0.75rem;
     text-align: center;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.dnd-attr-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+    border-radius: 0 0 4px 4px;
+}
+
+.dnd-attr-item:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.25);
 }
 
 .dnd-attr-name {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: var(--accent-secondary);
     text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
 }
 
 .dnd-attr-mod {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 800;
     color: var(--text-primary);
-    margin: 0.25rem 0;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
+
+.dnd-attr-mod.positive { color: var(--success); }
+.dnd-attr-mod.negative { color: var(--danger); }
 
 .dnd-attr-score {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.35rem;
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 0.35rem;
+    border: 1px solid var(--border-color);
 }
 
 .dnd-score-input {
-    width: 45px !important;
+    width: 42px !important;
     text-align: center;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 1rem;
     padding: 0.25rem !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-primary);
+}
+
+.dnd-score-input:focus {
+    outline: none;
 }
 
 .btn-attr-small {
-    width: 20px !important;
-    height: 20px !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
     padding: 0 !important;
     font-size: 0.7rem !important;
+    border-radius: 6px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .dnd-save {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    margin-top: 0.25rem;
-    font-size: 0.75rem;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    background: rgba(46, 204, 113, 0.1);
+    border-radius: 6px;
+    font-size: 0.8rem;
     color: var(--text-secondary);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.dnd-save:has(.save-prof:checked) {
+    background: rgba(46, 204, 113, 0.2);
+    border-color: var(--success);
 }
 
 .dnd-save .save-prof {
-    width: 14px;
-    height: 14px;
-    accent-color: var(--accent-primary);
+    width: 16px;
+    height: 16px;
+    accent-color: var(--success);
+    cursor: pointer;
 }
 
-/* D&D Skills Grid */
+.dnd-save-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ========== D&D SKILLS ENHANCED ========== */
 .dnd-skills-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -702,22 +802,31 @@ body:not(.system-dnd) #racesDnd { display: none; }
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.6rem 0.75rem;
     background: var(--bg-input);
-    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.dnd-skill-item:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-primary);
 }
 
 .dnd-skill-item .skill-prof {
     width: 16px;
     height: 16px;
     accent-color: var(--accent-primary);
+    cursor: pointer;
 }
 
 .dnd-skill-item .skill-expertise {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     accent-color: var(--accent-gold);
+    cursor: pointer;
 }
 
 .dnd-skill-item .skill-name {
@@ -1265,6 +1374,34 @@ input.vital-single {
     transform: scale(1.05);
 }
 
+/* D&D Attacks Table - Simpler Layout */
+.dnd-attacks-table th:first-child,
+.dnd-attacks-table td:first-child {
+    width: 25%;
+}
+
+.dnd-attacks-table th:nth-child(2),
+.dnd-attacks-table td:nth-child(2) {
+    width: 12%;
+    text-align: center;
+}
+
+.dnd-attacks-table th:nth-child(3),
+.dnd-attacks-table td:nth-child(3) {
+    width: 20%;
+}
+
+.dnd-attacks-table th:nth-child(4),
+.dnd-attacks-table td:nth-child(4) {
+    width: 15%;
+    text-align: center;
+}
+
+.dnd-attacks-table th:nth-child(5),
+.dnd-attacks-table td:nth-child(5) {
+    width: 23%;
+}
+
 /* Next Turn Button */
 .btn-next-turn {
     background: var(--accent-gold) !important;
@@ -1804,17 +1941,98 @@ input.vital-single {
     /* Attributes Mobile */
     .attributes-compact {
         grid-template-columns: repeat(3, 1fr);
-        gap: 0.4rem;
+        gap: 0.5rem;
+    }
+    
+    .attr-item {
+        padding: 0.6rem 0.4rem;
+        border-radius: 10px;
+    }
+    
+    .attr-item::before {
+        height: 2px;
     }
     
     .attr-input {
-        width: 50px !important;
-        padding: 0.4rem;
+        width: 42px !important;
         font-size: 1rem;
     }
     
     .attr-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .attr-controls {
+        padding: 0.15rem 0.25rem;
+    }
+    
+    .attr-controls .btn-attr {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+    }
+    
+    /* D&D Attributes Mobile */
+    .dnd-attributes-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .dnd-attr-item {
+        padding: 0.75rem 0.5rem;
+        border-radius: 12px;
+    }
+    
+    .dnd-attr-item::before {
+        width: 40px;
+        height: 3px;
+    }
+    
+    .dnd-attr-name {
         font-size: 0.7rem;
+        letter-spacing: 1px;
+    }
+    
+    .dnd-attr-mod {
+        font-size: 1.5rem;
+    }
+    
+    .dnd-attr-score {
+        padding: 0.25rem;
+    }
+    
+    .dnd-score-input {
+        width: 36px !important;
+        font-size: 0.9rem;
+    }
+    
+    .btn-attr-small {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        font-size: 0.65rem !important;
+    }
+    
+    .dnd-save {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.75rem;
+    }
+    
+    .dnd-save .save-prof {
+        width: 14px;
+        height: 14px;
+    }
+    
+    /* D&D Skills Mobile */
+    .dnd-skills-grid {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+    }
+    
+    .dnd-skill-item {
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
     }
     
     /* Vitals Compact Mobile */
@@ -2233,8 +2451,87 @@ input.vital-single {
         height: 100px;
     }
     
+    /* R&S Attributes Extra Small */
     .attributes-compact {
         grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+    }
+    
+    .attr-item {
+        padding: 0.5rem 0.3rem;
+        border-radius: 8px;
+    }
+    
+    .attr-label {
+        font-size: 0.6rem;
+    }
+    
+    .attr-input {
+        width: 38px !important;
+        font-size: 0.9rem;
+    }
+    
+    .attr-controls .btn-attr {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        font-size: 0.6rem !important;
+    }
+    
+    /* D&D Attributes Extra Small */
+    .dnd-attributes-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.4rem;
+    }
+    
+    .dnd-attr-item {
+        padding: 0.6rem 0.4rem;
+        border-radius: 10px;
+        border-width: 1px;
+    }
+    
+    .dnd-attr-item::before {
+        width: 30px;
+        height: 2px;
+    }
+    
+    .dnd-attr-name {
+        font-size: 0.6rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .dnd-attr-mod {
+        font-size: 1.3rem;
+        margin-bottom: 0.35rem;
+    }
+    
+    .dnd-attr-score {
+        padding: 0.2rem;
+        border-radius: 6px;
+    }
+    
+    .dnd-score-input {
+        width: 32px !important;
+        font-size: 0.8rem;
+    }
+    
+    .btn-attr-small {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        font-size: 0.6rem !important;
+        border-radius: 4px !important;
+    }
+    
+    .dnd-save {
+        padding: 0.2rem 0.3rem;
+        font-size: 0.7rem;
+        margin-top: 0.35rem;
+    }
+    
+    .dnd-save .save-prof {
+        width: 12px;
+        height: 12px;
     }
     
     /* Combat extra compact for very small devices */
