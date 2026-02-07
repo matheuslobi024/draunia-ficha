@@ -265,6 +265,14 @@ const SystemEditor = {
                 document.getElementById('sysInitCustom')?.classList.toggle('hidden', initFormula.value !== 'custom');
             });
         }
+        
+        // PA formula change
+        const paFormula = document.getElementById('sysPAFormula');
+        if (paFormula) {
+            paFormula.addEventListener('change', () => {
+                document.getElementById('sysPACustom')?.classList.toggle('hidden', paFormula.value !== 'custom');
+            });
+        }
     },
     
     // Bind icon picker
@@ -590,6 +598,13 @@ const SystemEditor = {
         
         const initFormula = document.getElementById('sysInitFormula')?.value;
         document.getElementById('sysInitCustom')?.classList.toggle('hidden', initFormula !== 'custom');
+        
+        // Resource custom formula sections
+        const peFormula = document.getElementById('sysPEFormula')?.value;
+        document.getElementById('sysPECustom')?.classList.toggle('hidden', peFormula !== 'custom');
+        
+        const paFormula = document.getElementById('sysPAFormula')?.value;
+        document.getElementById('sysPACustom')?.classList.toggle('hidden', paFormula !== 'custom');
     },
     
     // Update overview panel
@@ -651,8 +666,8 @@ const SystemEditor = {
                     </select>
                 </td>
                 <td><input type="text" value="${cls.primaryAttr || ''}" data-field="primaryAttr"></td>
-                <td>
-                    <label class="sys-toggle" style="margin:0;">
+                <td style="text-align:center;">
+                    <label class="sys-toggle-mini">
                         <input type="checkbox" ${cls.spellcaster ? 'checked' : ''} data-field="spellcaster">
                         <span class="slider"></span>
                     </label>
@@ -753,8 +768,8 @@ const SystemEditor = {
             <tr data-index="${i}">
                 <td><input type="text" value="${skill.name || ''}" data-field="name"></td>
                 <td><input type="text" value="${skill.attr || ''}" data-field="attr" placeholder="FOR, DES..."></td>
-                <td>
-                    <label class="sys-toggle" style="margin:0;">
+                <td style="text-align:center;">
+                    <label class="sys-toggle-mini">
                         <input type="checkbox" ${skill.armorPenalty ? 'checked' : ''} data-field="armorPenalty">
                         <span class="slider"></span>
                     </label>

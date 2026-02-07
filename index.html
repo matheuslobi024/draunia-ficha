@@ -1989,6 +1989,64 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Formula Reference -->
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-info-circle"></i> Referência de Variáveis para Fórmulas</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                                Clique em uma variável para ver sua descrição. Use estas em fórmulas personalizadas.
+                            </p>
+                            <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px;">
+                                <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Atributos Base:</strong>
+                                <span class="sys-formula-var" title="Força">for</span>
+                                <span class="sys-formula-var" title="Constituição">con</span>
+                                <span class="sys-formula-var" title="Vontade (R&S)">von</span>
+                                <span class="sys-formula-var" title="Carisma">car / cha</span>
+                                <span class="sys-formula-var" title="Inteligência">int</span>
+                                <span class="sys-formula-var" title="Agilidade (R&S)">agi</span>
+                                <span class="sys-formula-var" title="Destreza (D&D)">des / dex</span>
+                                <span class="sys-formula-var" title="Sabedoria (D&D)">sab / wis</span>
+                            </div>
+                            <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
+                                <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Modificadores:</strong>
+                                <span class="sys-formula-var" title="Modificador de Força">forMod</span>
+                                <span class="sys-formula-var" title="Modificador de Constituição">conMod</span>
+                                <span class="sys-formula-var" title="Modificador de Vontade">vonMod</span>
+                                <span class="sys-formula-var" title="Modificador de Carisma">chaMod</span>
+                                <span class="sys-formula-var" title="Modificador de Inteligência">intMod</span>
+                                <span class="sys-formula-var" title="Modificador de Agilidade">agiMod</span>
+                                <span class="sys-formula-var" title="Modificador de Destreza">desMod / dexMod</span>
+                                <span class="sys-formula-var" title="Modificador de Sabedoria">sabMod / wisMod</span>
+                            </div>
+                            <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
+                                <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Personagem:</strong>
+                                <span class="sys-formula-var" title="Nível do personagem">level</span>
+                                <span class="sys-formula-var" title="Bônus de proficiência">profBonus</span>
+                                <span class="sys-formula-var" title="Dado de vida da classe">hitDie</span>
+                                <span class="sys-formula-var" title="HP máximo">maxHP</span>
+                                <span class="sys-formula-var" title="PE máximo">maxPE</span>
+                            </div>
+                            <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
+                                <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Fusões (Reals&Scripts):</strong>
+                                <span class="sys-formula-var" title="Nível de fusão do coração">fusaoCoracao</span>
+                                <span class="sys-formula-var" title="Nível de fusão do cérebro">fusaoCerebro</span>
+                                <span class="sys-formula-var" title="Nível de fusão dos olhos">fusaoOlhos</span>
+                                <span class="sys-formula-var" title="Nível de fusão do braço">fusaoBraco</span>
+                                <span class="sys-formula-var" title="Nível de fusão do osso">fusaoOsso</span>
+                                <span class="sys-formula-var" title="Nível de fusão do músculo">fusaoMusculo</span>
+                                <span class="sys-formula-var" title="Nível de fusão da perna">fusaoPerna</span>
+                            </div>
+                            <div class="sys-formula-vars" style="background: var(--bg-main); padding: 1rem; border-radius: 6px; margin-top: 0.5rem;">
+                                <strong style="width: 100%; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Combate:</strong>
+                                <span class="sys-formula-var" title="Classe de Armadura base">baseAC</span>
+                                <span class="sys-formula-var" title="Classe de Armadura total">ca / ac</span>
+                                <span class="sys-formula-var" title="Bônus de armadura">armorBonus</span>
+                                <span class="sys-formula-var" title="Bônus de escudo">shieldBonus</span>
+                                <span class="sys-formula-var" title="Bônus de esquiva">dodgeBonus</span>
+                                <span class="sys-formula-var" title="Bônus de reflexos">reflexos</span>
+                                <span class="sys-formula-var" title="Bônus de perícia">skillBonus</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -2029,11 +2087,14 @@
                                     <div class="sys-formula-builder">
                                         <input type="text" id="sysHpCustomFormula" class="sys-formula-input" placeholder="Ex: (level * 10) + (con * 2)">
                                         <div class="sys-formula-vars">
-                                            <span class="sys-formula-var">level</span>
-                                            <span class="sys-formula-var">con</span>
-                                            <span class="sys-formula-var">for</span>
-                                            <span class="sys-formula-var">hitDie</span>
-                                            <span class="sys-formula-var">conMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysHpCustomFormula', 'level')">level</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysHpCustomFormula', 'hitDie')">hitDie</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysHpCustomFormula', 'con')">con</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysHpCustomFormula', 'conMod')">conMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysHpCustomFormula', 'for')">for</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysHpCustomFormula', 'forMod')">forMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysHpCustomFormula', 'fusaoCoracao')">fusaoCoracao</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysHpCustomFormula', 'profBonus')">profBonus</span>
                                         </div>
                                     </div>
                                 </div>
@@ -2089,11 +2150,16 @@
                                         <div class="sys-formula-builder">
                                             <input type="text" id="sysPECustomFormula" class="sys-formula-input" placeholder="Ex: (level * 5) + (int * 2)">
                                             <div class="sys-formula-vars">
-                                                <span class="sys-formula-var">level</span>
-                                                <span class="sys-formula-var">int</span>
-                                                <span class="sys-formula-var">wis</span>
-                                                <span class="sys-formula-var">cha</span>
-                                                <span class="sys-formula-var">von</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'level')">level</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'int')">int</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'intMod')">intMod</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'wis')">wis</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'wisMod')">wisMod</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'von')">von</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'vonMod')">vonMod</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'cha')">cha</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'chaMod')">chaMod</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPECustomFormula', 'fusaoCerebro')">fusaoCerebro</span>
                                             </div>
                                         </div>
                                     </div>
@@ -2176,6 +2242,20 @@
                                                 <option value="attr">Baseado em Atributo</option>
                                                 <option value="custom">Personalizado</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="sysPACustom" class="hidden">
+                                        <div class="sys-formula-builder">
+                                            <input type="text" id="sysPACustomFormula" class="sys-formula-input" placeholder="Ex: agiMod + level + 4">
+                                            <div class="sys-formula-vars">
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPACustomFormula', 'agiMod')">agiMod</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPACustomFormula', 'desMod')">desMod</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPACustomFormula', 'level')">level</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPACustomFormula', 'profBonus')">profBonus</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPACustomFormula', '4')">4</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysPACustomFormula', '3')">3</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2420,11 +2500,14 @@
                                     <div class="sys-formula-builder">
                                         <input type="text" id="sysCACustomFormula" class="sys-formula-input" placeholder="Ex: 10 + desMod + armorBonus">
                                         <div class="sys-formula-vars">
-                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'baseAC')">baseAC</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', '10')">10</span>
                                             <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'desMod')">desMod</span>
                                             <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'agiMod')">agiMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'conMod')">conMod</span>
                                             <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'armorBonus')">armorBonus</span>
                                             <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'shieldBonus')">shieldBonus</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'level')">level</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCACustomFormula', 'profBonus')">profBonus</span>
                                         </div>
                                     </div>
                                 </div>
@@ -2461,7 +2544,12 @@
                                                 <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'reflexos')">reflexos</span>
                                                 <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'desMod')">desMod</span>
                                                 <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'agiMod')">agiMod</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', '10')">10</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'level')">level</span>
+                                                <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysDodgeCustomFormula', 'armorBonus')">armorBonus</span>
                                             </div>
+                                        </div>
+                                    </div>
                                         </div>
                                     </div>
                                 </div>
@@ -2488,8 +2576,10 @@
                                         <div class="sys-formula-vars">
                                             <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'desMod')">desMod</span>
                                             <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'agiMod')">agiMod</span>
-                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'nivel')">nivel</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'intMod')">intMod</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'level')">level</span>
                                             <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'profBonus')">profBonus</span>
+                                            <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysInitCustomFormula', 'skillBonus')">skillBonus</span>
                                         </div>
                                     </div>
                                 </div>
