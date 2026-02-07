@@ -71,8 +71,10 @@ const SystemManager = {
     
     // Initialize system manager
     async init() {
+        console.log('[SystemManager] init() chamado');
         await this.loadCustomSystems();
         this.bindEditorEvents();
+        console.log('[SystemManager] Inicialização completa');
     },
     
     // Load custom systems from Firebase
@@ -192,9 +194,17 @@ const SystemManager = {
     
     // Show systems manager modal
     showManager() {
+        console.log('[SystemManager] showManager() chamado');
         this.renderSystemsList();
         document.getElementById('characterModal').classList.add('hidden');
-        document.getElementById('systemsManagerModal').classList.remove('hidden');
+        const managerModal = document.getElementById('systemsManagerModal');
+        console.log('[SystemManager] systemsManagerModal encontrado:', managerModal);
+        if (managerModal) {
+            managerModal.classList.remove('hidden');
+            console.log('[SystemManager] Manager modal aberto');
+        } else {
+            console.error('[SystemManager] systemsManagerModal NÃO encontrado!');
+        }
     },
     
     // Close systems manager
@@ -299,13 +309,21 @@ const SystemManager = {
     
     // Create new system
     createNew() {
+        console.log('[SystemManager] createNew() chamado');
         this.currentEditingSystem = null;
         this.resetEditorForm();
         document.getElementById('systemEditorTitle').textContent = 'Criar Novo Sistema';
         document.getElementById('deleteSystemBtn').classList.add('hidden');
         document.getElementById('systemsManagerModal').classList.add('hidden');
         document.getElementById('systemSelectModal').classList.add('hidden');
-        document.getElementById('systemEditorModal').classList.remove('hidden');
+        const editorModal = document.getElementById('systemEditorModal');
+        console.log('[SystemManager] systemEditorModal encontrado:', editorModal);
+        if (editorModal) {
+            editorModal.classList.remove('hidden');
+            console.log('[SystemManager] Modal aberto com sucesso');
+        } else {
+            console.error('[SystemManager] Modal systemEditorModal NÃO encontrado!');
+        }
     },
     
     // Edit existing system
@@ -519,8 +537,13 @@ const SystemManager = {
     
     // Save system
     async saveSystem() {
+        console.log('[SystemManager] saveSystem() chamado');
         const systemData = this.collectEditorData();
-        if (!systemData) return;
+        console.log('[SystemManager] Dados coletados:', systemData);
+        if (!systemData) {
+            console.log('[SystemManager] Dados inválidos, retornando');
+            return;
+        }
         
         try {
             let systemId;
@@ -534,8 +557,10 @@ const SystemManager = {
                 systemData.id = systemId;
             }
             
+            console.log('[SystemManager] Salvando sistema:', systemId);
             // Save to Firebase
             await API.saveCustomSystem(systemId, systemData);
+            console.log('[SystemManager] Sistema salvo no Firebase');
             
             // Update local cache
             this.customSystems[systemId] = systemData;
