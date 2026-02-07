@@ -299,6 +299,9 @@ const App = {
         const system = SystemManager.getSystem(systemId);
         const config = system.config || {};
         
+        // Tell Sheet module which system is active
+        Sheet.setSystem(systemId);
+        
         // Hide/show elements based on system
         document.querySelectorAll('.system-realsscripts').forEach(el => {
             el.classList.toggle('hidden', systemId !== 'realsscripts' && config.attrType !== 'realsscripts');
@@ -314,6 +317,16 @@ const App = {
             if (el.closest('.vital-box')) {
                 el.closest('.vital-box').classList.toggle('hidden', !config.hasActionPoints);
             }
+        });
+        
+        // Show/hide Sanity section based on system
+        document.querySelectorAll('.san-compact, .sanity-section').forEach(el => {
+            el.classList.toggle('hidden', !config.hasSanity);
+        });
+        
+        // Show/hide PE section based on system  
+        document.querySelectorAll('.pe-compact, .pe-section').forEach(el => {
+            el.classList.toggle('hidden', !config.hasEnergyPoints);
         });
         
         // Show/hide Fusions section

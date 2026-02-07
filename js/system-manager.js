@@ -386,52 +386,38 @@ const SystemManager = {
         `;
     },
     
-    // Create new system
+    // Create new system - uses full-screen SystemEditor
     createNew() {
-        console.log('[SystemManager] createNew() chamado');
-        this.currentEditingSystem = null;
-        this.resetEditorForm();
-        document.getElementById('systemEditorTitle').textContent = 'Criar Novo Sistema';
-        document.getElementById('deleteSystemBtn').classList.add('hidden');
+        console.log('[SystemManager] createNew() chamado - abrindo SystemEditor');
         document.getElementById('systemsManagerModal').classList.add('hidden');
         document.getElementById('systemSelectModal').classList.add('hidden');
-        const editorModal = document.getElementById('systemEditorModal');
-        console.log('[SystemManager] systemEditorModal encontrado:', editorModal);
-        if (editorModal) {
-            editorModal.classList.remove('hidden');
-            console.log('[SystemManager] Modal aberto com sucesso');
+        if (typeof SystemEditor !== 'undefined') {
+            SystemEditor.createNew();
         } else {
-            console.error('[SystemManager] Modal systemEditorModal NÃO encontrado!');
+            console.error('[SystemManager] SystemEditor não encontrado!');
         }
     },
     
-    // Edit existing system
+    // Edit existing system - uses full-screen SystemEditor
     editSystem(systemId) {
-        const system = this.customSystems[systemId];
-        if (!system) return;
-        
-        this.currentEditingSystem = systemId;
-        this.loadSystemIntoEditor(system);
-        document.getElementById('systemEditorTitle').textContent = 'Editar Sistema';
-        document.getElementById('deleteSystemBtn').classList.remove('hidden');
+        console.log('[SystemManager] editSystem() chamado - abrindo SystemEditor para:', systemId);
         document.getElementById('systemsManagerModal').classList.add('hidden');
-        document.getElementById('systemEditorModal').classList.remove('hidden');
+        if (typeof SystemEditor !== 'undefined') {
+            SystemEditor.editSystem(systemId);
+        } else {
+            console.error('[SystemManager] SystemEditor não encontrado!');
+        }
     },
     
-    // View built-in system (read-only)
+    // View built-in system (read-only) - uses full-screen SystemEditor
     viewSystem(systemId) {
-        const system = this.defaultSystems[systemId];
-        if (!system) return;
-        
-        this.currentEditingSystem = null;
-        this.loadSystemIntoEditor(system);
-        document.getElementById('systemEditorTitle').textContent = `Visualizar: ${system.name}`;
-        document.getElementById('deleteSystemBtn').classList.add('hidden');
+        console.log('[SystemManager] viewSystem() chamado - abrindo SystemEditor para:', systemId);
         document.getElementById('systemsManagerModal').classList.add('hidden');
-        document.getElementById('systemEditorModal').classList.remove('hidden');
-        
-        // Disable all inputs for viewing
-        this.setEditorReadOnly(true);
+        if (typeof SystemEditor !== 'undefined') {
+            SystemEditor.viewSystem(systemId);
+        } else {
+            console.error('[SystemManager] SystemEditor não encontrado!');
+        }
     },
     
     // Set editor to read-only mode

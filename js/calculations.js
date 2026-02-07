@@ -94,6 +94,65 @@ const Calculations = {
         'plate': { type: 'heavy', baseAC: 18, maxDex: 0, stealthDisadvantage: true }
     },
     
+    // D&D 5e Races with ability score bonuses
+    DND_RACES: {
+        'human': { name: 'Humano', bonuses: { all: 1 }, traits: ['Versátil', '+1 em todos os atributos'] },
+        'humanVariant': { name: 'Humano (Variante)', bonuses: { choice1: 1, choice2: 1 }, traits: ['Talento extra', '+1 em dois atributos à escolha'] },
+        'elf-high': { name: 'Elfo (Alto)', bonuses: { DEX: 2, INT: 1 }, traits: ['Visão no Escuro', 'Transe', 'Sentidos Aguçados', 'Cantrip'] },
+        'elf-wood': { name: 'Elfo (da Floresta)', bonuses: { DEX: 2, WIS: 1 }, traits: ['Visão no Escuro', 'Transe', 'Pés Ligeiros', 'Máscara da Natureza'] },
+        'elf-dark': { name: 'Elfo (Drow)', bonuses: { DEX: 2, CHA: 1 }, traits: ['Visão no Escuro Superior', 'Sensibilidade à Luz', 'Magia Drow'] },
+        'dwarf-hill': { name: 'Anão (Colina)', bonuses: { CON: 2, WIS: 1 }, traits: ['Visão no Escuro', 'Resistência Anã', 'HP Extra'] },
+        'dwarf-mountain': { name: 'Anão (Montanha)', bonuses: { CON: 2, STR: 2 }, traits: ['Visão no Escuro', 'Resistência Anã', 'Armadura Anã'] },
+        'halfling-lightfoot': { name: 'Halfling (Pés-Leves)', bonuses: { DEX: 2, CHA: 1 }, traits: ['Sorte', 'Corajoso', 'Furtividade Natural'] },
+        'halfling-stout': { name: 'Halfling (Robusto)', bonuses: { DEX: 2, CON: 1 }, traits: ['Sorte', 'Corajoso', 'Resiliência'] },
+        'dragonborn': { name: 'Draconato', bonuses: { STR: 2, CHA: 1 }, traits: ['Ancestralidade Dracônica', 'Sopro de Dragão', 'Resistência a Dano'] },
+        'gnome-forest': { name: 'Gnomo (Floresta)', bonuses: { INT: 2, DEX: 1 }, traits: ['Visão no Escuro', 'Esperteza Gnômica', 'Ilusionista Nato'] },
+        'gnome-rock': { name: 'Gnomo (Rocha)', bonuses: { INT: 2, CON: 1 }, traits: ['Visão no Escuro', 'Esperteza Gnômica', 'Conhecimento de Artífice'] },
+        'half-elf': { name: 'Meio-Elfo', bonuses: { CHA: 2, choice1: 1, choice2: 1 }, traits: ['Visão no Escuro', 'Versatilidade de Perícias', 'Ancestralidade Feérica'] },
+        'half-orc': { name: 'Meio-Orc', bonuses: { STR: 2, CON: 1 }, traits: ['Visão no Escuro', 'Fúria Selvagem', 'Ataques Selvagens'] },
+        'tiefling': { name: 'Tiefling', bonuses: { CHA: 2, INT: 1 }, traits: ['Visão no Escuro', 'Resistência Infernal', 'Legado Infernal'] },
+        'aasimar': { name: 'Aasimar', bonuses: { CHA: 2, WIS: 1 }, traits: ['Visão no Escuro', 'Resistência Celestial', 'Cura Mágica'] },
+        'goliath': { name: 'Golias', bonuses: { STR: 2, CON: 1 }, traits: ['Resistência Natural', 'Nascido nas Montanhas', 'Constituição Poderosa'] },
+        'tabaxi': { name: 'Tabaxi', bonuses: { DEX: 2, CHA: 1 }, traits: ['Visão no Escuro', 'Garras de Gato', 'Agilidade Felina'] },
+        'kenku': { name: 'Kenku', bonuses: { DEX: 2, WIS: 1 }, traits: ['Mimetismo', 'Falsificador Experto', 'Treinamento Kenku'] },
+        'firbolg': { name: 'Firbolg', bonuses: { WIS: 2, STR: 1 }, traits: ['Magia Firbolg', 'Fala das Feras e Folhas', 'Aparência Oculta'] },
+        'tortle': { name: 'Tortle', bonuses: { STR: 2, WIS: 1 }, traits: ['Armadura Natural', 'Garras', 'Prender Respiração', 'Defesa do Casco'] },
+        'aarakocra': { name: 'Aarakocra', bonuses: { DEX: 2, WIS: 1 }, traits: ['Voo', 'Talons'] },
+        'genasi-air': { name: 'Genasi (Ar)', bonuses: { CON: 2, DEX: 1 }, traits: ['Prender Respiração Infinito', 'Mesclar-se ao Vento'] },
+        'genasi-earth': { name: 'Genasi (Terra)', bonuses: { CON: 2, STR: 1 }, traits: ['Caminhar sobre Terra', 'Mesclar-se à Pedra'] },
+        'genasi-fire': { name: 'Genasi (Fogo)', bonuses: { CON: 2, INT: 1 }, traits: ['Visão no Escuro', 'Resistência ao Fogo', 'Alcance das Chamas'] },
+        'genasi-water': { name: 'Genasi (Água)', bonuses: { CON: 2, WIS: 1 }, traits: ['Respiração Anfíbia', 'Nadar', 'Chamar às Ondas'] },
+        'warforged': { name: 'Forjados', bonuses: { CON: 2, choice: 1 }, traits: ['Construção Viva', 'Armadura Integrada', 'Modo Sentinela'] }
+    },
+    
+    // D&D 5e Classes with full details
+    DND_CLASSES: {
+        'barbarian': { name: 'Bárbaro', hitDie: 12, primaryAttr: 'STR', savingThrows: ['STR', 'CON'], spellcaster: false },
+        'bard': { name: 'Bardo', hitDie: 8, primaryAttr: 'CHA', savingThrows: ['DEX', 'CHA'], spellcaster: true, spellAttr: 'CHA' },
+        'cleric': { name: 'Clérigo', hitDie: 8, primaryAttr: 'WIS', savingThrows: ['WIS', 'CHA'], spellcaster: true, spellAttr: 'WIS' },
+        'druid': { name: 'Druida', hitDie: 8, primaryAttr: 'WIS', savingThrows: ['INT', 'WIS'], spellcaster: true, spellAttr: 'WIS' },
+        'fighter': { name: 'Guerreiro', hitDie: 10, primaryAttr: 'STR', savingThrows: ['STR', 'CON'], spellcaster: false },
+        'monk': { name: 'Monge', hitDie: 8, primaryAttr: 'DEX', savingThrows: ['STR', 'DEX'], spellcaster: false },
+        'paladin': { name: 'Paladino', hitDie: 10, primaryAttr: 'STR', savingThrows: ['WIS', 'CHA'], spellcaster: true, spellAttr: 'CHA' },
+        'ranger': { name: 'Patrulheiro', hitDie: 10, primaryAttr: 'DEX', savingThrows: ['STR', 'DEX'], spellcaster: true, spellAttr: 'WIS' },
+        'rogue': { name: 'Ladino', hitDie: 8, primaryAttr: 'DEX', savingThrows: ['DEX', 'INT'], spellcaster: false },
+        'sorcerer': { name: 'Feiticeiro', hitDie: 6, primaryAttr: 'CHA', savingThrows: ['CON', 'CHA'], spellcaster: true, spellAttr: 'CHA' },
+        'warlock': { name: 'Bruxo', hitDie: 8, primaryAttr: 'CHA', savingThrows: ['WIS', 'CHA'], spellcaster: true, spellAttr: 'CHA' },
+        'wizard': { name: 'Mago', hitDie: 6, primaryAttr: 'INT', savingThrows: ['INT', 'WIS'], spellcaster: true, spellAttr: 'INT' },
+        'artificer': { name: 'Artífice', hitDie: 8, primaryAttr: 'INT', savingThrows: ['CON', 'INT'], spellcaster: true, spellAttr: 'INT' },
+        'blood-hunter': { name: 'Caçador de Sangue', hitDie: 10, primaryAttr: 'STR', savingThrows: ['DEX', 'INT'], spellcaster: false }
+    },
+    
+    // D&D 5e Attributes
+    DND_ATTRIBUTES: [
+        { id: 'dndStr', name: 'FOR', fullName: 'Força', description: 'Força física, capacidade atlética' },
+        { id: 'dndDex', name: 'DES', fullName: 'Destreza', description: 'Agilidade, reflexos, equilíbrio' },
+        { id: 'dndCon', name: 'CON', fullName: 'Constituição', description: 'Saúde, vigor, resistência' },
+        { id: 'dndInt', name: 'INT', fullName: 'Inteligência', description: 'Raciocínio, memória, conhecimento' },
+        { id: 'dndWis', name: 'SAB', fullName: 'Sabedoria', description: 'Percepção, intuição, perspicácia' },
+        { id: 'dndCha', name: 'CAR', fullName: 'Carisma', description: 'Força de personalidade, liderança' }
+    ],
+    
     // D&D 5e Spellcasting Ability by Class
     DND_SPELLCASTING_ABILITY: {
         'bard': 'CHA',
@@ -550,6 +609,25 @@ const Calculations = {
         });
         
         return trained.sort((a, b) => b.total - a.total);
+    },
+
+    // Get all proficient D&D skills
+    getDndProficientSkills(charData) {
+        const proficient = [];
+        const proficiencies = charData.dndSkillProficiencies || {};
+        
+        this.DND_SKILLS.forEach(skill => {
+            const level = proficiencies[skill.id] || 0; // 0 = none, 1 = proficient, 2 = expertise
+            if (level > 0) {
+                proficient.push({
+                    ...skill,
+                    proficiency: level,
+                    total: this.calculateDndSkillTotal(charData, skill.id)
+                });
+            }
+        });
+        
+        return proficient.sort((a, b) => b.total - a.total);
     },
 
     // Update all calculated fields

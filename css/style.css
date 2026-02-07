@@ -614,6 +614,130 @@ textarea {
     font-size: 1.1rem;
 }
 
+/* D&D Attributes */
+.dnd-only { display: none; }
+.rs-only { display: block; }
+body.system-dnd .dnd-only { display: block; }
+body.system-dnd .rs-only { display: none; }
+body.system-dnd #racesRealsscripts { display: none; }
+body.system-dnd #racesDnd { display: block; }
+body:not(.system-dnd) #racesRealsscripts { display: block; }
+body:not(.system-dnd) #racesDnd { display: none; }
+
+.dnd-attributes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.dnd-attr-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.dnd-attr-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-secondary);
+    text-transform: uppercase;
+}
+
+.dnd-attr-mod {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0.25rem 0;
+}
+
+.dnd-attr-score {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.dnd-score-input {
+    width: 45px !important;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.25rem !important;
+}
+
+.btn-attr-small {
+    width: 20px !important;
+    height: 20px !important;
+    padding: 0 !important;
+    font-size: 0.7rem !important;
+}
+
+.dnd-save {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.dnd-save .save-prof {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--accent-primary);
+}
+
+/* D&D Skills Grid */
+.dnd-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.dnd-skill-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: var(--bg-input);
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.dnd-skill-item .skill-prof {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent-primary);
+}
+
+.dnd-skill-item .skill-expertise {
+    width: 12px;
+    height: 12px;
+    accent-color: var(--accent-gold);
+}
+
+.dnd-skill-item .skill-name {
+    flex: 1;
+    color: var(--text-primary);
+}
+
+.dnd-skill-item .skill-attr {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.dnd-skill-item .skill-total {
+    font-weight: 600;
+    color: var(--accent-secondary);
+    min-width: 25px;
+    text-align: right;
+}
+
 /* Trained Skills */
 .trained-skills-list {
     max-height: 200px;

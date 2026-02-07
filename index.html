@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#0d0d15">
     <title>Ficha de RPG - Draunia</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/system-editor.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDKs -->
@@ -918,11 +919,47 @@
                                 <div class="form-group">
                                     <label>Raça</label>
                                     <select id="charRace" data-field="charRace">
-                                        <option value="">Selecione...</option>
-                                        <option value="humano">Humano</option>
-                                        <option value="elfo">Elfo</option>
-                                        <option value="anao">Anão</option>
-                                        <option value="demonio">Demônio</option>
+                                        <!-- Reals&Scripts Races -->
+                                        <optgroup label="Reals&Scripts" id="racesRealsscripts">
+                                            <option value="">Selecione...</option>
+                                            <option value="humano">Humano</option>
+                                            <option value="elfo">Elfo</option>
+                                            <option value="anao">Anão</option>
+                                            <option value="demonio">Demônio</option>
+                                            <option value="angel">Anjo</option>
+                                            <option value="hibrido">Híbrido</option>
+                                            <option value="construto">Construto</option>
+                                        </optgroup>
+                                        <!-- D&D 5e Races -->
+                                        <optgroup label="D&D 5e" id="racesDnd">
+                                            <option value="human">Humano</option>
+                                            <option value="humanVariant">Humano (Variante)</option>
+                                            <option value="elf-high">Elfo (Alto)</option>
+                                            <option value="elf-wood">Elfo (da Floresta)</option>
+                                            <option value="elf-dark">Elfo (Drow)</option>
+                                            <option value="dwarf-hill">Anão (Colina)</option>
+                                            <option value="dwarf-mountain">Anão (Montanha)</option>
+                                            <option value="halfling-lightfoot">Halfling (Pés-Leves)</option>
+                                            <option value="halfling-stout">Halfling (Robusto)</option>
+                                            <option value="dragonborn">Draconato</option>
+                                            <option value="gnome-forest">Gnomo (Floresta)</option>
+                                            <option value="gnome-rock">Gnomo (Rocha)</option>
+                                            <option value="half-elf">Meio-Elfo</option>
+                                            <option value="half-orc">Meio-Orc</option>
+                                            <option value="tiefling">Tiefling</option>
+                                            <option value="aasimar">Aasimar</option>
+                                            <option value="goliath">Golias</option>
+                                            <option value="tabaxi">Tabaxi</option>
+                                            <option value="kenku">Kenku</option>
+                                            <option value="firbolg">Firbolg</option>
+                                            <option value="tortle">Tortle</option>
+                                            <option value="aarakocra">Aarakocra</option>
+                                            <option value="genasi-air">Genasi (Ar)</option>
+                                            <option value="genasi-earth">Genasi (Terra)</option>
+                                            <option value="genasi-fire">Genasi (Fogo)</option>
+                                            <option value="genasi-water">Genasi (Água)</option>
+                                            <option value="warforged">Forjados</option>
+                                        </optgroup>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -934,7 +971,35 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="info-row">
+                            <!-- D&D Class Row -->
+                            <div class="info-row dnd-only" id="classRow">
+                                <div class="form-group">
+                                    <label>Classe</label>
+                                    <select id="charClass" data-field="dndClass">
+                                        <option value="">Selecione...</option>
+                                        <option value="barbarian">Bárbaro</option>
+                                        <option value="bard">Bardo</option>
+                                        <option value="cleric">Clérigo</option>
+                                        <option value="druid">Druida</option>
+                                        <option value="fighter">Guerreiro</option>
+                                        <option value="monk">Monge</option>
+                                        <option value="paladin">Paladino</option>
+                                        <option value="ranger">Patrulheiro</option>
+                                        <option value="rogue">Ladino</option>
+                                        <option value="sorcerer">Feiticeiro</option>
+                                        <option value="warlock">Bruxo</option>
+                                        <option value="wizard">Mago</option>
+                                        <option value="artificer">Artífice</option>
+                                        <option value="blood-hunter">Caçador de Sangue</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Dado de Vida</label>
+                                    <span id="hitDiceDisplay" class="calculated-small">d10</span>
+                                </div>
+                            </div>
+                            <!-- Reals&Scripts PN Row -->
+                            <div class="info-row rs-only" id="pnRow">
                                 <div class="form-group">
                                     <label>PN Disponíveis</label>
                                     <div class="input-with-buttons">
@@ -948,11 +1013,22 @@
                                     <span id="pnPerLevel" class="calculated-small">4</span>
                                 </div>
                             </div>
+                            <!-- D&D Proficiency -->
+                            <div class="info-row dnd-only" id="profRow">
+                                <div class="form-group">
+                                    <label>Bônus de Proficiência</label>
+                                    <span id="profBonus" class="calculated-small">+2</span>
+                                </div>
+                                <div class="form-group">
+                                    <label>Percepção Passiva</label>
+                                    <span id="passivePerception" class="calculated-small">10</span>
+                                </div>
+                            </div>
                             <div class="race-bonus" id="raceBonus"></div>
                         </div>
 
-                        <!-- Atributos -->
-                        <div class="attributes-card draggable-card" data-card-id="attributes">
+                        <!-- Atributos R&S -->
+                        <div class="attributes-card draggable-card rs-only" data-card-id="attributes" id="attributesRS">
                             <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
                             <h3><i class="fas fa-fist-raised"></i> Atributos <small>(<span id="usedAttrPoints">0</span>/8)</small></h3>
                             <div class="attributes-compact">
@@ -1002,6 +1078,92 @@
                                         <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrAgi', -1)"><i class="fas fa-minus"></i></button>
                                         <input type="number" id="attrAgi" data-field="attrAgi" class="attr-input" value="0">
                                         <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('attrAgi', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Atributos D&D -->
+                        <div class="attributes-card draggable-card dnd-only" data-card-id="attributes-dnd" id="attributesDND">
+                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                            <h3><i class="fas fa-dice-d20"></i> Atributos</h3>
+                            <div class="dnd-attributes-grid">
+                                <div class="dnd-attr-item">
+                                    <span class="dnd-attr-name">FOR</span>
+                                    <span class="dnd-attr-mod" id="modStr">+0</span>
+                                    <div class="dnd-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndStr', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="dndStr" data-field="dndStr" class="dnd-score-input" value="10" min="1" max="30">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndStr', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="dnd-save">
+                                        <input type="checkbox" id="saveStr" data-field="saveProfStr" class="save-prof">
+                                        <span id="saveStrVal">+0</span>
+                                    </div>
+                                </div>
+                                <div class="dnd-attr-item">
+                                    <span class="dnd-attr-name">DES</span>
+                                    <span class="dnd-attr-mod" id="modDex">+0</span>
+                                    <div class="dnd-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndDex', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="dndDex" data-field="dndDex" class="dnd-score-input" value="10" min="1" max="30">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndDex', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="dnd-save">
+                                        <input type="checkbox" id="saveDex" data-field="saveProfDex" class="save-prof">
+                                        <span id="saveDexVal">+0</span>
+                                    </div>
+                                </div>
+                                <div class="dnd-attr-item">
+                                    <span class="dnd-attr-name">CON</span>
+                                    <span class="dnd-attr-mod" id="modCon">+0</span>
+                                    <div class="dnd-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndCon', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="dndCon" data-field="dndCon" class="dnd-score-input" value="10" min="1" max="30">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndCon', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="dnd-save">
+                                        <input type="checkbox" id="saveCon" data-field="saveProfCon" class="save-prof">
+                                        <span id="saveConVal">+0</span>
+                                    </div>
+                                </div>
+                                <div class="dnd-attr-item">
+                                    <span class="dnd-attr-name">INT</span>
+                                    <span class="dnd-attr-mod" id="modInt">+0</span>
+                                    <div class="dnd-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndInt', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="dndInt" data-field="dndInt" class="dnd-score-input" value="10" min="1" max="30">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndInt', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="dnd-save">
+                                        <input type="checkbox" id="saveInt" data-field="saveProfInt" class="save-prof">
+                                        <span id="saveIntVal">+0</span>
+                                    </div>
+                                </div>
+                                <div class="dnd-attr-item">
+                                    <span class="dnd-attr-name">SAB</span>
+                                    <span class="dnd-attr-mod" id="modWis">+0</span>
+                                    <div class="dnd-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndWis', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="dndWis" data-field="dndWis" class="dnd-score-input" value="10" min="1" max="30">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndWis', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="dnd-save">
+                                        <input type="checkbox" id="saveWis" data-field="saveProfWis" class="save-prof">
+                                        <span id="saveWisVal">+0</span>
+                                    </div>
+                                </div>
+                                <div class="dnd-attr-item">
+                                    <span class="dnd-attr-name">CAR</span>
+                                    <span class="dnd-attr-mod" id="modCha">+0</span>
+                                    <div class="dnd-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndCha', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="dndCha" data-field="dndCha" class="dnd-score-input" value="10" min="1" max="30">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('dndCha', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <div class="dnd-save">
+                                        <input type="checkbox" id="saveCha" data-field="saveProfCha" class="save-prof">
+                                        <span id="saveChaVal">+0</span>
                                     </div>
                                 </div>
                             </div>
@@ -1546,14 +1708,998 @@
         </main>
     </div>
 
+    <!-- ========== FULL-SCREEN SYSTEM EDITOR ========== -->
+    <div id="systemEditorScreen">
+        <div class="sys-editor-layout">
+            <!-- Sidebar Navigation -->
+            <aside class="sys-editor-sidebar">
+                <div class="sys-editor-sidebar-header">
+                    <h2><i class="fas fa-cogs"></i> <span>Editor de Sistema</span></h2>
+                    <p id="sysEditingName">Novo Sistema</p>
+                </div>
+                
+                <nav class="sys-editor-nav">
+                    <div class="sys-nav-section">
+                        <div class="sys-nav-section-title">Geral</div>
+                        <div class="sys-nav-item active" data-panel="overview">
+                            <i class="fas fa-home"></i>
+                            <span>Visão Geral</span>
+                        </div>
+                        <div class="sys-nav-item" data-panel="basic">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Informações</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sys-nav-section">
+                        <div class="sys-nav-section-title">Personagem</div>
+                        <div class="sys-nav-item" data-panel="attributes">
+                            <i class="fas fa-fist-raised"></i>
+                            <span>Atributos</span>
+                        </div>
+                        <div class="sys-nav-item" data-panel="resources">
+                            <i class="fas fa-heart"></i>
+                            <span>Recursos</span>
+                        </div>
+                        <div class="sys-nav-item" data-panel="classes">
+                            <i class="fas fa-hat-wizard"></i>
+                            <span>Classes</span>
+                        </div>
+                        <div class="sys-nav-item" data-panel="races">
+                            <i class="fas fa-users"></i>
+                            <span>Raças</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sys-nav-section">
+                        <div class="sys-nav-section-title">Mecânicas</div>
+                        <div class="sys-nav-item" data-panel="skills">
+                            <i class="fas fa-book-open"></i>
+                            <span>Perícias</span>
+                        </div>
+                        <div class="sys-nav-item" data-panel="combat">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Combate</span>
+                        </div>
+                        <div class="sys-nav-item" data-panel="magic">
+                            <i class="fas fa-magic"></i>
+                            <span>Magias</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sys-nav-section">
+                        <div class="sys-nav-section-title">Avançado</div>
+                        <div class="sys-nav-item" data-panel="fields">
+                            <i class="fas fa-th-list"></i>
+                            <span>Campos</span>
+                        </div>
+                        <div class="sys-nav-item" data-panel="formulas">
+                            <i class="fas fa-calculator"></i>
+                            <span>Fórmulas</span>
+                        </div>
+                    </div>
+                </nav>
+                
+                <div class="sys-editor-sidebar-footer">
+                    <button class="btn-primary" onclick="SystemEditor.save()">
+                        <i class="fas fa-save"></i> <span>Salvar</span>
+                    </button>
+                    <button class="btn-secondary" onclick="SystemEditor.close()">
+                        <i class="fas fa-times"></i> <span>Fechar</span>
+                    </button>
+                    <button class="btn-danger" id="sysDeleteBtn" onclick="SystemEditor.confirmDelete()">
+                        <i class="fas fa-trash"></i> <span>Excluir</span>
+                    </button>
+                </div>
+            </aside>
+            
+            <!-- Main Content Area -->
+            <main class="sys-editor-main">
+                <!-- ==================== VISÃO GERAL ==================== -->
+                <div class="sys-panel active" id="panel-overview">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-home"></i> Visão Geral do Sistema</h2>
+                            <p>Resumo das configurações e estatísticas</p>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-chart-pie"></i> Resumo</h3>
+                            <div class="sys-cards-grid" id="sysOverviewStats">
+                                <div class="sys-card">
+                                    <div class="sys-card-header">
+                                        <div class="sys-card-icon"><i class="fas fa-fist-raised"></i></div>
+                                        <div class="sys-card-title">
+                                            <h4 id="ovAttrCount">6</h4>
+                                            <span>Atributos</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sys-card">
+                                    <div class="sys-card-header">
+                                        <div class="sys-card-icon"><i class="fas fa-book-open"></i></div>
+                                        <div class="sys-card-title">
+                                            <h4 id="ovSkillCount">18</h4>
+                                            <span>Perícias</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sys-card">
+                                    <div class="sys-card-header">
+                                        <div class="sys-card-icon"><i class="fas fa-hat-wizard"></i></div>
+                                        <div class="sys-card-title">
+                                            <h4 id="ovClassCount">0</h4>
+                                            <span>Classes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sys-card">
+                                    <div class="sys-card-header">
+                                        <div class="sys-card-icon"><i class="fas fa-users"></i></div>
+                                        <div class="sys-card-title">
+                                            <h4 id="ovRaceCount">0</h4>
+                                            <span>Raças</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-toggle-on"></i> Recursos Ativos</h3>
+                            <div id="sysOverviewFeatures" class="sys-cards-grid">
+                                <!-- Rendered by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== INFORMAÇÕES BÁSICAS ==================== -->
+                <div class="sys-panel" id="panel-basic">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-info-circle"></i> Informações Básicas</h2>
+                            <p>Nome, descrição e aparência do sistema</p>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-id-card"></i> Identificação</h3>
+                            <div class="sys-form-grid">
+                                <div class="sys-form-group">
+                                    <label class="required">Nome do Sistema</label>
+                                    <input type="text" id="sysName" placeholder="Ex: Meu Sistema Personalizado">
+                                </div>
+                                <div class="sys-form-group">
+                                    <label>Versão</label>
+                                    <input type="text" id="sysVersion" placeholder="Ex: 1.0">
+                                </div>
+                            </div>
+                            <div class="sys-form-group">
+                                <label>Descrição</label>
+                                <textarea id="sysDescription" placeholder="Descreva o sistema, suas principais mecânicas e diferenças..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-palette"></i> Aparência</h3>
+                            <div class="sys-form-group">
+                                <label>Ícone do Sistema</label>
+                                <div class="sys-icon-picker" id="sysIconPicker">
+                                    <div class="sys-icon-option selected" data-icon="fa-dice-d20"><i class="fas fa-dice-d20"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-scroll"><i class="fas fa-scroll"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-dragon"><i class="fas fa-dragon"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-hat-wizard"><i class="fas fa-hat-wizard"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-shield-alt"><i class="fas fa-shield-alt"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-sword"><i class="fas fa-sword"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-skull"><i class="fas fa-skull"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-star"><i class="fas fa-star"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-bolt"><i class="fas fa-bolt"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-fire"><i class="fas fa-fire"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-gem"><i class="fas fa-gem"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-crown"><i class="fas fa-crown"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-dungeon"><i class="fas fa-dungeon"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-chess-rook"><i class="fas fa-chess-rook"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-khanda"><i class="fas fa-khanda"></i></div>
+                                    <div class="sys-icon-option" data-icon="fa-ghost"><i class="fas fa-ghost"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-sliders-h"></i> Configurações Gerais</h3>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info">
+                                    <span>Baseado em Template</span>
+                                    <small>Copiar configurações de um sistema existente</small>
+                                </div>
+                                <select id="sysBaseTemplate" style="width: 200px;">
+                                    <option value="">Nenhum (criar do zero)</option>
+                                    <option value="realsscripts">Reals&Scripts</option>
+                                    <option value="dnd5e">D&D 5e</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== ATRIBUTOS ==================== -->
+                <div class="sys-panel" id="panel-attributes">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-fist-raised"></i> Atributos</h2>
+                            <p>Configure os atributos base do personagem</p>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-list"></i> Tipo de Atributos</h3>
+                            <div class="sys-form-group">
+                                <label>Preset de Atributos</label>
+                                <select id="sysAttrPreset" onchange="SystemEditor.onAttrPresetChange()">
+                                    <option value="realsscripts">Reals&Scripts (FOR, CON, VON, CAR, INT, AGI)</option>
+                                    <option value="dnd">D&D 5e (FOR, DES, CON, INT, SAB, CAR)</option>
+                                    <option value="custom">Personalizado</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="sys-form-section" id="sysCustomAttrsSection">
+                            <h3><i class="fas fa-edit"></i> Atributos Personalizados</h3>
+                            <div class="sys-list-container" id="sysAttrsList">
+                                <!-- Rendered by JS -->
+                            </div>
+                            <button class="sys-add-item-btn" onclick="SystemEditor.addAttribute()">
+                                <i class="fas fa-plus"></i> Adicionar Atributo
+                            </button>
+                        </div>
+                        
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-calculator"></i> Cálculo de Modificadores</h3>
+                            <div class="sys-form-grid">
+                                <div class="sys-form-group">
+                                    <label>Fórmula de Modificador</label>
+                                    <select id="sysModifierCalc">
+                                        <option value="direct">Direto (valor = modificador)</option>
+                                        <option value="dnd">D&D ((valor - 10) / 2)</option>
+                                        <option value="half">Metade (valor / 2)</option>
+                                        <option value="minus5">Subtração (valor - 5)</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </div>
+                                <div class="sys-form-group">
+                                    <label>Valor Mínimo</label>
+                                    <input type="number" id="sysAttrMin" value="1" min="0">
+                                </div>
+                                <div class="sys-form-group">
+                                    <label>Valor Máximo</label>
+                                    <input type="number" id="sysAttrMax" value="20" min="1">
+                                </div>
+                                <div class="sys-form-group">
+                                    <label>Limite de Pontos (0 = ilimitado)</label>
+                                    <input type="number" id="sysAttrPointLimit" value="0" min="0">
+                                </div>
+                            </div>
+                            
+                            <div id="sysCustomModSection" class="hidden">
+                                <h4>Fórmula Personalizada</h4>
+                                <div class="sys-formula-builder">
+                                    <input type="text" id="sysCustomModFormula" class="sys-formula-input" placeholder="Ex: Math.floor((value - 10) / 2)">
+                                    <div class="sys-formula-vars">
+                                        <span class="sys-formula-var" onclick="SystemEditor.insertVar('sysCustomModFormula', 'value')">value</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== RECURSOS ==================== -->
+                <div class="sys-panel" id="panel-resources">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-heart"></i> Recursos</h2>
+                            <p>HP, PE, Sanidade, Pontos de Ação</p>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <!-- Tabs for Resources -->
+                        <div class="sys-panel-tabs">
+                            <button class="sys-panel-tab active" data-restab="hp">Pontos de Vida</button>
+                            <button class="sys-panel-tab" data-restab="pe">Pontos de Energia</button>
+                            <button class="sys-panel-tab" data-restab="sanity">Sanidade</button>
+                            <button class="sys-panel-tab" data-restab="pa">Pontos de Ação</button>
+                        </div>
+                        
+                        <!-- HP Tab -->
+                        <div class="sys-panel-tab-content active" id="restab-hp">
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-heart"></i> Pontos de Vida (HP)</h3>
+                                <div class="sys-form-group">
+                                    <label>Fórmula de HP Máximo</label>
+                                    <select id="sysHpFormula">
+                                        <option value="realsscripts">Reals&Scripts: (Coração × 20) + (Nível × CON)</option>
+                                        <option value="dnd">D&D: Dado de Vida + mod. CON por nível</option>
+                                        <option value="levelcon">Nível × CON</option>
+                                        <option value="levelonly">Apenas Nível × Multiplicador</option>
+                                        <option value="flat">Fixo por Nível</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="sysHpCustom" class="hidden">
+                                    <div class="sys-formula-builder">
+                                        <input type="text" id="sysHpCustomFormula" class="sys-formula-input" placeholder="Ex: (level * 10) + (con * 2)">
+                                        <div class="sys-formula-vars">
+                                            <span class="sys-formula-var">level</span>
+                                            <span class="sys-formula-var">con</span>
+                                            <span class="sys-formula-var">for</span>
+                                            <span class="sys-formula-var">hitDie</span>
+                                            <span class="sys-formula-var">conMod</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div id="sysHpFlat" class="hidden">
+                                    <div class="sys-form-row">
+                                        <div class="sys-form-group">
+                                            <label>HP Base (Nível 1)</label>
+                                            <input type="number" id="sysHpBase" value="10" min="1">
+                                        </div>
+                                        <div class="sys-form-group">
+                                            <label>HP por Nível</label>
+                                            <input type="number" id="sysHpPerLevel" value="5" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PE Tab -->
+                        <div class="sys-panel-tab-content" id="restab-pe">
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-bolt"></i> Pontos de Energia</h3>
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Possui Pontos de Energia</span>
+                                        <small>Mana, Ki, Foco, etc.</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysHasPE" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div id="sysPEConfig">
+                                    <div class="sys-form-row">
+                                        <div class="sys-form-group">
+                                            <label>Nome dos Pontos</label>
+                                            <input type="text" id="sysPEName" value="PE" placeholder="PE, Mana, Ki...">
+                                        </div>
+                                        <div class="sys-form-group">
+                                            <label>Fórmula</label>
+                                            <select id="sysPEFormula">
+                                                <option value="realsscripts">Reals&Scripts: (Cérebro × 6) + (Nível × VON)</option>
+                                                <option value="simple">Nível × Multiplicador</option>
+                                                <option value="attr">Baseado em Atributo</option>
+                                                <option value="custom">Personalizado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="sysPECustom" class="hidden">
+                                        <div class="sys-formula-builder">
+                                            <input type="text" id="sysPECustomFormula" class="sys-formula-input" placeholder="Ex: (level * 5) + (int * 2)">
+                                            <div class="sys-formula-vars">
+                                                <span class="sys-formula-var">level</span>
+                                                <span class="sys-formula-var">int</span>
+                                                <span class="sys-formula-var">wis</span>
+                                                <span class="sys-formula-var">cha</span>
+                                                <span class="sys-formula-var">von</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sanity Tab -->
+                        <div class="sys-panel-tab-content" id="restab-sanity">
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-brain"></i> Sanidade</h3>
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Possui Sanidade</span>
+                                        <small>Stress, Corrupção, etc.</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysHasSanity" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div id="sysSanityConfig">
+                                    <div class="sys-form-group">
+                                        <label>Nome do Recurso</label>
+                                        <input type="text" id="sysSanityName" value="Sanidade" placeholder="Sanidade, Stress...">
+                                    </div>
+                                    
+                                    <div class="sys-toggle-row">
+                                        <div class="sys-toggle-info">
+                                            <span>Possui Valor Máximo</span>
+                                            <small>Se desligado, apenas tracking manual</small>
+                                        </div>
+                                        <label class="sys-toggle">
+                                            <input type="checkbox" id="sysSanityHasMax">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div id="sysSanityMaxConfig" class="hidden">
+                                        <div class="sys-form-group">
+                                            <label>Fórmula de Máximo</label>
+                                            <select id="sysSanityFormula">
+                                                <option value="flat">Valor Fixo</option>
+                                                <option value="attr">Atributo × Multiplicador</option>
+                                                <option value="custom">Personalizado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PA Tab -->
+                        <div class="sys-panel-tab-content" id="restab-pa">
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-running"></i> Pontos de Ação</h3>
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Possui Pontos de Ação</span>
+                                        <small>Sistema de economia de ações por turno</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysHasPA">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div id="sysPAConfig" class="hidden">
+                                    <div class="sys-form-row">
+                                        <div class="sys-form-group">
+                                            <label>Nome dos Pontos</label>
+                                            <input type="text" id="sysPAName" value="PA" placeholder="PA, Ações...">
+                                        </div>
+                                        <div class="sys-form-group">
+                                            <label>Fórmula</label>
+                                            <select id="sysPAFormula">
+                                                <option value="realsscripts">Reals&Scripts: AGI + Nível + 4</option>
+                                                <option value="flat">Valor Fixo</option>
+                                                <option value="attr">Baseado em Atributo</option>
+                                                <option value="custom">Personalizado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== CLASSES ==================== -->
+                <div class="sys-panel" id="panel-classes">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-hat-wizard"></i> Classes</h2>
+                            <p>Configure as classes do sistema</p>
+                        </div>
+                        <div class="sys-editor-header-actions">
+                            <button class="btn-primary" onclick="SystemEditor.addClass()">
+                                <i class="fas fa-plus"></i> Nova Classe
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-cog"></i> Configuração</h3>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info">
+                                    <span>Sistema usa Classes</span>
+                                    <small>Personagens escolhem uma classe com habilidades</small>
+                                </div>
+                                <label class="sys-toggle">
+                                    <input type="checkbox" id="sysHasClasses">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div id="sysClassesConfig" class="hidden">
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Classe afeta HP</span>
+                                        <small>Dado de vida diferente por classe</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysClassAffectsHP" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Multiclasse permitido</span>
+                                        <small>Personagens podem ter múltiplas classes</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysAllowMulticlass">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sys-form-section" id="sysClassesListSection" style="display:none;">
+                            <h3><i class="fas fa-list"></i> Lista de Classes</h3>
+                            <div class="sys-table-editor">
+                                <table class="sys-table" id="sysClassesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Dado Vida</th>
+                                            <th>Atrib. Principal</th>
+                                            <th>Conjurador</th>
+                                            <th class="actions-cell">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sysClassesTableBody">
+                                        <!-- Rendered by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="sys-add-item-btn" onclick="SystemEditor.addClass()">
+                                <i class="fas fa-plus"></i> Adicionar Classe
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== RAÇAS ==================== -->
+                <div class="sys-panel" id="panel-races">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-users"></i> Raças</h2>
+                            <p>Configure as raças disponíveis</p>
+                        </div>
+                        <div class="sys-editor-header-actions">
+                            <button class="btn-primary" onclick="SystemEditor.addRace()">
+                                <i class="fas fa-plus"></i> Nova Raça
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-cog"></i> Configuração</h3>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info">
+                                    <span>Sistema usa Raças</span>
+                                    <small>Personagens escolhem uma raça com bônus</small>
+                                </div>
+                                <label class="sys-toggle">
+                                    <input type="checkbox" id="sysHasRaces" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div id="sysRacesConfig">
+                                <div class="sys-form-group">
+                                    <label>Preset de Raças</label>
+                                    <select id="sysRacePreset" onchange="SystemEditor.onRacePresetChange()">
+                                        <option value="none">Nenhum (criar do zero)</option>
+                                        <option value="realsscripts">Reals&Scripts (Humano, Elfo, Anão...)</option>
+                                        <option value="dnd">D&D 5e (27 raças)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-list"></i> Lista de Raças</h3>
+                            <div class="sys-table-editor">
+                                <table class="sys-table" id="sysRacesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Bônus de Atributos</th>
+                                            <th>Habilidades</th>
+                                            <th class="actions-cell">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sysRacesTableBody">
+                                        <!-- Rendered by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="sys-add-item-btn" onclick="SystemEditor.addRace()">
+                                <i class="fas fa-plus"></i> Adicionar Raça
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== PERÍCIAS ==================== -->
+                <div class="sys-panel" id="panel-skills">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-book-open"></i> Perícias</h2>
+                            <p>Configure o sistema de perícias</p>
+                        </div>
+                        <div class="sys-editor-header-actions">
+                            <button class="btn-primary" onclick="SystemEditor.addSkill()">
+                                <i class="fas fa-plus"></i> Nova Perícia
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-cog"></i> Tipo de Sistema</h3>
+                            <div class="sys-form-row">
+                                <div class="sys-form-group">
+                                    <label>Sistema de Perícias</label>
+                                    <select id="sysSkillSystem">
+                                        <option value="realsscripts">Reals&Scripts (Treino 0-3)</option>
+                                        <option value="dnd">D&D (Proficiência/Expertise)</option>
+                                        <option value="ranks">Ranks (pontos por nível)</option>
+                                        <option value="percent">Percentual (0-100%)</option>
+                                    </select>
+                                </div>
+                                <div class="sys-form-group">
+                                    <label>Preset de Perícias</label>
+                                    <select id="sysSkillPreset" onchange="SystemEditor.onSkillPresetChange()">
+                                        <option value="none">Nenhum (criar do zero)</option>
+                                        <option value="realsscripts">Reals&Scripts (36 perícias)</option>
+                                        <option value="dnd">D&D 5e (18 perícias)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-list"></i> Lista de Perícias</h3>
+                            <div class="sys-table-editor">
+                                <table class="sys-table" id="sysSkillsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Atributo</th>
+                                            <th>Penalidade Armadura</th>
+                                            <th class="actions-cell">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sysSkillsTableBody">
+                                        <!-- Rendered by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="sys-add-item-btn" onclick="SystemEditor.addSkill()">
+                                <i class="fas fa-plus"></i> Adicionar Perícia
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== COMBATE ==================== -->
+                <div class="sys-panel" id="panel-combat">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-shield-alt"></i> Combate</h2>
+                            <p>Configure as regras de combate</p>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <!-- Combat Tabs -->
+                        <div class="sys-panel-tabs">
+                            <button class="sys-panel-tab active" data-combtab="defense">Defesas</button>
+                            <button class="sys-panel-tab" data-combtab="initiative">Iniciativa</button>
+                            <button class="sys-panel-tab" data-combtab="saves">Resistências</button>
+                            <button class="sys-panel-tab" data-combtab="fusions">Fusões</button>
+                        </div>
+                        
+                        <!-- Defense Tab -->
+                        <div class="sys-panel-tab-content active" id="combtab-defense">
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-shield-alt"></i> Classe de Armadura (CA)</h3>
+                                <div class="sys-form-group">
+                                    <label>Fórmula de CA</label>
+                                    <select id="sysCAFormula">
+                                        <option value="realsscripts">Reals&Scripts: 10 + Bônus Armadura</option>
+                                        <option value="dnd">D&D: 10 + mod. DES + Armadura</option>
+                                        <option value="flatbase">Base Fixa + Atributo</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-running"></i> Esquiva</h3>
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Possui Esquiva Separada</span>
+                                        <small>Valor de defesa alternativo</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysHasDodge">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div id="sysDodgeConfig" class="hidden">
+                                    <div class="sys-form-group">
+                                        <label>Fórmula de Esquiva</label>
+                                        <select id="sysDodgeFormula">
+                                            <option value="realsscripts">Reals&Scripts: CA + Reflexos</option>
+                                            <option value="dexbased">10 + mod. DES</option>
+                                            <option value="custom">Personalizado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Initiative Tab -->
+                        <div class="sys-panel-tab-content" id="combtab-initiative">
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-bolt"></i> Iniciativa</h3>
+                                <div class="sys-form-group">
+                                    <label>Fórmula de Iniciativa</label>
+                                    <select id="sysInitFormula">
+                                        <option value="dex">D&D: mod. DES</option>
+                                        <option value="agi">Reals&Scripts: AGI</option>
+                                        <option value="skill">Baseado em Perícia</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Saving Throws Tab -->
+                        <div class="sys-panel-tab-content" id="combtab-saves">
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-shield-virus"></i> Testes de Resistência</h3>
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Possui Testes de Resistência</span>
+                                        <small>Saving Throws, Fortitude/Reflexos/Vontade</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysHasSaves">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div id="sysSavesConfig" class="hidden">
+                                    <div class="sys-form-group">
+                                        <label>Tipo de Resistência</label>
+                                        <select id="sysSaveType">
+                                            <option value="dnd">D&D: 6 atributos com proficiência</option>
+                                            <option value="three">3 Tipos: Fort, Ref, Von</option>
+                                            <option value="custom">Personalizado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fusions Tab -->
+                        <div class="sys-panel-tab-content" id="combtab-fusions">
+                            <div class="sys-form-section">
+                                <h3><i class="fas fa-dna"></i> Fusões</h3>
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Sistema possui Fusões</span>
+                                        <small>Órgãos, Ossos, Músculos - único do Reals&Scripts</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysHasFusions">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div id="sysFusionsConfig" class="hidden">
+                                    <div class="sys-form-group">
+                                        <label>Tipos de Fusão (uma por linha: Nome, Descrição)</label>
+                                        <textarea id="sysFusionTypes" placeholder="Coração, Aumenta HP&#10;Cérebro, Aumenta PE&#10;Olhos, Melhora Percepção"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== MAGIAS ==================== -->
+                <div class="sys-panel" id="panel-magic">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-magic"></i> Magias</h2>
+                            <p>Configure o sistema de magias</p>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-cog"></i> Configuração</h3>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info">
+                                    <span>Sistema possui Magias</span>
+                                    <small>Espaços de magia, spell slots, etc.</small>
+                                </div>
+                                <label class="sys-toggle">
+                                    <input type="checkbox" id="sysHasMagic">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div id="sysMagicConfig" class="hidden">
+                                <div class="sys-form-group">
+                                    <label>Sistema de Magia</label>
+                                    <select id="sysMagicSystem">
+                                        <option value="dnd">D&D: Spell Slots por nível</option>
+                                        <option value="mana">Mana/PE: Custo por magia</option>
+                                        <option value="daily">Diário: X usos por dia</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="sys-toggle-row">
+                                    <div class="sys-toggle-info">
+                                        <span>Possui Cantrips/Truques</span>
+                                        <small>Magias de nível 0 ilimitadas</small>
+                                    </div>
+                                    <label class="sys-toggle">
+                                        <input type="checkbox" id="sysHasCantrips" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="sys-form-row">
+                                    <div class="sys-form-group">
+                                        <label>Atributo de Conjuração Padrão</label>
+                                        <select id="sysSpellAttr">
+                                            <option value="int">INT (Inteligência)</option>
+                                            <option value="wis">SAB (Sabedoria)</option>
+                                            <option value="cha">CAR (Carisma)</option>
+                                            <option value="class">Baseado na Classe</option>
+                                        </select>
+                                    </div>
+                                    <div class="sys-form-group">
+                                        <label>Nível Máximo de Magia</label>
+                                        <input type="number" id="sysMaxSpellLevel" value="9" min="1" max="20">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== CAMPOS ==================== -->
+                <div class="sys-panel" id="panel-fields">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-th-list"></i> Campos da Ficha</h2>
+                            <p>Configure quais campos aparecem na ficha</p>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-check-square"></i> Campos Visíveis</h3>
+                            
+                            <h4>Informações Básicas</h4>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info"><span>Nome do Personagem</span></div>
+                                <label class="sys-toggle"><input type="checkbox" checked disabled><span class="slider"></span></label>
+                            </div>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info"><span>Nível</span></div>
+                                <label class="sys-toggle"><input type="checkbox" checked disabled><span class="slider"></span></label>
+                            </div>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info"><span>Raça</span></div>
+                                <label class="sys-toggle"><input type="checkbox" id="sysFieldRace" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info"><span>Classe</span></div>
+                                <label class="sys-toggle"><input type="checkbox" id="sysFieldClass"><span class="slider"></span></label>
+                            </div>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info"><span>Background/História</span></div>
+                                <label class="sys-toggle"><input type="checkbox" id="sysFieldBackground" checked><span class="slider"></span></label>
+                            </div>
+                            
+                            <h4>Combate</h4>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info"><span>Inventário com Peso</span></div>
+                                <label class="sys-toggle"><input type="checkbox" id="sysFieldWeight" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="sys-toggle-row">
+                                <div class="sys-toggle-info"><span>Ataques</span></div>
+                                <label class="sys-toggle"><input type="checkbox" id="sysFieldAttacks" checked><span class="slider"></span></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== FÓRMULAS ==================== -->
+                <div class="sys-panel" id="panel-formulas">
+                    <div class="sys-editor-content-header">
+                        <div>
+                            <h2><i class="fas fa-calculator"></i> Fórmulas Avançadas</h2>
+                            <p>Configure fórmulas personalizadas</p>
+                        </div>
+                    </div>
+                    <div class="sys-editor-content-body">
+                        <div class="sys-form-section">
+                            <h3><i class="fas fa-code"></i> Editor de Fórmulas</h3>
+                            <p style="color: var(--text-muted);">
+                                Defina fórmulas personalizadas para cálculos do sistema.
+                                Use JavaScript válido com as variáveis disponíveis.
+                            </p>
+                            
+                            <div class="sys-form-group">
+                                <label>Fórmula Selecionada</label>
+                                <select id="sysFormulaSelect">
+                                    <option value="hp">HP Máximo</option>
+                                    <option value="pe">PE Máximo</option>
+                                    <option value="ca">Classe de Armadura</option>
+                                    <option value="initiative">Iniciativa</option>
+                                    <option value="dodge">Esquiva</option>
+                                    <option value="pa">Pontos de Ação</option>
+                                </select>
+                            </div>
+                            
+                            <div class="sys-formula-builder">
+                                <input type="text" id="sysFormulaEditor" class="sys-formula-input" placeholder="Selecione uma fórmula acima...">
+                                <div class="sys-formula-vars" id="sysFormulaVars">
+                                    <span class="sys-formula-var">level</span>
+                                    <span class="sys-formula-var">con</span>
+                                    <span class="sys-formula-var">for</span>
+                                    <span class="sys-formula-var">dex</span>
+                                    <span class="sys-formula-var">int</span>
+                                    <span class="sys-formula-var">wis</span>
+                                    <span class="sys-formula-var">cha</span>
+                                    <span class="sys-formula-var">hitDie</span>
+                                    <span class="sys-formula-var">profBonus</span>
+                                </div>
+                                <div class="sys-formula-preview" id="sysFormulaPreview">
+                                    <span>Resultado com valores de exemplo: </span>
+                                    <strong>?</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Dialog -->
+    <div class="sys-dialog-overlay" id="sysDeleteDialog">
+        <div class="sys-dialog">
+            <h3>Excluir Sistema?</h3>
+            <p>Esta ação não pode ser desfeita. Todas as configurações serão perdidas.</p>
+            <div class="sys-dialog-buttons">
+                <button class="btn-secondary" onclick="SystemEditor.cancelDelete()">Cancelar</button>
+                <button class="btn-danger" onclick="SystemEditor.doDelete()">Excluir</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts - Ordem importante! -->
     <script src="js/firebase-config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/calculations.js"></script>
     <script src="js/system-manager.js"></script>
+    <script src="js/system-editor.js"></script>
     <script src="js/sheet.js"></script>
     <script src="js/layout.js"></script>
     <script src="js/app.js"></script>
 </body>
-</html>

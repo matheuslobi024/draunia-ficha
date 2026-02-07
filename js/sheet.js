@@ -3,6 +3,7 @@
 const Sheet = {
     currentCharacter: null,
     saveTimeout: null,
+    currentSystem: 'realsscripts',
 
     // Initialize sheet
     init() {
@@ -10,6 +11,88 @@ const Sheet = {
         this.generateSkillsHTML();
         this.generateCombatSkillsHTML();
         this.setupSkillSearch();
+        
+        // Hide D&D races by default (R&S is default system)
+        const dndRaces = document.getElementById('racesDnd');
+        if (dndRaces) dndRaces.style.display = 'none';
+    },
+
+    // Set the system and adapt the UI
+    setSystem(systemId) {
+        this.currentSystem = systemId || 'realsscripts';
+        const isDnd = systemId === 'dnd5e';
+        
+        // Toggle body class for CSS
+        document.body.classList.toggle('system-dnd', isDnd);
+        
+        // Show/hide race optgroups
+        const rsRaces = document.getElementById('racesRealsscripts');
+        const dndRaces = document.getElementById('racesDnd');
+        if (rsRaces) rsRaces.style.display = isDnd ? 'none' : '';
+        if (dndRaces) dndRaces.style.display = isDnd ? '' : 'none';
+        
+        // Regenerate skills for the current system
+        this.generateSkillsHTML();
+        this.generateCombatSkillsHTML();
+        
+        // Update class display and recalculate if D&D
+        if (isDnd && this.currentCharacter) {
+            this.updateDndClassDisplay();
+            this.updateDndModifiers();
+        }
+        
+        console.log('[Sheet] Sistema configurado:', this.currentSystem);
+    },
+
+    // Update D&D class display (hit dice, etc)
+    updateDndClassDisplay() {
+        const charClass = this.currentCharacter?.dndClass || 'fighter';
+        const classInfo = Calculations.DND_CLASSES[charClass];
+        
+        const hitDiceEl = document.getElementById('hitDiceDisplay');
+        if (hitDiceEl && classInfo) {
+            hitDiceEl.textContent = 'd' + classInfo.hitDie;
+        }
+    },
+
+    // Update D&D modifiers display
+    updateDndModifiers() {
+        if (!this.currentCharacter) return;
+        
+        const attrs = ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha'];
+        const profBonus = Calculations.calculateDndProficiencyBonus(this.currentCharacter);
+        
+        attrs.forEach(attr => {
+            const score = this.currentCharacter['dnd' + attr] || 10;
+            const mod = Calculations.calculateDndModifier(score);
+            const modStr = (mod >= 0 ? '+' : '') + mod;
+            
+            // Update modifier display
+            const modEl = document.getElementById('mod' + attr);
+            if (modEl) modEl.textContent = modStr;
+            
+            // Update saving throw
+            const saveEl = document.getElementById('save' + attr + 'Val');
+            const profEl = document.getElementById('save' + attr);
+            if (saveEl && profEl) {
+                const isProficient = this.currentCharacter['saveProf' + attr] || false;
+                const saveVal = mod + (isProficient ? profBonus : 0);
+                saveEl.textContent = (saveVal >= 0 ? '+' : '') + saveVal;
+            }
+        });
+        
+        // Update proficiency bonus display
+        const profBonusEl = document.getElementById('profBonus');
+        if (profBonusEl) profBonusEl.textContent = '+' + profBonus;
+        
+        // Update passive perception
+        const passiveEl = document.getElementById('passivePerception');
+        if (passiveEl) {
+            const wisScore = this.currentCharacter.dndWis || 10;
+            const wisMod = Calculations.calculateDndModifier(wisScore);
+            const isProficient = this.currentCharacter.dndSkillProficiencies?.perception || false;
+            passiveEl.textContent = 10 + wisMod + (isProficient ? profBonus : 0);
+        }
     },
 
     // Adjust a numeric value by delta (+1 or -1)
@@ -502,33 +585,85 @@ const Sheet = {
         if (!grid) return;
 
         grid.innerHTML = '';
+        
+        const isDnd = this.currentSystem === 'dnd5e';
+        const skills = isDnd ? Calculations.DND_SKILLS : Calculations.SKILLS;
 
-        Calculations.SKILLS.forEach(skill => {
-            const div = document.createElement('div');
-            div.className = 'skill-item' + (skill.armorPenalty ? ' armor-penalty' : '');
-            div.innerHTML = `
-                <div class="skill-info">
-                    <span class="skill-name">${skill.name}${skill.armorPenalty ? ' <i class="fas fa-weight-hanging" title="Penalidade de Carga"></i>' : ''}</span>
+        if (isDnd) {
+            // D&D-style skills with proficiency checkboxes
+            grid.className = 'dnd-skills-grid';
+            skills.forEach(skill => {
+                const div = document.createElement('div');
+                div.className = 'dnd-skill-item';
+                div.innerHTML = `
+                    <input type="checkbox" class="skill-prof" data-skill-prof="${skill.id}" title="Proficiente">
+                    <input type="checkbox" class="skill-expertise" data-skill-exp="${skill.id}" title="Expertise">
+                    <span class="skill-name">${skill.name}</span>
                     <span class="skill-attr">${skill.attr}</span>
-                </div>
-                <select class="skill-select" data-skill="${skill.id}">
-                    <option value="0">Sem Treino</option>
-                    <option value="1">Treinada</option>
-                    <option value="2">Veterana</option>
-                    <option value="3">Expert</option>
-                </select>
-                <span class="skill-total" data-skill-total="${skill.id}">+0</span>
-            `;
+                    <span class="skill-total" data-skill-total="${skill.id}">+0</span>
+                `;
 
-            const select = div.querySelector('select');
-            select.addEventListener('change', () => this.onFieldChange());
+                const profCheckbox = div.querySelector('[data-skill-prof]');
+                const expCheckbox = div.querySelector('[data-skill-exp]');
+                profCheckbox.addEventListener('change', () => this.onDndSkillChange(skill.id, profCheckbox, expCheckbox));
+                expCheckbox.addEventListener('change', () => this.onDndSkillChange(skill.id, profCheckbox, expCheckbox));
 
-            grid.appendChild(div);
-        });
+                grid.appendChild(div);
+            });
+        } else {
+            // Reals&Scripts style skills with training levels
+            grid.className = 'skills-grid';
+            skills.forEach(skill => {
+                const div = document.createElement('div');
+                div.className = 'skill-item' + (skill.armorPenalty ? ' armor-penalty' : '');
+                div.innerHTML = `
+                    <div class="skill-info">
+                        <span class="skill-name">${skill.name}${skill.armorPenalty ? ' <i class="fas fa-weight-hanging" title="Penalidade de Carga"></i>' : ''}</span>
+                        <span class="skill-attr">${skill.attr}</span>
+                    </div>
+                    <select class="skill-select" data-skill="${skill.id}">
+                        <option value="0">Sem Treino</option>
+                        <option value="1">Treinada</option>
+                        <option value="2">Veterana</option>
+                        <option value="3">Expert</option>
+                    </select>
+                    <span class="skill-total" data-skill-total="${skill.id}">+0</span>
+                `;
+
+                const select = div.querySelector('select');
+                select.addEventListener('change', () => this.onFieldChange());
+
+                grid.appendChild(div);
+            });
+        }
+    },
+
+    // Handle D&D skill proficiency change
+    onDndSkillChange(skillId, profCheckbox, expCheckbox) {
+        if (!this.currentCharacter) return;
+        
+        // Initialize skill objects if needed
+        if (!this.currentCharacter.dndSkillProficiencies) {
+            this.currentCharacter.dndSkillProficiencies = {};
+        }
+        if (!this.currentCharacter.dndSkillExpertise) {
+            this.currentCharacter.dndSkillExpertise = {};
+        }
+        
+        // Expertise requires proficiency
+        if (expCheckbox.checked && !profCheckbox.checked) {
+            profCheckbox.checked = true;
+        }
+        
+        this.currentCharacter.dndSkillProficiencies[skillId] = profCheckbox.checked;
+        this.currentCharacter.dndSkillExpertise[skillId] = expCheckbox.checked;
+        
+        this.onFieldChange();
     },
 
     // Combat skills to display
-    COMBAT_SKILLS: ['luta', 'pontaria', 'atletismo', 'acrobacia', 'reflexos', 'furtividade', 'intimidacao', 'percepcao', 'tatica', 'medicina'],
+    COMBAT_SKILLS_RS: ['luta', 'pontaria', 'atletismo', 'acrobacia', 'reflexos', 'furtividade', 'intimidacao', 'percepcao', 'tatica', 'medicina'],
+    COMBAT_SKILLS_DND: ['athletics', 'acrobatics', 'stealth', 'perception', 'insight', 'intimidation', 'investigation', 'survival', 'medicine', 'sleightOfHand'],
 
     // Generate combat skills HTML for combat tab
     generateCombatSkillsHTML() {
@@ -536,9 +671,13 @@ const Sheet = {
         if (!grid) return;
 
         grid.innerHTML = '';
+        
+        const isDnd = this.currentSystem === 'dnd5e';
+        const combatSkills = isDnd ? this.COMBAT_SKILLS_DND : this.COMBAT_SKILLS_RS;
+        const allSkills = isDnd ? Calculations.DND_SKILLS : Calculations.SKILLS;
 
-        this.COMBAT_SKILLS.forEach(skillId => {
-            const skill = Calculations.SKILLS.find(s => s.id === skillId);
+        combatSkills.forEach(skillId => {
+            const skill = allSkills.find(s => s.id === skillId);
             if (!skill) return;
 
             const div = document.createElement('div');
@@ -557,8 +696,13 @@ const Sheet = {
     updateCombatSkills() {
         if (!this.currentCharacter) return;
 
-        this.COMBAT_SKILLS.forEach(skillId => {
-            const total = Calculations.calculateSkillTotal(this.currentCharacter, skillId);
+        const isDnd = this.currentSystem === 'dnd5e';
+        const combatSkills = isDnd ? this.COMBAT_SKILLS_DND : this.COMBAT_SKILLS_RS;
+
+        combatSkills.forEach(skillId => {
+            const total = isDnd 
+                ? Calculations.calculateDndSkillTotal(this.currentCharacter, skillId)
+                : Calculations.calculateSkillTotal(this.currentCharacter, skillId);
             const el = document.querySelector(`[data-combat-skill="${skillId}"]`);
             if (el) {
                 el.textContent = (total >= 0 ? '+' : '') + total;
@@ -583,14 +727,43 @@ const Sheet = {
 
     // Update race bonus display
     updateRaceBonus() {
-        const race = this.currentCharacter.charRace;
         const bonusEl = document.getElementById('raceBonus');
         if (!bonusEl) return;
-
-        if (race && Calculations.RACE_BONUSES[race]) {
-            bonusEl.textContent = '★ ' + Calculations.RACE_BONUSES[race];
+        
+        const isDnd = this.currentSystem === 'dnd5e';
+        const race = this.currentCharacter.charRace;
+        
+        if (isDnd) {
+            // D&D race bonus - use charRace field
+            const raceInfo = Calculations.DND_RACES[race];
+            
+            if (raceInfo) {
+                // Format bonuses
+                const bonusList = [];
+                if (raceInfo.bonuses.all) {
+                    bonusList.push('+1 em todos');
+                } else {
+                    for (const [attr, val] of Object.entries(raceInfo.bonuses)) {
+                        if (attr !== 'choice1' && attr !== 'choice2' && attr !== 'choice') {
+                            bonusList.push(`${attr} +${val}`);
+                        }
+                    }
+                }
+                
+                const bonusText = bonusList.length > 0 ? bonusList.join(', ') : '';
+                const traitsText = raceInfo.traits.slice(0, 2).join(', ');
+                
+                bonusEl.innerHTML = `<strong>${raceInfo.name}</strong>: ${bonusText}<br><small>${traitsText}</small>`;
+            } else {
+                bonusEl.textContent = '';
+            }
         } else {
-            bonusEl.textContent = '';
+            // Reals&Scripts race bonus
+            if (race && Calculations.RACE_BONUSES[race]) {
+                bonusEl.textContent = '★ ' + Calculations.RACE_BONUSES[race];
+            } else {
+                bonusEl.textContent = '';
+            }
         }
     },
 
@@ -598,6 +771,28 @@ const Sheet = {
     updateCalculations() {
         if (!this.currentCharacter) return;
 
+        const isDnd = this.currentSystem === 'dnd5e';
+        
+        if (isDnd) {
+            // D&D 5e calculations
+            this.updateDndCalculations();
+        } else {
+            // Reals&Scripts calculations
+            this.updateRsCalculations();
+        }
+
+        // Update combat skills in combat tab
+        this.updateCombatSkills();
+
+        // Update trained skills list in principal tab
+        this.updateTrainedSkillsList();
+
+        // Update race bonus
+        this.updateRaceBonus();
+    },
+
+    // Reals&Scripts specific calculations
+    updateRsCalculations() {
         const calc = Calculations.updateAllCalculations(this.currentCharacter);
 
         // Update HP
@@ -687,15 +882,67 @@ const Sheet = {
                 totalEl.textContent = (total >= 0 ? '+' : '') + total;
             }
         });
+    },
 
-        // Update combat skills in combat tab
-        this.updateCombatSkills();
+    // D&D 5e specific calculations
+    updateDndCalculations() {
+        // Update D&D modifiers and saving throws
+        this.updateDndModifiers();
+        this.updateDndClassDisplay();
 
-        // Update trained skills list in principal tab
-        this.updateTrainedSkillsList();
+        // Calculate D&D values
+        const maxHp = Calculations.calculateDndMaxHP(this.currentCharacter);
+        const ac = Calculations.calculateDndAC(this.currentCharacter);
+        const initiative = Calculations.calculateDndInitiative(this.currentCharacter);
+        const profBonus = Calculations.calculateDndProficiencyBonus(this.currentCharacter);
+        const passivePerception = Calculations.calculateDndPassivePerception(this.currentCharacter);
 
-        // Update race bonus
-        this.updateRaceBonus();
+        // Update HP
+        const maxHpEl = document.getElementById('maxHp');
+        const maxHpMainEl = document.getElementById('maxHpMain');
+        const hpBar = document.getElementById('hpBar');
+        if (maxHpEl) maxHpEl.textContent = maxHp;
+        if (maxHpMainEl) maxHpMainEl.textContent = maxHp;
+        if (hpBar) {
+            const currentHp = parseInt(this.currentCharacter.currentHp) || 0;
+            const percent = Math.min(100, Math.max(0, (currentHp / maxHp) * 100));
+            hpBar.style.width = percent + '%';
+        }
+
+        // Update AC
+        const caEl = document.getElementById('armorClass');
+        if (caEl) caEl.textContent = ac;
+
+        // Update Initiative
+        const initEl = document.getElementById('initiative');
+        if (initEl) initEl.textContent = (initiative >= 0 ? '+' : '') + initiative;
+
+        // Update Proficiency Bonus
+        const profBonusEl = document.getElementById('profBonus');
+        if (profBonusEl) profBonusEl.textContent = '+' + profBonus;
+
+        // Update Passive Perception
+        const passiveEl = document.getElementById('passivePerception');
+        if (passiveEl) passiveEl.textContent = passivePerception;
+
+        // Update all D&D skill totals
+        Calculations.DND_SKILLS.forEach(skill => {
+            const totalEl = document.querySelector(`[data-skill-total="${skill.id}"]`);
+            if (totalEl) {
+                const total = Calculations.calculateDndSkillTotal(this.currentCharacter, skill.id);
+                totalEl.textContent = (total >= 0 ? '+' : '') + total;
+            }
+        });
+
+        // Update Spell DC if character is a caster
+        const spellDC = Calculations.calculateDndSpellDC(this.currentCharacter);
+        const spellDCEl = document.getElementById('spellDC');
+        if (spellDCEl) spellDCEl.textContent = spellDC;
+
+        // Calculate and update speed (base 30 for most races)
+        const speed = this.currentCharacter.dndSpeed || 30;
+        const speedEl = document.getElementById('dndSpeed');
+        if (speedEl) speedEl.textContent = speed + ' ft';
     },
 
     // Update trained skills list
@@ -703,18 +950,40 @@ const Sheet = {
         const container = document.getElementById('trainedSkillsList');
         if (!container) return;
 
-        const trained = Calculations.getTrainedSkills(this.currentCharacter);
-
-        if (trained.length === 0) {
-            container.innerHTML = '<p class="no-skills">Nenhuma perícia treinada</p>';
-            return;
+        const isDnd = this.currentSystem === 'dnd5e';
+        
+        if (isDnd) {
+            // D&D proficient skills
+            const proficient = Calculations.getDndProficientSkills(this.currentCharacter);
+            
+            if (proficient.length === 0) {
+                container.innerHTML = '<p class="no-skills">Nenhuma proficiência</p>';
+                return;
+            }
+            
+            container.innerHTML = proficient.map(skill => `
+                <div class="trained-skill-item">
+                    <span class="skill-name">
+                        ${skill.proficiency === 2 ? '★★' : '★'} ${skill.name}
+                    </span>
+                    <span class="skill-bonus">${skill.total >= 0 ? '+' : ''}${skill.total}</span>
+                </div>
+            `).join('');
+        } else {
+            // Reals&Scripts trained skills
+            const trained = Calculations.getTrainedSkills(this.currentCharacter);
+            
+            if (trained.length === 0) {
+                container.innerHTML = '<p class="no-skills">Nenhuma perícia treinada</p>';
+                return;
+            }
+            
+            container.innerHTML = trained.map(skill => `
+                <div class="trained-skill-item">
+                    <span class="skill-name">${skill.name}</span>
+                    <span class="skill-bonus">${skill.total >= 0 ? '+' : ''}${skill.total}</span>
+                </div>
+            `).join('');
         }
-
-        container.innerHTML = trained.map(skill => `
-            <div class="trained-skill-item">
-                <span class="skill-name">${skill.name}</span>
-                <span class="skill-bonus">${skill.total >= 0 ? '+' : ''}${skill.total}</span>
-            </div>
-        `).join('');
     }
 };
