@@ -410,10 +410,34 @@ const Calculations = {
 
     // Race bonuses info
     RACE_BONUSES: {
-        'humano': '+2 Perícias Treinadas Extras',
-        'elfo': 'Olhos Fundidos',
-        'anao': '+1 Músculo de Braços',
-        'demonio': '+1 Músculo de Pernas'
+        'humano': {
+            name: 'Humano',
+            attrs: 'Sem bônus (0 em todos)',
+            special: '+2 Perícias Extras (qualquer)',
+            skills: 'Coringas (escolhe 2 de qualquer)',
+            description: 'Versatilidade: capacidade de se especializar em qualquer área'
+        },
+        'elfo': {
+            name: 'Elfo',
+            attrs: 'FOR-1, CON-1, INT+1, VON+2, DES+2',
+            special: 'Olhos Fundidos desde nascimento',
+            skills: 'Herbalismo, Primeiros Socorros, Concentração',
+            description: 'Capacidade de manipular javatons mais facilmente pelas orelhas alongadas'
+        },
+        'anao': {
+            name: 'Anão',
+            attrs: 'FOR+2, CON+1, DES-1, CAR-2',
+            special: 'Músculos dos Braços Fundidos desde nascimento',
+            skills: 'Engenharia, Mineração, Intimidação',
+            description: 'Força sobre-humana nos braços, afinidade com engenharia'
+        },
+        'demonio': {
+            name: 'Demônio',
+            attrs: 'FOR+1, CON+1, VON+1, CAR-1',
+            special: 'Fusão temporária de pernas (1x/dia)',
+            skills: 'Escolhe 1: Sobrevivência, Cultura ou Percepção',
+            description: 'Pode fundir javatons às pernas temporariamente para fuga rápida ou ataque poderoso'
+        }
     },
 
     // Get attribute value by name
