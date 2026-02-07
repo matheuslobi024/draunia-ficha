@@ -441,6 +441,11 @@ const SystemEditor = {
     
     // Collect form data to system object
     collectFormData() {
+        if (!this.currentSystem) {
+            console.error('[SystemEditor] currentSystem is null/undefined');
+            return null;
+        }
+        
         const sys = this.currentSystem;
         
         // Basic info
@@ -1000,6 +1005,17 @@ const SystemEditor = {
     // Save system
     async save() {
         const system = this.collectFormData();
+        
+        if (!system) {
+            alert('Erro: Sistema não está carregado. Tente novamente.');
+            return;
+        }
+        
+        if (!system.id) {
+            console.error('[SystemEditor] System ID is missing');
+            alert('Erro: ID do sistema não encontrado.');
+            return;
+        }
         
         if (!system.name || system.name.trim() === '') {
             alert('Por favor, insira um nome para o sistema.');

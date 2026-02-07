@@ -276,6 +276,8 @@ const API = {
     
     async saveCustomSystem(systemId, systemData) {
         if (!this.currentUser) throw new Error('Não autenticado');
+        if (!systemId) throw new Error('ID do sistema não fornecido');
+        if (!systemData) throw new Error('Dados do sistema não fornecidos');
         
         try {
             systemData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
