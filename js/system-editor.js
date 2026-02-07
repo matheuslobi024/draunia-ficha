@@ -873,13 +873,10 @@ const SystemEditor = {
             this.renderRacesTable(dndRaces);
         } else if (preset === 'realsscripts') {
             const rsRaces = [
-                { name: 'Humano', bonuses: '+1 qualquer', traits: 'Versátil, Adaptável' },
-                { name: 'Elfo', bonuses: 'AGI+1, INT+1', traits: 'Visão no Escuro' },
-                { name: 'Anão', bonuses: 'CON+2', traits: 'Resistência' },
-                { name: 'Demônio', bonuses: 'FOR+1, CAR+1', traits: 'Herança Infernal' },
-                { name: 'Anjo', bonuses: 'CAR+2', traits: 'Luz Celestial' },
-                { name: 'Híbrido', bonuses: 'Variável', traits: 'Dupla Herança' },
-                { name: 'Construto', bonuses: 'CON+2', traits: 'Sem necessidades biológicas' }
+                { name: 'Humano', bonuses: 'Nenhuma fusão inata', traits: '+2 Perícias Extras (qualquer)' },
+                { name: 'Elfo', bonuses: 'Olhos Fundidos', traits: 'Herbalismo, Primeiros Socorros, Concentração' },
+                { name: 'Anão', bonuses: 'Músculos Braços Fundidos', traits: 'Engenharia, Mineração, Intimidação' },
+                { name: 'Demônio', bonuses: 'Fusão pernas (1x/dia)', traits: 'Escolhe 1: Sobrevivência, Cultura ou Percepção' }
             ];
             this.renderRacesTable(rsRaces);
         }
