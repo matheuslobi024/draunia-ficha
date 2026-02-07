@@ -209,8 +209,14 @@ const SystemManager = {
     
     // Close systems manager
     closeManager() {
-        document.getElementById('systemsManagerModal').classList.add('hidden');
-        document.getElementById('characterModal').classList.remove('hidden');
+        console.log('[SystemManager] closeManager() chamado');
+        const managerModal = document.getElementById('systemsManagerModal');
+        const charModal = document.getElementById('characterModal');
+        console.log('[SystemManager] managerModal:', managerModal);
+        console.log('[SystemManager] charModal:', charModal);
+        if (managerModal) managerModal.classList.add('hidden');
+        if (charModal) charModal.classList.remove('hidden');
+        console.log('[SystemManager] Voltou para characterModal');
     },
     
     // Render systems list in manager
@@ -607,8 +613,17 @@ const SystemManager = {
     
     // Close editor
     closeEditor() {
+        console.log('[SystemManager] closeEditor() chamado');
         document.getElementById('systemEditorModal').classList.add('hidden');
         this.currentEditingSystem = null;
         this.setEditorReadOnly(false);
+        // Mostrar o manager ou o characterModal
+        const managerModal = document.getElementById('systemsManagerModal');
+        const charModal = document.getElementById('characterModal');
+        if (managerModal && !managerModal.classList.contains('hidden')) {
+            // Manager já está visível, não precisa fazer nada
+        } else if (charModal) {
+            charModal.classList.remove('hidden');
+        }
     }
 };
