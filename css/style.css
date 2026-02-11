@@ -1870,6 +1870,11 @@ input.vital-single {
     box-shadow: 0 0 8px rgba(155, 89, 182, 0.4);
 }
 
+.pa-fill {
+    background: linear-gradient(90deg, #e6a800 0%, var(--pa-color) 50%, #ffd93d 100%);
+    box-shadow: 0 0 8px rgba(255, 217, 61, 0.4);
+}
+
 /* Efeito de brilho nas barras */
 .bar-fill::after {
     content: '';

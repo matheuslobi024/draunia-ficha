@@ -44,6 +44,17 @@ const BaseCalculations = {
     },
     
     /**
+     * Calculate Max Sanity using current system
+     */
+    calculateMaxSanity(charData) {
+        const system = SystemRegistry.getCurrent();
+        if (!system || !system.calculations.calculateMaxSanity) {
+            return charData.sanity || 0;
+        }
+        return system.calculations.calculateMaxSanity(charData);
+    },
+    
+    /**
      * Calculate CA/AC using current system
      */
     calculateCA(charData) {

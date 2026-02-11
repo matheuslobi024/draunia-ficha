@@ -789,6 +789,23 @@ const Sheet = {
         this.showNotification('PE restaurado ao máximo!', 'success');
     },
 
+    // Restore Sanity to max
+    restoreSanity() {
+        const maxSanity = Calculations.calculateMaxSanity(this.currentCharacter);
+        const sanityInput = document.getElementById('sanity');
+        const sanityMainInput = document.getElementById('sanityMain');
+        
+        if (sanityInput) {
+            sanityInput.value = maxSanity;
+        }
+        if (sanityMainInput) {
+            sanityMainInput.value = maxSanity;
+        }
+        this.currentCharacter.sanity = maxSanity;
+        this.onFieldChange();
+        this.showNotification('Sanidade restaurada ao máximo!', 'success');
+    },
+
     // Use attack - consume PA and PE
     useAttack(btn) {
         const tr = btn.closest('tr');
@@ -1312,10 +1329,31 @@ const Sheet = {
             }
         }
 
+        // Update Sanity (if system has it)
+        if (config.hasSanity) {
+            const maxSanity = Calculations.calculateMaxSanity(this.currentCharacter);
+            const maxSanityEl = document.getElementById('maxSanity');
+            const maxSanityMainEl = document.getElementById('maxSanityMain');
+            const sanBar = document.getElementById('sanBar');
+            if (maxSanityEl) maxSanityEl.textContent = maxSanity;
+            if (maxSanityMainEl) maxSanityMainEl.textContent = maxSanity;
+            if (sanBar) {
+                const currentSanity = parseInt(this.currentCharacter.sanity) || 0;
+                const percent = Math.min(100, Math.max(0, (currentSanity / maxSanity) * 100));
+                sanBar.style.width = percent + '%';
+            }
+        }
+
         // Update PA (if system has it)
         if (config.hasActionPoints) {
             const maxPAEl = document.getElementById('maxPA');
+            const paBar = document.getElementById('paBar');
             if (maxPAEl) maxPAEl.textContent = pa;
+            if (paBar) {
+                const currentPA = parseInt(this.currentCharacter.currentPA) || 0;
+                const percent = Math.min(100, Math.max(0, (currentPA / pa) * 100));
+                paBar.style.width = percent + '%';
+            }
         }
 
         // Update CA
