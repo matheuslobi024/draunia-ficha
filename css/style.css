@@ -1531,10 +1531,10 @@ body.system-op .vital-box.rs-only { display: none; }
 /* Vitals Compact Card */
 .vitals-compact-card {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-lg);
     background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-xl);
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--border-color);
 }
@@ -1553,6 +1553,7 @@ body.system-op .vital-box.rs-only { display: none; }
 
 .vitals-compact-card.cols-3 {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
 }
 
 /* Adaptive grid based on visible items (modern browsers) */
@@ -1572,13 +1573,14 @@ body.system-op .vital-box.rs-only { display: none; }
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-sm);
-    padding: var(--spacing-md) var(--spacing-sm);
+    padding: var(--spacing-lg) var(--spacing-md);
     background: linear-gradient(135deg, var(--bg-input) 0%, rgba(20, 20, 35, 0.9) 100%);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     border: 1px solid var(--border-light);
     transition: all 0.3s ease;
-    min-height: 120px;
+    min-height: 140px;
+    min-width: 100px;
 }
 
 .vital-compact:hover {
@@ -1615,18 +1617,18 @@ body.system-op .vital-box.rs-only { display: none; }
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
     font-weight: 700;
     flex-wrap: nowrap;
-    margin: var(--spacing-xs) 0;
+    margin: var(--spacing-sm) 0;
 }
 
 .vital-compact-input {
-    width: 55px !important;
-    min-width: 55px;
+    width: 58px !important;
+    min-width: 58px;
     text-align: center;
-    padding: 0.5rem !important;
-    font-size: 1.25rem !important;
+    padding: 0.6rem !important;
+    font-size: 1.3rem !important;
     font-weight: 700;
     background: linear-gradient(135deg, var(--bg-input) 0%, rgba(15, 15, 25, 0.95) 100%) !important;
     border: 1px solid var(--border-light) !important;
@@ -1644,15 +1646,15 @@ body.system-op .vital-box.rs-only { display: none; }
 
 .vital-buttons {
     display: flex;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-sm);
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
 }
 
 .vital-buttons .btn-adjust {
-    width: 34px;
-    height: 30px;
-    min-width: 34px;
-    font-size: 0.85rem;
+    width: 38px;
+    height: 34px;
+    min-width: 38px;
+    font-size: 0.9rem;
     border-radius: var(--border-radius-md);
     transition: all 0.2s ease;
 }
