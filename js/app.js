@@ -242,15 +242,38 @@ const App = {
 
     // Select character
     async selectCharacter(charId) {
-        const character = await Auth.getCharacter(charId);
+        // Show loading state
+        const charModal = document.getElementById('characterModal');
+        const charItem = charModal.querySelector(`[data-id="${charId}"]`);
+        if (charItem) {
+            charItem.classList.add('loading');
+        }
+        
+        try {
+            const character = await Auth.getCharacter(charId);
 
-        if (character) {
-            this.currentCharacterId = charId;
-            this.currentSystem = character.system || 'realsscripts';
-            Sheet.loadCharacter(character, charId);
-            this.applySystemToUI(this.currentSystem);
-            document.getElementById('characterModal').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
+            if (character) {
+                this.currentCharacterId = charId;
+                this.currentSystem = character.system || 'realsscripts';
+                Sheet.loadCharacter(character, charId);
+                this.applySystemToUI(this.currentSystem);
+                document.getElementById('characterModal').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+            } else {
+                console.error('[App] Character not found:', charId);
+                alert('Erro ao carregar personagem. Tente novamente.');
+                // Remove loading state
+                if (charItem) {
+                    charItem.classList.remove('loading');
+                }
+            }
+        } catch (error) {
+            console.error('[App] Error selecting character:', error);
+            alert('Erro ao carregar personagem. Tente novamente.');
+            // Remove loading state
+            if (charItem) {
+                charItem.classList.remove('loading');
+            }
         }
     },
 
@@ -309,7 +332,7 @@ const App = {
     // Apply system-specific UI changes
     applySystemToUI(systemId) {
         const system = SystemManager.getSystem(systemId);
-        const config = system.config || {};
+        const config = system?.config || {};
         
         // Tell Sheet module which system is active
         Sheet.setSystem(systemId);
@@ -331,16 +354,6 @@ const App = {
             }
         });
         
-        // Show/hide Sanity section based on system
-        document.querySelectorAll('.san-compact, .sanity-section').forEach(el => {
-            el.classList.toggle('hidden', !config.hasSanity);
-        });
-        
-        // Show/hide PE section based on system  
-        document.querySelectorAll('.pe-compact, .pe-section').forEach(el => {
-            el.classList.toggle('hidden', !config.hasEnergyPoints);
-        });
-        
         // Show/hide Fusions section
         const fusionElements = document.querySelectorAll('.fusions-section, [data-card-id="fusions"]');
         fusionElements.forEach(el => {
@@ -348,7 +361,7 @@ const App = {
         });
         
         // Show/hide Dodge
-        const dodgeElements = document.querySelectorAll('#dodge').forEach(el => {
+        document.querySelectorAll('#dodge').forEach(el => {
             el.closest('.defense-box')?.classList.toggle('hidden', !config.hasDodge);
         });
         
@@ -366,6 +379,8 @@ const App = {
         
         // Store current system for calculations
         Calculations.currentSystem = systemId;
+        
+        console.log('[App] Sistema UI aplicado:', systemId, config);
     },
 
     // Delete character

@@ -169,7 +169,12 @@ const API = {
     },
     
     async getCharacter(charId) {
-        if (!this.currentUser) throw new Error('Não autenticado');
+        if (!this.currentUser) {
+            console.error('[API] getCharacter: Usuário não autenticado');
+            throw new Error('Não autenticado');
+        }
+        
+        console.log('[API] Carregando personagem:', charId);
         
         try {
             const doc = await db.collection('users')
@@ -179,12 +184,14 @@ const API = {
                 .get();
             
             if (!doc.exists) {
+                console.error('[API] Personagem não encontrado:', charId);
                 throw new Error('Personagem não encontrado');
             }
             
+            console.log('[API] Personagem carregado com sucesso');
             return doc.data();
         } catch (error) {
-            console.error('Erro ao carregar personagem:', error);
+            console.error('[API] Erro ao carregar personagem:', error);
             throw error;
         }
     },
