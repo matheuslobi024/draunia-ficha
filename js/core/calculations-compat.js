@@ -119,6 +119,11 @@ const Calculations = {
         return system?.calculations?.calculateCA?.(charData) || 10;
     },
     
+    calculateMaxSanity(charData) {
+        const system = SystemRegistry.get(this.currentSystem);
+        return system?.calculations?.calculateMaxSanity?.(charData) || charData?.sanity || 20;
+    },
+    
     // ========== D&D 5E METHODS (delegate to DnD5eSystem) ==========
     
     calculateDndModifier(score) {
