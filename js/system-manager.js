@@ -295,8 +295,9 @@ const SystemManager = {
         let html = '';
         for (const [id, system] of Object.entries(allSystems)) {
             const isBuiltIn = system.isBuiltIn;
+            const isShared = system.isShared;
             html += `
-                <div class="system-manager-item ${isBuiltIn ? 'built-in' : ''}" data-system-id="${id}">
+                <div class="system-manager-item ${isBuiltIn ? 'built-in' : ''} ${isShared ? 'shared' : ''}" data-system-id="${id}">
                     <div class="system-item-icon">
                         <i class="fas ${system.icon || 'fa-dice-d20'}"></i>
                     </div>
@@ -304,9 +305,15 @@ const SystemManager = {
                         <h4>${system.name}</h4>
                         <p>${system.description || ''}</p>
                         ${isBuiltIn ? '<span class="built-in-badge">Sistema Padrão</span>' : ''}
+                        ${isShared ? `<span class="shared-badge"><i class="fas fa-share-alt"></i> De: ${system.sharedBy?.name || 'Desconhecido'}</span>` : ''}
                     </div>
                     <div class="system-item-actions">
                         ${!isBuiltIn ? `
+                            ${!isShared ? `
+                                <button class="btn-icon" onclick="SystemManager.showShareModal('${id}')" title="Compartilhar">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            ` : ''}
                             <button class="btn-icon" onclick="SystemManager.editSystem('${id}')" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -324,6 +331,54 @@ const SystemManager = {
         }
         
         container.innerHTML = html || '<p class="no-systems">Nenhum sistema personalizado criado.</p>';
+    },
+    
+    // Show share modal
+    showShareModal(systemId) {
+        this.currentShareSystemId = systemId;
+        const system = this.getSystem(systemId);
+        
+        const modal = document.getElementById('shareSystemModal');
+        const systemName = document.getElementById('shareSystemName');
+        const emailInput = document.getElementById('shareEmailInput');
+        
+        if (systemName) systemName.textContent = system.name;
+        if (emailInput) emailInput.value = '';
+        
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    },
+    
+    // Close share modal
+    closeShareModal() {
+        const modal = document.getElementById('shareSystemModal');
+        if (modal) modal.classList.add('hidden');
+        this.currentShareSystemId = null;
+    },
+    
+    // Share system with email
+    async shareSystem() {
+        const emailInput = document.getElementById('shareEmailInput');
+        const email = emailInput?.value.trim();
+        
+        if (!email) {
+            alert('Por favor, insira um email.');
+            return;
+        }
+        
+        if (!this.currentShareSystemId) {
+            alert('Nenhum sistema selecionado.');
+            return;
+        }
+        
+        try {
+            const result = await API.shareSystem(this.currentShareSystemId, email);
+            alert(result.message);
+            this.closeShareModal();
+        } catch (error) {
+            alert(error.message || 'Erro ao compartilhar sistema.');
+        }
     },
     
     // Show system select modal

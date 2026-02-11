@@ -211,17 +211,29 @@ const App = {
         if (characters.length === 0) {
             list.innerHTML = '<p style="text-align: center; color: var(--text-muted);">Nenhuma ficha criada</p>';
         } else {
-            list.innerHTML = characters.map(char => `
+            list.innerHTML = characters.map(char => {
+                // Get system info for display
+                const systemId = char.system || 'realsscripts';
+                const system = SystemManager.getSystem(systemId);
+                const systemName = system?.name || 'Sistema Desconhecido';
+                const systemIcon = system?.icon || 'fa-dice-d20';
+                
+                return `
                 <div class="character-item" data-id="${char.id}">
+                    <div class="character-system-badge" title="${systemName}">
+                        <i class="fas ${systemIcon}"></i>
+                    </div>
                     <div class="character-item-info" onclick="App.selectCharacter('${char.id}')">
                         <h4>${char.name || 'Sem nome'}</h4>
                         <span>${char.race || 'Sem raça'} • Nível ${char.level || 1}</span>
+                        <span class="character-system-name">${systemName}</span>
                     </div>
                     <button class="delete-char-btn" onclick="App.deleteCharacter('${char.id}', event)" title="Excluir">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         document.getElementById('characterModal').classList.remove('hidden');

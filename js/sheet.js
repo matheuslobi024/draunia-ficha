@@ -20,16 +20,81 @@ const Sheet = {
     // Set the system and adapt the UI
     setSystem(systemId) {
         this.currentSystem = systemId || 'realsscripts';
-        const isDnd = systemId === 'dnd5e';
+        
+        // Get system config
+        const system = SystemManager?.getSystem(systemId);
+        const config = system?.config || {};
+        
+        const isDnd = systemId === 'dnd5e' || config.attrType === 'dnd';
+        const isRS = systemId === 'realsscripts' || config.attrType === 'realsscripts';
+        const isCustom = config.attrType === 'custom' && config.customAttrs && config.customAttrs.length > 0;
+        const hasCustomRaces = config.races && config.races.length > 0;
         
         // Toggle body class for CSS
         document.body.classList.toggle('system-dnd', isDnd);
+        document.body.classList.toggle('system-custom', isCustom);
+        
+        // Show/hide attribute sections
+        const rsAttrs = document.getElementById('attributesRS');
+        const dndAttrs = document.getElementById('attributesDND');
+        const customAttrs = document.getElementById('attributesCustom');
+        
+        if (rsAttrs) rsAttrs.style.display = isRS && !isCustom ? '' : 'none';
+        if (dndAttrs) dndAttrs.style.display = isDnd && !isCustom ? '' : 'none';
+        if (customAttrs) customAttrs.style.display = isCustom ? '' : 'none';
+        
+        // Generate custom attributes if needed
+        if (isCustom) {
+            this.generateCustomAttributesHTML(config.customAttrs, config);
+        }
         
         // Show/hide race optgroups
         const rsRaces = document.getElementById('racesRealsscripts');
         const dndRaces = document.getElementById('racesDnd');
-        if (rsRaces) rsRaces.style.display = isDnd ? 'none' : '';
-        if (dndRaces) dndRaces.style.display = isDnd ? '' : 'none';
+        const customRaces = document.getElementById('racesCustom');
+        
+        // Handle race optgroups visibility
+        if (hasCustomRaces) {
+            // Custom system with custom races
+            if (rsRaces) rsRaces.style.display = 'none';
+            if (dndRaces) dndRaces.style.display = 'none';
+            if (customRaces) {
+                customRaces.style.display = '';
+                this.populateCustomRaces(config.races);
+            }
+        } else if (isDnd) {
+            if (rsRaces) rsRaces.style.display = 'none';
+            if (dndRaces) dndRaces.style.display = '';
+            if (customRaces) customRaces.style.display = 'none';
+        } else {
+            if (rsRaces) rsRaces.style.display = '';
+            if (dndRaces) dndRaces.style.display = 'none';
+            if (customRaces) customRaces.style.display = 'none';
+        }
+        
+        // Handle class section visibility
+        const classRow = document.getElementById('classRow');
+        const hasClasses = config.hasClasses === true || isDnd;
+        const hasCustomClasses = config.classes && config.classes.length > 0;
+        const dndClasses = document.getElementById('classesDnd');
+        const customClasses = document.getElementById('classesCustom');
+        
+        if (classRow) {
+            classRow.style.display = hasClasses ? '' : 'none';
+        }
+        
+        if (hasClasses) {
+            if (hasCustomClasses) {
+                if (dndClasses) dndClasses.style.display = 'none';
+                if (customClasses) {
+                    customClasses.style.display = '';
+                    this.populateCustomClasses(config.classes);
+                }
+            } else if (isDnd) {
+                if (dndClasses) dndClasses.style.display = '';
+                if (customClasses) customClasses.style.display = 'none';
+            }
+        }
         
         // Regenerate skills for the current system
         this.generateSkillsHTML();
@@ -41,7 +106,137 @@ const Sheet = {
             this.updateDndModifiers();
         }
         
-        console.log('[Sheet] Sistema configurado:', this.currentSystem);
+        // Set current system in calculations
+        Calculations.currentSystem = systemId;
+        
+        console.log('[Sheet] Sistema configurado:', this.currentSystem, 'Config:', config);
+    },
+    
+    // Populate custom classes select
+    populateCustomClasses(classes) {
+        const group = document.getElementById('classesCustom');
+        if (!group || !classes) return;
+        
+        // Keep "Selecione..." option
+        group.innerHTML = '<option value="">Selecione...</option>';
+        
+        classes.forEach(cls => {
+            const option = document.createElement('option');
+            option.value = cls.id || cls.name.toLowerCase().replace(/\s+/g, '_');
+            option.textContent = cls.name;
+            if (cls.hitDie) option.dataset.hitDie = cls.hitDie;
+            group.appendChild(option);
+        });
+    },
+    
+    // Populate custom races select
+    populateCustomRaces(races) {
+        const group = document.getElementById('racesCustom');
+        if (!group || !races) return;
+        
+        // Keep "Selecione..." option
+        group.innerHTML = '<option value="">Selecione...</option>';
+        
+        races.forEach(race => {
+            const option = document.createElement('option');
+            option.value = race.id || race.name.toLowerCase().replace(/\s+/g, '_');
+            option.textContent = race.name;
+            group.appendChild(option);
+        });
+    },
+    
+    // Generate custom attributes HTML based on system config
+    generateCustomAttributesHTML(customAttrs, config) {
+        const container = document.getElementById('customAttributesContainer');
+        if (!container) return;
+        
+        // Show point limit info if applicable
+        const pointInfo = document.getElementById('customAttrPointsInfo');
+        if (pointInfo && config.attrPointLimit > 0) {
+            pointInfo.innerHTML = `(<span id="usedCustomAttrPoints">0</span>/${config.attrPointLimit})`;
+        } else if (pointInfo) {
+            pointInfo.innerHTML = '';
+        }
+        
+        // Generate attribute items
+        let html = '';
+        for (const attr of customAttrs) {
+            const fieldId = 'customAttr_' + attr.abbr.toLowerCase();
+            const min = config.attrMin !== undefined ? config.attrMin : 1;
+            const max = config.attrMax !== undefined ? config.attrMax : 20;
+            const defaultVal = attr.default !== undefined ? attr.default : 0;
+            
+            html += `
+                <div class="attr-item">
+                    <span class="attr-label" title="${attr.name}">${attr.abbr}</span>
+                    <div class="attr-controls">
+                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('${fieldId}', -1)"><i class="fas fa-minus"></i></button>
+                        <input type="number" id="${fieldId}" data-field="${fieldId}" class="attr-input" value="${defaultVal}" min="${min}" max="${max}">
+                        <button type="button" class="btn-adjust btn-attr" onclick="Sheet.adjustValue('${fieldId}', 1)"><i class="fas fa-plus"></i></button>
+                    </div>
+                    ${config.modifierCalc !== 'direct' ? `<span class="attr-mod" id="${fieldId}_mod">+0</span>` : ''}
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+        
+        // Bind events to new inputs
+        container.querySelectorAll('[data-field]').forEach(el => {
+            el.addEventListener('input', () => this.onFieldChange());
+            el.addEventListener('change', () => this.onFieldChange());
+        });
+        
+        // Load values if character exists
+        if (this.currentCharacter) {
+            this.loadCustomAttributeValues(customAttrs);
+        }
+    },
+    
+    // Load custom attribute values from character
+    loadCustomAttributeValues(customAttrs) {
+        if (!this.currentCharacter) return;
+        
+        for (const attr of customAttrs) {
+            const fieldId = 'customAttr_' + attr.abbr.toLowerCase();
+            const input = document.getElementById(fieldId);
+            if (input) {
+                const savedValue = this.currentCharacter[fieldId];
+                if (savedValue !== undefined) {
+                    input.value = savedValue;
+                } else {
+                    input.value = attr.default !== undefined ? attr.default : 0;
+                }
+            }
+        }
+        
+        this.updateCustomAttributeModifiers();
+    },
+    
+    // Update custom attribute modifiers display
+    updateCustomAttributeModifiers() {
+        const system = SystemManager?.getSystem(this.currentSystem);
+        const config = system?.config || {};
+        
+        if (config.attrType !== 'custom' || !config.customAttrs) return;
+        
+        for (const attr of config.customAttrs) {
+            const fieldId = 'customAttr_' + attr.abbr.toLowerCase();
+            const input = document.getElementById(fieldId);
+            const modEl = document.getElementById(fieldId + '_mod');
+            
+            if (input && modEl) {
+                const score = parseInt(input.value) || 0;
+                let mod = score;
+                
+                if (config.modifierCalc === 'dnd') {
+                    mod = Math.floor((score - 10) / 2);
+                }
+                
+                const modStr = (mod >= 0 ? '+' : '') + mod;
+                modEl.textContent = modStr;
+            }
+        }
     },
 
     // Update D&D class display (hit dice, etc)
@@ -332,6 +527,13 @@ const Sheet = {
                     select.value = level;
                 }
             });
+        }
+        
+        // Load custom attribute values if system has custom attributes
+        const system = SystemManager?.getSystem(this.currentSystem);
+        const config = system?.config || {};
+        if (config.attrType === 'custom' && config.customAttrs) {
+            this.loadCustomAttributeValues(config.customAttrs);
         }
 
         // Load inventory
@@ -659,10 +861,30 @@ const Sheet = {
 
         grid.innerHTML = '';
         
-        const isDnd = this.currentSystem === 'dnd5e';
-        const skills = isDnd ? Calculations.DND_SKILLS : Calculations.SKILLS;
+        // Get system config
+        const system = SystemManager?.getSystem(this.currentSystem);
+        const config = system?.config || {};
+        
+        const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd' || config.skillSystem === 'dnd';
+        const hasCustomSkills = config.skillSystem === 'custom' && config.skills && config.skills.length > 0;
+        
+        // Determine which skills to use
+        let skills;
+        if (hasCustomSkills) {
+            // Use custom skills from system config
+            skills = config.skills.map(s => ({
+                id: s.id || s.name.toLowerCase().replace(/\s+/g, '_'),
+                name: s.name,
+                attr: s.attr || '-',
+                armorPenalty: s.armorPenalty || false
+            }));
+        } else if (isDnd) {
+            skills = Calculations.DND_SKILLS;
+        } else {
+            skills = Calculations.SKILLS;
+        }
 
-        if (isDnd) {
+        if (isDnd && !hasCustomSkills) {
             // D&D-style skills with proficiency checkboxes
             grid.className = 'dnd-skills-grid';
             skills.forEach(skill => {
@@ -684,7 +906,7 @@ const Sheet = {
                 grid.appendChild(div);
             });
         } else {
-            // Realms&Scripts style skills with training levels
+            // Realms&Scripts style skills OR custom skills with training levels
             grid.className = 'skills-grid';
             skills.forEach(skill => {
                 const div = document.createElement('div');
@@ -745,9 +967,32 @@ const Sheet = {
 
         grid.innerHTML = '';
         
-        const isDnd = this.currentSystem === 'dnd5e';
-        const combatSkills = isDnd ? this.COMBAT_SKILLS_DND : this.COMBAT_SKILLS_RS;
-        const allSkills = isDnd ? Calculations.DND_SKILLS : Calculations.SKILLS;
+        // Get system config
+        const system = SystemManager?.getSystem(this.currentSystem);
+        const config = system?.config || {};
+        
+        const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd' || config.skillSystem === 'dnd';
+        const hasCustomSkills = config.skillSystem === 'custom' && config.skills && config.skills.length > 0;
+        
+        let combatSkills;
+        let allSkills;
+        
+        if (hasCustomSkills) {
+            // For custom skills, show all skills in combat (user can have specific combat skills defined)
+            allSkills = config.skills.map(s => ({
+                id: s.id || s.name.toLowerCase().replace(/\s+/g, '_'),
+                name: s.name,
+                attr: s.attr || '-'
+            }));
+            // Show first 10 custom skills for combat tab or all if less than 10
+            combatSkills = allSkills.slice(0, 10).map(s => s.id);
+        } else if (isDnd) {
+            combatSkills = this.COMBAT_SKILLS_DND;
+            allSkills = Calculations.DND_SKILLS;
+        } else {
+            combatSkills = this.COMBAT_SKILLS_RS;
+            allSkills = Calculations.SKILLS;
+        }
 
         combatSkills.forEach(skillId => {
             const skill = allSkills.find(s => s.id === skillId);
@@ -769,7 +1014,11 @@ const Sheet = {
     updateCombatSkills() {
         if (!this.currentCharacter) return;
 
-        const isDnd = this.currentSystem === 'dnd5e';
+        // Get system config
+        const system = SystemManager?.getSystem(this.currentSystem);
+        const config = system?.config || {};
+        
+        const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd' || config.skillSystem === 'dnd';
         const combatSkills = isDnd ? this.COMBAT_SKILLS_DND : this.COMBAT_SKILLS_RS;
 
         combatSkills.forEach(skillId => {
@@ -803,7 +1052,11 @@ const Sheet = {
         const bonusEl = document.getElementById('raceBonus');
         if (!bonusEl) return;
         
-        const isDnd = this.currentSystem === 'dnd5e';
+        // Get system config
+        const system = SystemManager?.getSystem(this.currentSystem);
+        const config = system?.config || {};
+        
+        const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd';
         const race = this.currentCharacter.charRace;
         
         if (isDnd) {
@@ -853,14 +1106,21 @@ const Sheet = {
     updateCalculations() {
         if (!this.currentCharacter) return;
 
-        const isDnd = this.currentSystem === 'dnd5e';
+        // Get system config for dynamic behavior
+        const system = SystemManager?.getSystem(this.currentSystem);
+        const config = system?.config || {};
+        
+        // Set system in calculations module
+        Calculations.currentSystem = this.currentSystem;
+        
+        const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd';
         
         if (isDnd) {
             // D&D 5e calculations
             this.updateDndCalculations();
         } else {
-            // Realms&Scripts calculations
-            this.updateRsCalculations();
+            // Use dynamic calculations based on system config
+            this.updateDynamicCalculations(config);
         }
 
         // Update combat skills in combat tab
@@ -871,6 +1131,114 @@ const Sheet = {
 
         // Update race bonus
         this.updateRaceBonus();
+    },
+    
+    // Dynamic calculations based on system config
+    updateDynamicCalculations(config) {
+        // Calculate values using dynamic formulas
+        const maxHp = Calculations.calculateDynamicMaxHP(this.currentCharacter);
+        const maxPE = Calculations.calculateDynamicMaxPE(this.currentCharacter);
+        const pa = Calculations.calculateDynamicPA(this.currentCharacter);
+        const ca = Calculations.calculateDynamicCA(this.currentCharacter);
+        const calc = Calculations.updateAllCalculations(this.currentCharacter);
+
+        // Update HP
+        const maxHpEl = document.getElementById('maxHp');
+        const maxHpMainEl = document.getElementById('maxHpMain');
+        const hpBar = document.getElementById('hpBar');
+        if (maxHpEl) maxHpEl.textContent = maxHp;
+        if (maxHpMainEl) maxHpMainEl.textContent = maxHp;
+        if (hpBar) {
+            const currentHp = parseInt(this.currentCharacter.currentHp) || 0;
+            const percent = Math.min(100, Math.max(0, (currentHp / maxHp) * 100));
+            hpBar.style.width = percent + '%';
+        }
+
+        // Update PE (if system has it)
+        if (config.hasEnergyPoints !== false) {
+            const maxPEEl = document.getElementById('maxPE');
+            const maxPEMainEl = document.getElementById('maxPEMain');
+            const peBar = document.getElementById('peBar');
+            if (maxPEEl) maxPEEl.textContent = maxPE;
+            if (maxPEMainEl) maxPEMainEl.textContent = maxPE;
+            if (peBar) {
+                const currentPE = parseInt(this.currentCharacter.currentPE) || 0;
+                const percent = Math.min(100, Math.max(0, (currentPE / maxPE) * 100));
+                peBar.style.width = percent + '%';
+            }
+        }
+
+        // Update PA (if system has it)
+        if (config.hasActionPoints) {
+            const maxPAEl = document.getElementById('maxPA');
+            if (maxPAEl) maxPAEl.textContent = pa;
+        }
+
+        // Update CA
+        const caEl = document.getElementById('armorClass');
+        if (caEl) caEl.textContent = ca;
+
+        // Update Dodge (if system has it)
+        if (config.hasDodge) {
+            const dodgeEl = document.getElementById('dodge');
+            if (dodgeEl) dodgeEl.textContent = calc.dodge;
+        }
+
+        // Update Initiative
+        const initEl = document.getElementById('initiative');
+        if (initEl) initEl.textContent = (calc.initiative >= 0 ? '+' : '') + calc.initiative;
+
+        // Update Weight
+        const currentWeightEl = document.getElementById('currentWeight');
+        const maxWeightEl = document.getElementById('maxWeight');
+        const maxWeightInfoEl = document.getElementById('maxWeightInfo');
+        const heavyWeightInfoEl = document.getElementById('heavyWeightInfo');
+        const weightStatusEl = document.getElementById('weightStatus');
+
+        if (currentWeightEl) currentWeightEl.textContent = calc.currentWeight;
+        if (maxWeightEl) maxWeightEl.textContent = calc.maxWeight;
+        if (maxWeightInfoEl) maxWeightInfoEl.textContent = calc.maxWeight;
+        if (heavyWeightInfoEl) heavyWeightInfoEl.textContent = calc.heavyWeight;
+        
+        if (weightStatusEl) {
+            weightStatusEl.className = 'weight-badge ' + calc.weightStatus;
+            const statusText = {
+                'normal': 'OK',
+                'heavy': 'PESADO',
+                'overweight': 'EXCESSO'
+            };
+            weightStatusEl.textContent = statusText[calc.weightStatus];
+        }
+
+        // Update Damage Reductions (if system has fusions)
+        if (config.hasFusions) {
+            const reduceDefendEl = document.getElementById('reduceDefend');
+            const reduceDamageEl = document.getElementById('reduceDamage');
+            const reduceFallEl = document.getElementById('reduceFall');
+
+            if (reduceDefendEl) reduceDefendEl.textContent = calc.reduceDefend;
+            if (reduceDamageEl) reduceDamageEl.textContent = calc.reduceDamage;
+            if (reduceFallEl) reduceFallEl.textContent = calc.reduceFall;
+        }
+
+        // Update Attribute Points
+        const usedAttrEl = document.getElementById('usedAttrPoints');
+        if (usedAttrEl) usedAttrEl.textContent = calc.usedAttrPoints;
+
+        // Update PN per Level (if system has sanity)
+        if (config.hasSanity) {
+            const pnEl = document.getElementById('pnPerLevel');
+            if (pnEl) pnEl.textContent = calc.pnPerLevel;
+        }
+
+        // Update all skill totals
+        Calculations.SKILLS.forEach(skill => {
+            const totalEl = document.querySelector(`[data-skill-total="${skill.id}"]`);
+            if (totalEl) {
+                const total = Calculations.calculateSkillTotal(this.currentCharacter, skill.id);
+                totalEl.textContent = (total >= 0 ? '+' : '') + total;
+            }
+        });
     },
 
     // Realms&Scripts specific calculations
@@ -1032,7 +1400,11 @@ const Sheet = {
         const container = document.getElementById('trainedSkillsList');
         if (!container) return;
 
-        const isDnd = this.currentSystem === 'dnd5e';
+        // Get system config
+        const system = SystemManager?.getSystem(this.currentSystem);
+        const config = system?.config || {};
+        
+        const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd' || config.skillSystem === 'dnd';
         
         if (isDnd) {
             // D&D proficient skills

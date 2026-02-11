@@ -159,6 +159,7 @@ const API = {
                 name: doc.data().charName || 'Sem Nome',
                 race: doc.data().charRace || '',
                 level: doc.data().charLevel || 1,
+                system: doc.data().system || 'realsscripts',
                 lastModified: doc.data().updatedAt?.toDate() || new Date()
             }));
         } catch (error) {
@@ -330,6 +331,113 @@ const API = {
         } catch (error) {
             console.error('Erro ao deletar sistema:', error);
             throw error;
+        }
+    },
+    
+    // ================== SYSTEM SHARING ==================
+    
+    // Find user by email
+    async findUserByEmail(email) {
+        try {
+            const snapshot = await db.collection('users')
+                .where('email', '==', email.toLowerCase().trim())
+                .get();
+            
+            if (snapshot.empty) {
+                return null;
+            }
+            
+            const doc = snapshot.docs[0];
+            return {
+                uid: doc.id,
+                name: doc.data().name,
+                email: doc.data().email
+            };
+        } catch (error) {
+            console.error('Erro ao buscar usuário:', error);
+            throw error;
+        }
+    },
+    
+    // Share system with another user by email
+    async shareSystem(systemId, targetEmail) {
+        if (!this.currentUser) throw new Error('Não autenticado');
+        
+        try {
+            // Find target user
+            const targetUser = await this.findUserByEmail(targetEmail);
+            if (!targetUser) {
+                throw new Error('Usuário não encontrado com este email');
+            }
+            
+            if (targetUser.uid === this.currentUser.uid) {
+                throw new Error('Você não pode compartilhar um sistema consigo mesmo');
+            }
+            
+            // Get the system to share
+            const systemDoc = await db.collection('users')
+                .doc(this.currentUser.uid)
+                .collection('systems')
+                .doc(systemId)
+                .get();
+            
+            if (!systemDoc.exists) {
+                throw new Error('Sistema não encontrado');
+            }
+            
+            const systemData = systemDoc.data();
+            
+            // Create a copy for the target user with a new ID
+            const sharedSystemId = 'shared_' + Date.now();
+            const sharedData = {
+                ...systemData,
+                id: sharedSystemId,
+                name: systemData.name + ' (Compartilhado)',
+                sharedBy: {
+                    uid: this.currentUser.uid,
+                    name: this.currentUserData?.name || 'Desconhecido',
+                    email: this.currentUser.email
+                },
+                sharedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                isShared: true
+            };
+            
+            // Save to target user's systems
+            await db.collection('users')
+                .doc(targetUser.uid)
+                .collection('systems')
+                .doc(sharedSystemId)
+                .set(sharedData);
+            
+            return { 
+                success: true, 
+                message: `Sistema compartilhado com ${targetUser.name} (${targetUser.email})` 
+            };
+        } catch (error) {
+            console.error('Erro ao compartilhar sistema:', error);
+            throw error;
+        }
+    },
+    
+    // Get systems shared with current user
+    async getSharedSystems() {
+        if (!this.currentUser) return {};
+        
+        try {
+            const snapshot = await db.collection('users')
+                .doc(this.currentUser.uid)
+                .collection('systems')
+                .where('isShared', '==', true)
+                .get();
+            
+            const systems = {};
+            snapshot.docs.forEach(doc => {
+                systems[doc.id] = doc.data();
+            });
+            return systems;
+        } catch (error) {
+            console.error('Erro ao carregar sistemas compartilhados:', error);
+            return {};
         }
     }
 };

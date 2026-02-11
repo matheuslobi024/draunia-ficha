@@ -6,6 +6,261 @@ const SystemEditor = {
     isNewSystem: true,
     hasUnsavedChanges: false,
     
+    // System templates for easy creation
+    templates: {
+        blank: {
+            name: 'Sistema em Branco',
+            description: 'Comece do zero com todas as opções desligadas',
+            icon: 'fa-file',
+            config: {
+                attrType: 'custom',
+                customAttrs: [],
+                modifierCalc: 'direct',
+                attrMin: 1,
+                attrMax: 10,
+                attrPointLimit: 0,
+                hpFormula: 'flat',
+                hpBase: 10,
+                hpPerLevel: 5,
+                hasEnergyPoints: false,
+                hasSanity: false,
+                hasActionPoints: false,
+                hasFusions: false,
+                hasClasses: false,
+                hasRaces: false,
+                hasMagic: false,
+                hasDodge: false,
+                hasSavingThrows: false,
+                skillSystem: 'custom',
+                skills: []
+            }
+        },
+        dnd5e: {
+            name: 'Estilo D&D 5e',
+            description: '6 atributos, classes com dado de vida, proficiência, 18 perícias',
+            icon: 'fa-dragon',
+            config: {
+                attrType: 'dnd',
+                modifierCalc: 'dnd',
+                attrMin: 1,
+                attrMax: 20,
+                attrPointLimit: 27,
+                hpFormula: 'dnd',
+                hasEnergyPoints: false,
+                hasSanity: false,
+                hasActionPoints: false,
+                hasFusions: false,
+                hasClasses: true,
+                classAffectsHP: true,
+                allowMulticlass: true,
+                hasRaces: true,
+                hasMagic: true,
+                magicSystem: 'dnd',
+                hasCantrips: true,
+                spellAttr: 'int',
+                maxSpellLevel: 9,
+                hasDodge: false,
+                hasSavingThrows: true,
+                skillSystem: 'dnd',
+                caFormula: 'dnd'
+            }
+        },
+        realsscripts: {
+            name: 'Estilo Realms&Scripts',
+            description: '6 atributos, fusões, PA, PE, sanidade',
+            icon: 'fa-scroll',
+            config: {
+                attrType: 'realsscripts',
+                modifierCalc: 'direct',
+                attrMin: -10,
+                attrMax: 10,
+                attrPointLimit: 8,
+                hpFormula: 'realsscripts',
+                hasEnergyPoints: true,
+                energyName: 'PE',
+                peFormula: 'realsscripts',
+                hasSanity: true,
+                sanityName: 'Sanidade',
+                sanityHasMax: false,
+                hasActionPoints: true,
+                paName: 'PA',
+                paFormula: 'realsscripts',
+                hasFusions: true,
+                hasClasses: false,
+                hasRaces: true,
+                hasMagic: false,
+                hasDodge: true,
+                dodgeFormula: 'realsscripts',
+                hasSavingThrows: false,
+                skillSystem: 'realsscripts',
+                caFormula: 'realsscripts'
+            }
+        },
+        storyteller: {
+            name: 'Estilo Storyteller (WoD)',
+            description: '9 atributos em 3 categorias, pools de dados',
+            icon: 'fa-moon',
+            config: {
+                attrType: 'custom',
+                customAttrs: [
+                    { name: 'Força', abbr: 'FOR', default: 1 },
+                    { name: 'Destreza', abbr: 'DES', default: 1 },
+                    { name: 'Vigor', abbr: 'VIG', default: 1 },
+                    { name: 'Carisma', abbr: 'CAR', default: 1 },
+                    { name: 'Manipulação', abbr: 'MAN', default: 1 },
+                    { name: 'Aparência', abbr: 'APA', default: 1 },
+                    { name: 'Percepção', abbr: 'PER', default: 1 },
+                    { name: 'Inteligência', abbr: 'INT', default: 1 },
+                    { name: 'Raciocínio', abbr: 'RAC', default: 1 }
+                ],
+                modifierCalc: 'direct',
+                attrMin: 1,
+                attrMax: 5,
+                attrPointLimit: 0,
+                hpFormula: 'flat',
+                hpBase: 7,
+                hpPerLevel: 0,
+                hasEnergyPoints: true,
+                energyName: 'Força de Vontade',
+                hasSanity: true,
+                sanityName: 'Humanidade',
+                sanityHasMax: true,
+                hasActionPoints: false,
+                hasFusions: false,
+                hasClasses: false,
+                hasRaces: false,
+                hasMagic: false,
+                hasDodge: false,
+                hasSavingThrows: false,
+                skillSystem: 'custom'
+            }
+        },
+        pbta: {
+            name: 'Estilo PbtA (Powered by the Apocalypse)',
+            description: '5 atributos simples, movimentos narrativos',
+            icon: 'fa-book-reader',
+            config: {
+                attrType: 'custom',
+                customAttrs: [
+                    { name: 'Força', abbr: 'FOR', default: 0 },
+                    { name: 'Agilidade', abbr: 'AGI', default: 0 },
+                    { name: 'Esperto', abbr: 'ESP', default: 0 },
+                    { name: 'Charme', abbr: 'CHA', default: 0 },
+                    { name: 'Estranho', abbr: 'EST', default: 0 }
+                ],
+                modifierCalc: 'direct',
+                attrMin: -2,
+                attrMax: 3,
+                attrPointLimit: 0,
+                hpFormula: 'flat',
+                hpBase: 6,
+                hpPerLevel: 0,
+                hasEnergyPoints: false,
+                hasSanity: false,
+                hasActionPoints: false,
+                hasFusions: false,
+                hasClasses: true,
+                classAffectsHP: false,
+                hasRaces: false,
+                hasMagic: false,
+                hasDodge: false,
+                hasSavingThrows: false,
+                skillSystem: 'custom'
+            }
+        },
+        osr: {
+            name: 'Estilo OSR (Old School)',
+            description: '6 atributos clássicos, estilo D&D B/X',
+            icon: 'fa-dungeon',
+            config: {
+                attrType: 'dnd',
+                modifierCalc: 'dnd',
+                attrMin: 3,
+                attrMax: 18,
+                attrPointLimit: 0,
+                hpFormula: 'dnd',
+                hasEnergyPoints: false,
+                hasSanity: false,
+                hasActionPoints: false,
+                hasFusions: false,
+                hasClasses: true,
+                classAffectsHP: true,
+                hasRaces: true,
+                hasMagic: true,
+                hasDodge: false,
+                hasSavingThrows: true,
+                skillSystem: 'custom',
+                caFormula: 'dnd'
+            }
+        },
+        modern: {
+            name: 'Moderno/Contemporâneo',
+            description: 'Sem magia, foco em perícias e combate tático',
+            icon: 'fa-crosshairs',
+            config: {
+                attrType: 'custom',
+                customAttrs: [
+                    { name: 'Força', abbr: 'FOR', default: 10 },
+                    { name: 'Reflexos', abbr: 'REF', default: 10 },
+                    { name: 'Resistência', abbr: 'RES', default: 10 },
+                    { name: 'Inteligência', abbr: 'INT', default: 10 },
+                    { name: 'Percepção', abbr: 'PER', default: 10 },
+                    { name: 'Carisma', abbr: 'CAR', default: 10 }
+                ],
+                modifierCalc: 'dnd',
+                attrMin: 1,
+                attrMax: 20,
+                attrPointLimit: 0,
+                hpFormula: 'levelcon',
+                hasEnergyPoints: false,
+                hasSanity: true,
+                sanityName: 'Estresse',
+                sanityHasMax: true,
+                hasActionPoints: true,
+                paName: 'Ações',
+                hasClasses: false,
+                hasRaces: false,
+                hasMagic: false,
+                hasDodge: true,
+                hasSavingThrows: true,
+                skillSystem: 'custom'
+            }
+        },
+        superhero: {
+            name: 'Super-Heróis',
+            description: 'Atributos elevados, pontos de poder',
+            icon: 'fa-mask',
+            config: {
+                attrType: 'custom',
+                customAttrs: [
+                    { name: 'Força', abbr: 'FOR', default: 2 },
+                    { name: 'Agilidade', abbr: 'AGI', default: 2 },
+                    { name: 'Vigor', abbr: 'VIG', default: 2 },
+                    { name: 'Inteligência', abbr: 'INT', default: 2 },
+                    { name: 'Vontade', abbr: 'VON', default: 2 },
+                    { name: 'Presença', abbr: 'PRE', default: 2 }
+                ],
+                modifierCalc: 'direct',
+                attrMin: 0,
+                attrMax: 20,
+                attrPointLimit: 0,
+                hpFormula: 'custom',
+                customHpFormula: '(vig * 5) + (level * 10)',
+                hasEnergyPoints: true,
+                energyName: 'Pontos de Poder',
+                hasSanity: false,
+                hasActionPoints: true,
+                paName: 'Ações',
+                hasClasses: false,
+                hasRaces: false,
+                hasMagic: false,
+                hasDodge: true,
+                hasSavingThrows: true,
+                skillSystem: 'custom'
+            }
+        }
+    },
+    
     // Default system template
     defaultTemplate: {
         id: '',
@@ -287,8 +542,97 @@ const SystemEditor = {
         });
     },
     
-    // Open editor for new system
+    // Show template picker modal
+    showTemplatePicker() {
+        const modal = document.getElementById('templatePickerModal');
+        if (!modal) {
+            console.error('[SystemEditor] Template picker modal not found');
+            this.createNew(); // fallback to direct creation
+            return;
+        }
+        
+        // Generate template cards
+        const container = modal.querySelector('.template-grid');
+        if (container) {
+            container.innerHTML = '';
+            for (const [key, template] of Object.entries(this.templates)) {
+                const card = document.createElement('div');
+                card.className = 'template-card';
+                card.dataset.template = key;
+                card.innerHTML = `
+                    <div class="template-icon"><i class="fas ${template.icon}"></i></div>
+                    <div class="template-name">${template.name}</div>
+                    <div class="template-desc">${template.description}</div>
+                `;
+                card.addEventListener('click', () => {
+                    this.loadTemplate(key);
+                    this.closeTemplatePicker();
+                });
+                container.appendChild(card);
+            }
+        }
+        
+        modal.classList.add('active');
+    },
+    
+    // Close template picker modal
+    closeTemplatePicker() {
+        const modal = document.getElementById('templatePickerModal');
+        if (modal) modal.classList.remove('active');
+    },
+    
+    // Load a template configuration
+    loadTemplate(templateKey) {
+        const template = this.templates[templateKey];
+        if (!template) {
+            console.warn('[SystemEditor] Template not found:', templateKey);
+            this.createNew();
+            return;
+        }
+        
+        console.log('[SystemEditor] Loading template:', templateKey);
+        
+        this.isNewSystem = true;
+        this.currentSystem = JSON.parse(JSON.stringify(this.defaultTemplate));
+        this.currentSystem.id = 'custom_' + Date.now();
+        this.currentSystem.icon = template.icon || 'fa-dice-d20';
+        
+        // Apply template config
+        if (template.config) {
+            this.currentSystem.config = {
+                ...this.currentSystem.config,
+                ...template.config
+            };
+        }
+        
+        // Set default name based on template
+        if (templateKey !== 'blank') {
+            this.currentSystem.name = 'Meu ' + template.name;
+        }
+        
+        document.getElementById('sysEditingName').textContent = 'Novo Sistema';
+        document.getElementById('sysDeleteBtn').style.display = 'none';
+        
+        this.loadSystemToForm();
+        this.show();
+        this.navigateToPanel('basic');
+        
+        console.log('[SystemEditor] Template applied:', templateKey);
+    },
+    
+    // Open editor for new system (with template picker)
     createNew() {
+        // Show template picker first
+        if (document.getElementById('templatePickerModal')) {
+            this.showTemplatePicker();
+        } else {
+            // Fallback: create blank system
+            this.createBlank();
+        }
+    },
+    
+    // Create blank system directly (skip template picker)
+    createBlank() {
         this.isNewSystem = true;
         this.currentSystem = JSON.parse(JSON.stringify(this.defaultTemplate));
         this.currentSystem.id = 'custom_' + Date.now();
@@ -300,7 +644,7 @@ const SystemEditor = {
         this.show();
         this.navigateToPanel('basic');
         
-        console.log('[SystemEditor] Creating new system');
+        console.log('[SystemEditor] Creating new blank system');
     },
     
     // Open editor for existing system

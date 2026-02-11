@@ -2,6 +2,208 @@
 
 const Calculations = {
     
+    // Current system ID for dynamic calculations
+    currentSystem: 'realsscripts',
+    
+    // Get current system config
+    getSystemConfig() {
+        if (typeof SystemManager !== 'undefined') {
+            const system = SystemManager.getSystem(this.currentSystem);
+            return system?.config || {};
+        }
+        return {};
+    },
+    
+    // ========== DYNAMIC CALCULATIONS (use system config) ==========
+    
+    // Calculate Max HP dynamically based on system config
+    calculateDynamicMaxHP(charData) {
+        const config = this.getSystemConfig();
+        const hpFormula = config.hpFormula || 'realsscripts';
+        
+        switch (hpFormula) {
+            case 'realsscripts':
+                return this.calculateMaxHP(charData);
+            case 'dnd':
+                return this.calculateDndMaxHP(charData);
+            case 'levelcon':
+                const level = parseInt(charData.charLevel) || 1;
+                const con = this.getAttrValueBySystem(charData, 'con');
+                return level * con;
+            case 'levelonly':
+                const lvl = parseInt(charData.charLevel) || 1;
+                const mult = config.hpLevelMultiplier || 10;
+                return lvl * mult;
+            case 'flat':
+                const base = config.flatHpBase || 10;
+                const perLevel = config.flatHpPerLevel || 5;
+                const charLevel = parseInt(charData.charLevel) || 1;
+                return base + ((charLevel - 1) * perLevel);
+            case 'custom':
+                return this.evaluateCustomFormula(config.customHpFormula, charData);
+            default:
+                return this.calculateMaxHP(charData);
+        }
+    },
+    
+    // Calculate Max PE dynamically based on system config
+    calculateDynamicMaxPE(charData) {
+        const config = this.getSystemConfig();
+        if (!config.hasEnergyPoints) return 0;
+        
+        const peFormula = config.peFormula || 'realsscripts';
+        const level = parseInt(charData.charLevel) || 1;
+        
+        switch (peFormula) {
+            case 'realsscripts':
+                return this.calculateMaxPE(charData);
+            case 'simple':
+                const mult = config.peMultiplier || 5;
+                return level * mult;
+            case 'attr':
+                const attrName = config.peAttr || 'von';
+                const attrVal = this.getAttrValueBySystem(charData, attrName);
+                const attrMult = config.peAttrMultiplier || 2;
+                return attrVal * attrMult;
+            case 'attrlevel':
+                const attr = config.peLevelAttr || 'von';
+                const val = this.getAttrValueBySystem(charData, attr);
+                const aMult = config.peLevelAttrMultiplier || 1;
+                const lMult = config.peLevelMultiplier || 5;
+                return (val * aMult) + (level * lMult);
+            case 'custom':
+                return this.evaluateCustomFormula(config.customPeFormula, charData);
+            default:
+                return this.calculateMaxPE(charData);
+        }
+    },
+    
+    // Calculate PA dynamically based on system config
+    calculateDynamicPA(charData) {
+        const config = this.getSystemConfig();
+        if (!config.hasActionPoints) return 0;
+        
+        const paFormula = config.paFormula || 'realsscripts';
+        
+        switch (paFormula) {
+            case 'realsscripts':
+                return this.calculatePA(charData);
+            case 'flat':
+                return config.flatPa || 3;
+            case 'attr':
+                const attrName = config.paAttr || 'agi';
+                const attrVal = this.getAttrValueBySystem(charData, attrName);
+                const base = config.paBase || 4;
+                return attrVal + base;
+            case 'custom':
+                return this.evaluateCustomFormula(config.customPaFormula, charData);
+            default:
+                return this.calculatePA(charData);
+        }
+    },
+    
+    // Calculate CA dynamically based on system config
+    calculateDynamicCA(charData) {
+        const config = this.getSystemConfig();
+        const caFormula = config.caFormula || 'realsscripts';
+        
+        switch (caFormula) {
+            case 'realsscripts':
+                return this.calculateCA(charData);
+            case 'dnd':
+                return this.calculateDndAC(charData);
+            case 'base10agi':
+                const agi = this.getAttrValueBySystem(charData, 'agi');
+                return 10 + agi;
+            case 'flatbase':
+                const base = config.caBase || 10;
+                const attrName = config.caAttr || 'agi';
+                const attrVal = this.getAttrValueBySystem(charData, attrName);
+                return base + attrVal;
+            case 'custom':
+                return this.evaluateCustomFormula(config.customCaFormula, charData);
+            default:
+                return this.calculateCA(charData);
+        }
+    },
+    
+    // Get attribute value by system type
+    getAttrValueBySystem(charData, attrName) {
+        const config = this.getSystemConfig();
+        const attrType = config.attrType || 'realsscripts';
+        
+        const attrNameLower = attrName.toLowerCase();
+        
+        if (attrType === 'dnd' || this.currentSystem === 'dnd5e') {
+            // Map common names to D&D attributes
+            const dndMap = {
+                'for': 'dndStr', 'str': 'dndStr', 'strength': 'dndStr',
+                'des': 'dndDex', 'dex': 'dndDex', 'dexterity': 'dndDex',
+                'con': 'dndCon', 'constitution': 'dndCon',
+                'int': 'dndInt', 'intelligence': 'dndInt',
+                'sab': 'dndWis', 'wis': 'dndWis', 'wisdom': 'dndWis',
+                'car': 'dndCha', 'cha': 'dndCha', 'charisma': 'dndCha',
+                'agi': 'dndDex', // Map AGI to DEX for D&D
+                'von': 'dndWis'  // Map VON to WIS for D&D
+            };
+            const field = dndMap[attrNameLower] || 'dndStr';
+            const score = parseInt(charData[field]) || 10;
+            // Return modifier for D&D, not raw score
+            if (config.modifierCalc === 'dnd') {
+                return this.calculateDndModifier(score);
+            }
+            return score;
+        } else {
+            // Realms&Scripts attributes
+            const rsMap = {
+                'for': 'attrFor', 'str': 'attrFor', 'strength': 'attrFor',
+                'con': 'attrCon', 'constitution': 'attrCon',
+                'von': 'attrVon', 'willpower': 'attrVon',
+                'car': 'attrCar', 'cha': 'attrCar', 'charisma': 'attrCar',
+                'int': 'attrInt', 'intelligence': 'attrInt',
+                'agi': 'attrAgi', 'dex': 'attrAgi', 'agility': 'attrAgi'
+            };
+            const field = rsMap[attrNameLower] || 'attrFor';
+            return parseInt(charData[field]) || 0;
+        }
+    },
+    
+    // Evaluate custom formula (simple expression parser)
+    evaluateCustomFormula(formula, charData) {
+        if (!formula) return 0;
+        
+        try {
+            // Replace variables with actual values
+            let expr = formula.toLowerCase()
+                .replace(/\blevel\b/g, parseInt(charData.charLevel) || 1)
+                .replace(/\bfor\b/g, this.getAttrValueBySystem(charData, 'for'))
+                .replace(/\bcon\b/g, this.getAttrValueBySystem(charData, 'con'))
+                .replace(/\bvon\b/g, this.getAttrValueBySystem(charData, 'von'))
+                .replace(/\bcar\b/g, this.getAttrValueBySystem(charData, 'car'))
+                .replace(/\bint\b/g, this.getAttrValueBySystem(charData, 'int'))
+                .replace(/\bagi\b/g, this.getAttrValueBySystem(charData, 'agi'))
+                .replace(/\bdex\b/g, this.getAttrValueBySystem(charData, 'agi'))
+                .replace(/\bwis\b/g, this.getAttrValueBySystem(charData, 'von'))
+                .replace(/\bcha\b/g, this.getAttrValueBySystem(charData, 'car'))
+                .replace(/\bhitdie\b/g, this.getHitDie(charData));
+            
+            // Use Function constructor for safe-ish evaluation (only math)
+            // eslint-disable-next-line no-new-func
+            const fn = new Function('return ' + expr);
+            const result = fn();
+            return Math.floor(result) || 0;
+        } catch (e) {
+            console.error('Error evaluating formula:', formula, e);
+            return 0;
+        }
+    },
+    
+    // Get Hit Die for current class
+    getHitDie(charData) {
+        const className = (charData.dndClass || 'fighter').toLowerCase();
+        return this.DND_HIT_DICE[className] || 10;
+    },
+    
     // ========== D&D 5E RULES ==========
     
     // D&D 5e Ability Score Modifier Table
