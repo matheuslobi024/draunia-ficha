@@ -26,6 +26,8 @@ const Calculations = {
                 return this.calculateMaxHP(charData);
             case 'dnd':
                 return this.calculateDndMaxHP(charData);
+            case 'ordemparanormal':
+                return this.calculateOPMaxHP(charData);
             case 'levelcon':
                 const level = parseInt(charData.charLevel) || 1;
                 const con = this.getAttrValueBySystem(charData, 'con');
@@ -57,6 +59,8 @@ const Calculations = {
         switch (peFormula) {
             case 'realsscripts':
                 return this.calculateMaxPE(charData);
+            case 'ordemparanormal':
+                return this.calculateOPMaxPE(charData);
             case 'simple':
                 const mult = config.peMultiplier || 5;
                 return level * mult;
@@ -133,6 +137,34 @@ const Calculations = {
         const attrType = config.attrType || 'realsscripts';
         
         const attrNameLower = attrName.toLowerCase();
+        
+        // Check for Ordem Paranormal first
+        if (attrType === 'ordemparanormal' || this.currentSystem === 'ordemparanormal') {
+            const opMap = {
+                'agi': 'opAgi', 'agilidade': 'opAgi',
+                'for': 'opFor', 'forca': 'opFor', 'força': 'opFor',
+                'int': 'opInt', 'intelecto': 'opInt', 'inteligencia': 'opInt',
+                'pre': 'opPre', 'presenca': 'opPre', 'presença': 'opPre',
+                'vig': 'opVig', 'vigor': 'opVig',
+                // Map D&D-style names to OP
+                'str': 'opFor', 'dex': 'opAgi', 'con': 'opVig', 'wis': 'opPre', 'cha': 'opPre'
+            };
+            const field = opMap[attrNameLower] || 'opFor';
+            return parseInt(charData[field]) || 0;
+        }
+        
+        // Check for custom attributes
+        if (attrType === 'custom' && config.customAttrs) {
+            // Look for custom attribute by abbr or name
+            const customAttr = config.customAttrs.find(a => 
+                a.abbr?.toLowerCase() === attrNameLower ||
+                a.name?.toLowerCase() === attrNameLower
+            );
+            if (customAttr) {
+                const fieldId = `customAttr_${customAttr.abbr.toLowerCase()}`;
+                return parseInt(charData[fieldId]) || 0;
+            }
+        }
         
         if (attrType === 'dnd' || this.currentSystem === 'dnd5e') {
             // Map common names to D&D attributes
@@ -593,13 +625,169 @@ const Calculations = {
         { id: 'tatica', name: 'Tática', attr: 'INT', armorPenalty: false },
         { id: 'tecnologia', name: 'Tecnologia', attr: 'INT', armorPenalty: false }
     ],
+    
+    // ========== ORDEM PARANORMAL RULES ===========
+    
+    // OP Attributes: AGI, FOR, INT, PRE, VIG (scale 0-5 normally)
+    OP_ATTRIBUTES: [
+        { id: 'agi', name: 'Agilidade', abbr: 'AGI', description: 'Velocidade, reflexos, coordenação' },
+        { id: 'for', name: 'Força', abbr: 'FOR', description: 'Poder físico, resistência muscular' },
+        { id: 'int', name: 'Intelecto', abbr: 'INT', description: 'Raciocínio, memória, conhecimento' },
+        { id: 'pre', name: 'Presença', abbr: 'PRE', description: 'Carisma, força de vontade, liderança' },
+        { id: 'vig', name: 'Vigor', abbr: 'VIG', description: 'Resistência física, saúde' }
+    ],
+    
+    // OP Skills (based on Ordem Paranormal RPG)
+    OP_SKILLS: [
+        { id: 'acrobacia', name: 'Acrobacia', attr: 'AGI', armorPenalty: true },
+        { id: 'adestramento', name: 'Adestramento', attr: 'PRE', armorPenalty: false },
+        { id: 'artes', name: 'Artes', attr: 'PRE', armorPenalty: false },
+        { id: 'atletismo', name: 'Atletismo', attr: 'FOR', armorPenalty: false },
+        { id: 'atualidades', name: 'Atualidades', attr: 'INT', armorPenalty: false },
+        { id: 'ciencias', name: 'Ciências', attr: 'INT', armorPenalty: false },
+        { id: 'crime', name: 'Crime', attr: 'AGI', armorPenalty: true },
+        { id: 'diplomacia', name: 'Diplomacia', attr: 'PRE', armorPenalty: false },
+        { id: 'enganacao', name: 'Enganação', attr: 'PRE', armorPenalty: false },
+        { id: 'fortitude', name: 'Fortitude', attr: 'VIG', armorPenalty: false },
+        { id: 'furtividade', name: 'Furtividade', attr: 'AGI', armorPenalty: true },
+        { id: 'iniciativa', name: 'Iniciativa', attr: 'AGI', armorPenalty: false },
+        { id: 'intimidacao', name: 'Intimidação', attr: 'PRE', armorPenalty: false },
+        { id: 'intuicao', name: 'Intuição', attr: 'PRE', armorPenalty: false },
+        { id: 'investigacao', name: 'Investigação', attr: 'INT', armorPenalty: false },
+        { id: 'luta', name: 'Luta', attr: 'FOR', armorPenalty: false },
+        { id: 'medicina', name: 'Medicina', attr: 'INT', armorPenalty: false },
+        { id: 'ocultismo', name: 'Ocultismo', attr: 'INT', armorPenalty: false },
+        { id: 'percepcao', name: 'Percepção', attr: 'PRE', armorPenalty: false },
+        { id: 'pilotagem', name: 'Pilotagem', attr: 'AGI', armorPenalty: false },
+        { id: 'pontaria', name: 'Pontaria', attr: 'AGI', armorPenalty: false },
+        { id: 'profissao', name: 'Profissão', attr: 'INT', armorPenalty: false },
+        { id: 'reflexos', name: 'Reflexos', attr: 'AGI', armorPenalty: false },
+        { id: 'religiao', name: 'Religião', attr: 'PRE', armorPenalty: false },
+        { id: 'sobrevivencia', name: 'Sobrevivência', attr: 'INT', armorPenalty: false },
+        { id: 'tatica', name: 'Tática', attr: 'INT', armorPenalty: false },
+        { id: 'tecnologia', name: 'Tecnologia', attr: 'INT', armorPenalty: false },
+        { id: 'vontade', name: 'Vontade', attr: 'PRE', armorPenalty: false }
+    ],
+    
+    // OP Trilhas (Classes/Paths)
+    OP_TRILHAS: {
+        'combatente': { 
+            id: 'combatente', 
+            name: 'Combatente', 
+            description: 'Especialista em combate físico',
+            baseHp: 20,  // HP at NEX 5%
+            hpPerNex: 4, // HP per 5% NEX after first
+            basePe: 2,   // PE at NEX 5%
+            pePerNex: 2, // PE per 5% NEX after first
+            skillsPerNex: 2
+        },
+        'especialista': { 
+            id: 'especialista', 
+            name: 'Especialista', 
+            description: 'Mestre em perícias e conhecimento',
+            baseHp: 16,
+            hpPerNex: 3,
+            basePe: 3,
+            pePerNex: 3,
+            skillsPerNex: 4
+        },
+        'ocultista': { 
+            id: 'ocultista', 
+            name: 'Ocultista', 
+            description: 'Manipulador de rituais e paranormal',
+            baseHp: 12,
+            hpPerNex: 2,
+            basePe: 4,
+            pePerNex: 4,
+            skillsPerNex: 3
+        }
+    },
+    
+    // OP NEX to Level mapping
+    OP_NEX_TABLE: {
+        5: 1, 10: 2, 15: 3, 20: 4, 25: 5, 30: 6, 35: 7, 40: 8, 45: 9, 50: 10,
+        55: 11, 60: 12, 65: 13, 70: 14, 75: 15, 80: 16, 85: 17, 90: 18, 95: 19, 99: 20
+    },
+    
+    // Calculate OP Max HP
+    // Formula: Base HP (depends on trilha) + VIG + (NEX levels after 1st × HP per NEX)
+    calculateOPMaxHP(charData) {
+        const vigor = parseInt(charData.opVig) || 0;
+        const nex = parseInt(charData.charLevel) || 5;
+        const trilha = charData.opTrilha || 'combatente';
+        const trilhaInfo = this.OP_TRILHAS[trilha] || this.OP_TRILHAS['combatente'];
+        
+        // NEX comes in as percentage (5, 10, 15...), convert to level (1, 2, 3...)
+        const nexLevel = Math.floor(nex / 5);
+        const additionalLevels = Math.max(0, nexLevel - 1);
+        
+        // Base HP at NEX 5% + VIG + additional HP from levels
+        const baseHP = trilhaInfo.baseHp + vigor;
+        return baseHP + (additionalLevels * trilhaInfo.hpPerNex);
+    },
+    
+    // Calculate OP Max PE
+    // Formula: Base PE (depends on trilha) + PRE + (NEX levels after 1st × PE per NEX)
+    calculateOPMaxPE(charData) {
+        const presenca = parseInt(charData.opPre) || 0;
+        const nex = parseInt(charData.charLevel) || 5;
+        const trilha = charData.opTrilha || 'combatente';
+        const trilhaInfo = this.OP_TRILHAS[trilha] || this.OP_TRILHAS['combatente'];
+        
+        const nexLevel = Math.floor(nex / 5);
+        const additionalLevels = Math.max(0, nexLevel - 1);
+        
+        const basePE = trilhaInfo.basePe + presenca;
+        return basePE + (additionalLevels * trilhaInfo.pePerNex);
+    },
+    
+    // Calculate OP Defenses (Reflexos, Fortitude, Vontade)
+    calculateOPDefenses(charData) {
+        const agi = parseInt(charData.opAgi) || 0;
+        const vig = parseInt(charData.opVig) || 0;
+        const pre = parseInt(charData.opPre) || 0;
+        
+        return {
+            reflexos: 10 + agi,
+            fortitude: 10 + vig,
+            vontade: 10 + pre
+        };
+    },
+    
+    // Get OP attribute value
+    getOPAttrValue(charData, attrName) {
+        const attrMap = {
+            'AGI': charData.opAgi || 0,
+            'FOR': charData.opFor || 0,
+            'INT': charData.opInt || 0,
+            'PRE': charData.opPre || 0,
+            'VIG': charData.opVig || 0
+        };
+        return parseInt(attrMap[attrName.toUpperCase()]) || 0;
+    },
 
-    // Training levels
+    // Training levels (Realms&Scripts)
     TRAINING_LEVELS: {
         0: { name: 'Sem Treino', bonus: 0, cost: 0 },
         1: { name: 'Treinada', bonus: 1, cost: 1 },
         2: { name: 'Veterana', bonus: 3, cost: 3 },
         3: { name: 'Expert', bonus: 5, cost: 5 }
+    },
+
+    // Training levels (Ordem Paranormal) - higher bonuses
+    OP_TRAINING_LEVELS: {
+        0: { name: 'Destreinado', bonus: 0, cost: 0 },
+        1: { name: 'Treinado', bonus: 5, cost: 1 },
+        2: { name: 'Veterano', bonus: 10, cost: 2 },
+        3: { name: 'Expert', bonus: 15, cost: 3 }
+    },
+    
+    // Get training level info based on current system
+    getTrainingLevel(level) {
+        if (this.currentSystem === 'ordemparanormal') {
+            return this.OP_TRAINING_LEVELS[level] || this.OP_TRAINING_LEVELS[0];
+        }
+        return this.TRAINING_LEVELS[level] || this.TRAINING_LEVELS[0];
     },
 
     // Armor bonuses and penalties
@@ -779,6 +967,31 @@ const Calculations = {
             total += parseInt(charData.fusionMuscleLegs) || 0;
         }
 
+        return total;
+    },
+    
+    // Calculate skill total for any system (custom, OP, or R&S)
+    calculateGenericSkillTotal(charData, skillId, skillInfo, systemType) {
+        if (!skillInfo) return 0;
+        
+        // Base attribute value
+        let total = 0;
+        if (skillInfo.attr && skillInfo.attr !== '-') {
+            total = this.getAttrValueBySystem(charData, skillInfo.attr);
+        }
+        
+        // Training bonus (use system-appropriate training levels)
+        const trainingLevel = (charData.skills && charData.skills[skillId]) || 0;
+        const trainingInfo = this.getTrainingLevel(trainingLevel);
+        total += trainingInfo.bonus || 0;
+        
+        // Armor penalty if applicable
+        if (skillInfo.armorPenalty) {
+            const armorType = charData.armorType || 'none';
+            const armorPenalty = this.ARMOR_BONUS[armorType]?.skillPenalty || 0;
+            total += armorPenalty;
+        }
+        
         return total;
     },
 

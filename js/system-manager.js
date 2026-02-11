@@ -6,7 +6,7 @@ const SystemManager = {
     currentEditingSystem: null,
     
     // Built-in systems (cannot be deleted)
-    builtInSystems: ['realsscripts', 'dnd5e'],
+    builtInSystems: ['realsscripts', 'dnd5e', 'ordemparanormal'],
     
     // Default systems
     defaultSystems: {
@@ -65,6 +65,41 @@ const SystemManager = {
                 hasProficiencyBonus: true,
                 hasPassivePerception: true,
                 hasAdvantageDisadvantage: true
+            }
+        },
+        'ordemparanormal': {
+            id: 'ordemparanormal',
+            name: 'Ordem Paranormal',
+            description: 'Sistema brasileiro de horror e investigação. 5 atributos (AGI, FOR, INT, PRE, VIG), NEX, PE, Sanidade, Trilhas (Combatente, Especialista, Ocultista) e Rituais.',
+            icon: 'fa-eye',
+            isBuiltIn: true,
+            config: {
+                attrType: 'ordemparanormal',
+                attrMin: 0,
+                attrMax: 5,
+                attrPointLimit: 0,
+                modifierCalc: 'direct',
+                hpFormula: 'ordemparanormal',
+                hasEnergyPoints: true,
+                energyName: 'PE',
+                peFormula: 'ordemparanormal',
+                hasSanity: true,
+                sanityName: 'Sanidade',
+                sanityHasMax: true,
+                sanityMax: 100,
+                hasActionPoints: false,
+                hasFusions: false,
+                caFormula: 'ordemparanormal',
+                hasDodge: false,
+                hasClasses: true,
+                classAffectsHp: false,
+                skillSystem: 'ordemparanormal',
+                skillList: 'ordemparanormal',
+                hasSpellSlots: false,
+                hasRituals: true,
+                hasSavingThrows: true,
+                saveType: 'ordemparanormal',
+                hasResistances: true
             }
         }
     },

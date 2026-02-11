@@ -27,20 +27,26 @@ const Sheet = {
         
         const isDnd = systemId === 'dnd5e' || config.attrType === 'dnd';
         const isRS = systemId === 'realsscripts' || config.attrType === 'realsscripts';
+        const isOP = systemId === 'ordemparanormal' || config.attrType === 'ordemparanormal';
         const isCustom = config.attrType === 'custom' && config.customAttrs && config.customAttrs.length > 0;
         const hasCustomRaces = config.races && config.races.length > 0;
         
         // Toggle body class for CSS
-        document.body.classList.toggle('system-dnd', isDnd);
-        document.body.classList.toggle('system-custom', isCustom);
+        document.body.classList.remove('system-dnd', 'system-op', 'system-rs', 'system-custom');
+        if (isDnd) document.body.classList.add('system-dnd');
+        else if (isOP) document.body.classList.add('system-op');
+        else if (isRS) document.body.classList.add('system-rs');
+        else if (isCustom) document.body.classList.add('system-custom');
         
         // Show/hide attribute sections
         const rsAttrs = document.getElementById('attributesRS');
         const dndAttrs = document.getElementById('attributesDND');
+        const opAttrs = document.getElementById('attributesOP');
         const customAttrs = document.getElementById('attributesCustom');
         
         if (rsAttrs) rsAttrs.style.display = isRS && !isCustom ? '' : 'none';
         if (dndAttrs) dndAttrs.style.display = isDnd && !isCustom ? '' : 'none';
+        if (opAttrs) opAttrs.style.display = isOP && !isCustom ? '' : 'none';
         if (customAttrs) customAttrs.style.display = isCustom ? '' : 'none';
         
         // Generate custom attributes if needed
@@ -302,6 +308,12 @@ const Sheet = {
         const minValue = parseInt(input.min);
         if (!isNaN(minValue) && newValue < minValue) {
             newValue = minValue;
+        }
+        
+        // Respect maximum values
+        const maxValue = parseInt(input.max);
+        if (!isNaN(maxValue) && newValue > maxValue) {
+            newValue = maxValue;
         }
 
         // Update the input
@@ -866,6 +878,7 @@ const Sheet = {
         const config = system?.config || {};
         
         const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd' || config.skillSystem === 'dnd';
+        const isOP = this.currentSystem === 'ordemparanormal' || config.skillSystem === 'ordemparanormal';
         const hasCustomSkills = config.skillSystem === 'custom' && config.skills && config.skills.length > 0;
         
         // Determine which skills to use
@@ -880,6 +893,8 @@ const Sheet = {
             }));
         } else if (isDnd) {
             skills = Calculations.DND_SKILLS;
+        } else if (isOP) {
+            skills = Calculations.OP_SKILLS;
         } else {
             skills = Calculations.SKILLS;
         }
@@ -906,7 +921,7 @@ const Sheet = {
                 grid.appendChild(div);
             });
         } else {
-            // Realms&Scripts style skills OR custom skills with training levels
+            // Realms&Scripts, Ordem Paranormal, or custom skills with training levels
             grid.className = 'skills-grid';
             skills.forEach(skill => {
                 const div = document.createElement('div');
@@ -961,6 +976,9 @@ const Sheet = {
     COMBAT_SKILLS_DND: ['athletics', 'acrobatics', 'stealth', 'perception', 'insight', 'intimidation', 'investigation', 'survival', 'medicine', 'sleightOfHand'],
 
     // Generate combat skills HTML for combat tab
+    // Combat skills for OP
+    COMBAT_SKILLS_OP: ['luta', 'reflexos', 'pontaria', 'furtividade', 'atletismo', 'percepcao', 'iniciativa', 'intimidacao'],
+    
     generateCombatSkillsHTML() {
         const grid = document.getElementById('combatSkillsGrid');
         if (!grid) return;
@@ -972,6 +990,7 @@ const Sheet = {
         const config = system?.config || {};
         
         const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd' || config.skillSystem === 'dnd';
+        const isOP = this.currentSystem === 'ordemparanormal' || config.attrType === 'ordemparanormal';
         const hasCustomSkills = config.skillSystem === 'custom' && config.skills && config.skills.length > 0;
         
         let combatSkills;
@@ -986,6 +1005,9 @@ const Sheet = {
             }));
             // Show first 10 custom skills for combat tab or all if less than 10
             combatSkills = allSkills.slice(0, 10).map(s => s.id);
+        } else if (isOP) {
+            combatSkills = this.COMBAT_SKILLS_OP;
+            allSkills = Calculations.OP_SKILLS;
         } else if (isDnd) {
             combatSkills = this.COMBAT_SKILLS_DND;
             allSkills = Calculations.DND_SKILLS;
@@ -1019,12 +1041,35 @@ const Sheet = {
         const config = system?.config || {};
         
         const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd' || config.skillSystem === 'dnd';
-        const combatSkills = isDnd ? this.COMBAT_SKILLS_DND : this.COMBAT_SKILLS_RS;
+        const isOP = this.currentSystem === 'ordemparanormal' || config.attrType === 'ordemparanormal';
+        
+        let combatSkills;
+        if (isOP) {
+            combatSkills = this.COMBAT_SKILLS_OP;
+        } else if (isDnd) {
+            combatSkills = this.COMBAT_SKILLS_DND;
+        } else {
+            combatSkills = this.COMBAT_SKILLS_RS;
+        }
 
         combatSkills.forEach(skillId => {
-            const total = isDnd 
-                ? Calculations.calculateDndSkillTotal(this.currentCharacter, skillId)
-                : Calculations.calculateSkillTotal(this.currentCharacter, skillId);
+            let total;
+            if (isOP) {
+                const skill = Calculations.OP_SKILLS.find(s => s.id === skillId);
+                if (skill) {
+                    const attrVal = Calculations.getOPAttrValue(this.currentCharacter, skill.attr);
+                    const trainingLevel = this.currentCharacter.skills?.[skillId] || 0;
+                    const trainingBonus = Calculations.getTrainingLevel(trainingLevel).bonus || 0;
+                    total = attrVal + trainingBonus;
+                } else {
+                    total = 0;
+                }
+            } else if (isDnd) {
+                total = Calculations.calculateDndSkillTotal(this.currentCharacter, skillId);
+            } else {
+                total = Calculations.calculateSkillTotal(this.currentCharacter, skillId);
+            }
+            
             const el = document.querySelector(`[data-combat-skill="${skillId}"]`);
             if (el) {
                 el.textContent = (total >= 0 ? '+' : '') + total;
@@ -1083,6 +1128,22 @@ const Sheet = {
             } else {
                 bonusEl.textContent = '';
             }
+        } else if (this.currentSystem === 'ordemparanormal' || config.attrType === 'ordemparanormal') {
+            // Ordem Paranormal - no race system, show trilha info
+            const trilha = this.currentCharacter.opTrilha || 'combatente';
+            const trilhaInfo = Calculations.OP_TRILHAS[trilha];
+            if (trilhaInfo) {
+                bonusEl.innerHTML = `
+                    <div class="race-bonus-card">
+                        <div class="race-name"><strong>📋 Trilha: ${trilhaInfo.name}</strong></div>
+                        <div class="race-fusion"><i class="fas fa-heart"></i> PV: ${trilhaInfo.baseHp} + VIG (+${trilhaInfo.hpPerNex}/NEX)</div>
+                        <div class="race-special"><i class="fas fa-bolt"></i> PE: ${trilhaInfo.basePe} + PRE (+${trilhaInfo.pePerNex}/NEX)</div>
+                        <div class="race-skills"><i class="fas fa-star"></i> Perícias: +${trilhaInfo.skillsPerNex}/NEX</div>
+                    </div>
+                `;
+            } else {
+                bonusEl.textContent = '';
+            }
         } else {
             // Realms&Scripts race bonus
             const raceInfo = race ? Calculations.RACE_BONUSES[race] : null;
@@ -1114,10 +1175,14 @@ const Sheet = {
         Calculations.currentSystem = this.currentSystem;
         
         const isDnd = this.currentSystem === 'dnd5e' || config.attrType === 'dnd';
+        const isOP = this.currentSystem === 'ordemparanormal' || config.attrType === 'ordemparanormal';
         
         if (isDnd) {
             // D&D 5e calculations
             this.updateDndCalculations();
+        } else if (isOP) {
+            // Ordem Paranormal calculations
+            this.updateOPCalculations(config);
         } else {
             // Use dynamic calculations based on system config
             this.updateDynamicCalculations(config);
@@ -1131,6 +1196,70 @@ const Sheet = {
 
         // Update race bonus
         this.updateRaceBonus();
+    },
+    
+    // Ordem Paranormal specific calculations
+    updateOPCalculations(config) {
+        const maxHp = Calculations.calculateOPMaxHP(this.currentCharacter);
+        const maxPE = Calculations.calculateOPMaxPE(this.currentCharacter);
+        const defenses = Calculations.calculateOPDefenses(this.currentCharacter);
+        
+        // Update HP
+        const maxHpEl = document.getElementById('maxHp');
+        const maxHpMainEl = document.getElementById('maxHpMain');
+        const hpBar = document.getElementById('hpBar');
+        if (maxHpEl) maxHpEl.textContent = maxHp;
+        if (maxHpMainEl) maxHpMainEl.textContent = maxHp;
+        if (hpBar) {
+            const currentHp = parseInt(this.currentCharacter.currentHp) || 0;
+            const percent = Math.min(100, Math.max(0, (currentHp / maxHp) * 100));
+            hpBar.style.width = percent + '%';
+        }
+        
+        // Update PE
+        const maxPEEl = document.getElementById('maxPE');
+        const maxPEMainEl = document.getElementById('maxPEMain');
+        const peBar = document.getElementById('peBar');
+        if (maxPEEl) maxPEEl.textContent = maxPE;
+        if (maxPEMainEl) maxPEMainEl.textContent = maxPE;
+        if (peBar) {
+            const currentPE = parseInt(this.currentCharacter.currentPE) || 0;
+            const percent = Math.min(100, Math.max(0, (currentPE / maxPE) * 100));
+            peBar.style.width = percent + '%';
+        }
+        
+        // Update OP Defenses
+        const reflexosEl = document.getElementById('opReflexos');
+        const fortitudeEl = document.getElementById('opFortitude');
+        const vontadeEl = document.getElementById('opVontade');
+        if (reflexosEl) reflexosEl.textContent = defenses.reflexos;
+        if (fortitudeEl) fortitudeEl.textContent = defenses.fortitude;
+        if (vontadeEl) vontadeEl.textContent = defenses.vontade;
+        
+        // Update NEX display
+        const nex = parseInt(this.currentCharacter.charLevel) || 5;
+        const nexEl = document.getElementById('opNexDisplay');
+        if (nexEl) nexEl.textContent = nex + '%';
+        
+        // Update skill totals
+        this.updateOPSkillTotals();
+    },
+    
+    // Update OP skill totals
+    updateOPSkillTotals() {
+        if (!this.currentCharacter) return;
+        
+        Calculations.OP_SKILLS.forEach(skill => {
+            const attrVal = Calculations.getOPAttrValue(this.currentCharacter, skill.attr);
+            const trainingLevel = this.currentCharacter.skills?.[skill.id] || 0;
+            const trainingBonus = Calculations.getTrainingLevel(trainingLevel).bonus || 0;
+            const total = attrVal + trainingBonus;
+            
+            const totalEl = document.querySelector(`[data-skill-total="${skill.id}"]`);
+            if (totalEl) {
+                totalEl.textContent = (total >= 0 ? '+' : '') + total;
+            }
+        });
     },
     
     // Dynamic calculations based on system config
@@ -1231,14 +1360,34 @@ const Sheet = {
             if (pnEl) pnEl.textContent = calc.pnPerLevel;
         }
 
-        // Update all skill totals
-        Calculations.SKILLS.forEach(skill => {
-            const totalEl = document.querySelector(`[data-skill-total="${skill.id}"]`);
-            if (totalEl) {
-                const total = Calculations.calculateSkillTotal(this.currentCharacter, skill.id);
-                totalEl.textContent = (total >= 0 ? '+' : '') + total;
-            }
-        });
+        // Update all skill totals based on skill system type
+        const hasCustomSkills = config.skillSystem === 'custom' && config.skills && config.skills.length > 0;
+        
+        if (hasCustomSkills) {
+            // Custom skills
+            config.skills.forEach(skill => {
+                const skillId = skill.id || skill.name.toLowerCase().replace(/\s+/g, '_');
+                const totalEl = document.querySelector(`[data-skill-total="${skillId}"]`);
+                if (totalEl) {
+                    const skillInfo = {
+                        id: skillId,
+                        attr: skill.attr || '-',
+                        armorPenalty: skill.armorPenalty || false
+                    };
+                    const total = Calculations.calculateGenericSkillTotal(this.currentCharacter, skillId, skillInfo, 'custom');
+                    totalEl.textContent = (total >= 0 ? '+' : '') + total;
+                }
+            });
+        } else {
+            // Standard R&S skills
+            Calculations.SKILLS.forEach(skill => {
+                const totalEl = document.querySelector(`[data-skill-total="${skill.id}"]`);
+                if (totalEl) {
+                    const total = Calculations.calculateSkillTotal(this.currentCharacter, skill.id);
+                    totalEl.textContent = (total >= 0 ? '+' : '') + total;
+                }
+            });
+        }
     },
 
     // Realms&Scripts specific calculations

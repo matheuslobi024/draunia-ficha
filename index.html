@@ -1278,6 +1278,83 @@
                             </div>
                         </div>
 
+                        <!-- Atributos Ordem Paranormal -->
+                        <div class="attributes-card draggable-card op-only" data-card-id="attributes-op" id="attributesOP" style="display: none;">
+                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
+                            <h3><i class="fas fa-eye"></i> Atributos <small>(NEX: <span id="opNexDisplay">5%</span>)</small></h3>
+                            <div class="op-attributes-grid">
+                                <div class="op-attr-item">
+                                    <span class="op-attr-name">AGI</span>
+                                    <div class="op-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opAgi', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="opAgi" data-field="opAgi" class="op-score-input" value="1" min="0" max="5">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opAgi', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <span class="op-attr-desc">Agilidade</span>
+                                </div>
+                                <div class="op-attr-item">
+                                    <span class="op-attr-name">FOR</span>
+                                    <div class="op-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opFor', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="opFor" data-field="opFor" class="op-score-input" value="1" min="0" max="5">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opFor', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <span class="op-attr-desc">Força</span>
+                                </div>
+                                <div class="op-attr-item">
+                                    <span class="op-attr-name">INT</span>
+                                    <div class="op-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opInt', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="opInt" data-field="opInt" class="op-score-input" value="1" min="0" max="5">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opInt', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <span class="op-attr-desc">Intelecto</span>
+                                </div>
+                                <div class="op-attr-item">
+                                    <span class="op-attr-name">PRE</span>
+                                    <div class="op-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opPre', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="opPre" data-field="opPre" class="op-score-input" value="1" min="0" max="5">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opPre', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <span class="op-attr-desc">Presença</span>
+                                </div>
+                                <div class="op-attr-item">
+                                    <span class="op-attr-name">VIG</span>
+                                    <div class="op-attr-score">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opVig', -1)"><i class="fas fa-minus"></i></button>
+                                        <input type="number" id="opVig" data-field="opVig" class="op-score-input" value="1" min="0" max="5">
+                                        <button type="button" class="btn-adjust btn-attr-small" onclick="Sheet.adjustValue('opVig', 1)"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                    <span class="op-attr-desc">Vigor</span>
+                                </div>
+                            </div>
+                            <!-- OP Trilha Selection -->
+                            <div class="op-trilha-section">
+                                <label>Trilha</label>
+                                <select id="opTrilha" data-field="opTrilha">
+                                    <option value="combatente">Combatente</option>
+                                    <option value="especialista">Especialista</option>
+                                    <option value="ocultista">Ocultista</option>
+                                </select>
+                            </div>
+                            <!-- OP Defenses -->
+                            <div class="op-defenses">
+                                <div class="op-defense-item">
+                                    <span class="defense-label">Reflexos</span>
+                                    <span class="defense-value" id="opReflexos">10</span>
+                                </div>
+                                <div class="op-defense-item">
+                                    <span class="defense-label">Fortitude</span>
+                                    <span class="defense-value" id="opFortitude">10</span>
+                                </div>
+                                <div class="op-defense-item">
+                                    <span class="defense-label">Vontade</span>
+                                    <span class="defense-value" id="opVontade">10</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- HP e Sanidade compactos -->
                         <div class="vitals-compact-card draggable-card" data-card-id="vitals">
                             <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>

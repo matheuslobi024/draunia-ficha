@@ -96,6 +96,37 @@ const SystemEditor = {
                 caFormula: 'realsscripts'
             }
         },
+        ordemparanormal: {
+            name: 'Ordem Paranormal',
+            description: '5 atributos, NEX, PE, Sanidade, Trilhas, Rituais',
+            icon: 'fa-eye',
+            config: {
+                attrType: 'ordemparanormal',
+                modifierCalc: 'direct',
+                attrMin: 0,
+                attrMax: 5,
+                attrPointLimit: 0,
+                hpFormula: 'ordemparanormal',
+                hasEnergyPoints: true,
+                energyName: 'PE',
+                peFormula: 'ordemparanormal',
+                hasSanity: true,
+                sanityName: 'Sanidade',
+                sanityHasMax: true,
+                hasActionPoints: false,
+                hasFusions: false,
+                hasClasses: true,
+                classAffectsHP: true,
+                hasRaces: false,
+                hasMagic: false,
+                hasRituals: true,
+                hasDodge: false,
+                hasSavingThrows: true,
+                saveType: 'ordemparanormal',
+                skillSystem: 'ordemparanormal',
+                caFormula: 'ordemparanormal'
+            }
+        },
         storyteller: {
             name: 'Estilo Storyteller (WoD)',
             description: '9 atributos em 3 categorias, pools de dados',
