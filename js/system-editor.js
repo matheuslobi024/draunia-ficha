@@ -113,13 +113,18 @@ const SystemEditor = {
                 hasSanity: true,
                 sanityName: 'Sanidade',
                 sanityHasMax: true,
+                sanityMax: 100,
                 hasActionPoints: false,
                 hasFusions: false,
                 hasClasses: true,
-                classAffectsHP: true,
+                classAffectsHP: false,
+                fieldClass: true,
                 hasRaces: false,
                 hasMagic: false,
                 hasRituals: true,
+                ritualSystem: 'ordemparanormal',
+                ritualsCostPE: true,
+                ritualsAffectSanity: true,
                 hasDodge: false,
                 hasSavingThrows: true,
                 saveType: 'ordemparanormal',
@@ -463,12 +468,15 @@ const SystemEditor = {
             });
         }
         
-        // Classes toggle
+        // Classes toggle - sync with fieldClass
         const hasClasses = document.getElementById('sysHasClasses');
         if (hasClasses) {
             hasClasses.addEventListener('change', () => {
                 document.getElementById('sysClassesConfig')?.classList.toggle('hidden', !hasClasses.checked);
                 document.getElementById('sysClassesListSection').style.display = hasClasses.checked ? 'block' : 'none';
+                // Sincronizar com o campo de classe na ficha
+                const fieldClass = document.getElementById('sysFieldClass');
+                if (fieldClass) fieldClass.checked = hasClasses.checked;
             });
         }
         
@@ -501,6 +509,14 @@ const SystemEditor = {
         if (hasMagic) {
             hasMagic.addEventListener('change', () => {
                 document.getElementById('sysMagicConfig')?.classList.toggle('hidden', !hasMagic.checked);
+            });
+        }
+        
+        // Rituals toggle
+        const hasRituals = document.getElementById('sysHasRituals');
+        if (hasRituals) {
+            hasRituals.addEventListener('change', () => {
+                document.getElementById('sysRitualsConfig')?.classList.toggle('hidden', !hasRituals.checked);
             });
         }
         
@@ -799,9 +815,16 @@ const SystemEditor = {
         this.setVal('sysSpellAttr', cfg.spellAttr || 'int');
         this.setVal('sysMaxSpellLevel', cfg.maxSpellLevel || 9);
         
+        // Rituals (Ordem Paranormal)
+        this.setChecked('sysHasRituals', cfg.hasRituals === true);
+        this.setVal('sysRitualSystem', cfg.ritualSystem || 'ordemparanormal');
+        this.setChecked('sysRitualsCostPE', cfg.ritualsCostPE !== false);
+        this.setChecked('sysRitualsAffectSanity', cfg.ritualsAffectSanity !== false);
+        
         // Fields
         this.setChecked('sysFieldRace', cfg.fieldRace !== false);
-        this.setChecked('sysFieldClass', cfg.fieldClass === true);
+        // Sincronizar fieldClass com hasClasses se hasClasses estiver definido
+        this.setChecked('sysFieldClass', cfg.hasClasses === true || cfg.fieldClass === true);
         this.setChecked('sysFieldBackground', cfg.fieldBackground !== false);
         this.setChecked('sysFieldWeight', cfg.fieldWeight !== false);
         this.setChecked('sysFieldAttacks', cfg.fieldAttacks !== false);
@@ -899,6 +922,12 @@ const SystemEditor = {
         cfg.spellAttr = this.getVal('sysSpellAttr');
         cfg.maxSpellLevel = parseInt(this.getVal('sysMaxSpellLevel')) || 9;
         
+        // Rituals (Ordem Paranormal)
+        cfg.hasRituals = this.getChecked('sysHasRituals');
+        cfg.ritualSystem = this.getVal('sysRitualSystem');
+        cfg.ritualsCostPE = this.getChecked('sysRitualsCostPE');
+        cfg.ritualsAffectSanity = this.getChecked('sysRitualsAffectSanity');
+        
         // Fields
         cfg.fieldRace = this.getChecked('sysFieldRace');
         cfg.fieldClass = this.getChecked('sysFieldClass');
@@ -949,7 +978,8 @@ const SystemEditor = {
             ['sysHasDodge', 'sysDodgeConfig'],
             ['sysHasSaves', 'sysSavesConfig'],
             ['sysHasFusions', 'sysFusionsConfig'],
-            ['sysHasMagic', 'sysMagicConfig']
+            ['sysHasMagic', 'sysMagicConfig'],
+            ['sysHasRituals', 'sysRitualsConfig']
         ];
         
         triggers.forEach(([checkboxId, sectionId]) => {
