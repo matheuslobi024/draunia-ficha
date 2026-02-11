@@ -1073,19 +1073,21 @@ body.system-op .vital-box.rs-only { display: none; }
 .dnd-attr-score {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 0.4rem;
     background: var(--bg-card);
     border-radius: 10px;
-    padding: 0.5rem 0.6rem;
+    padding: 0.5rem 0.8rem;
     border: 1px solid var(--border-color);
+    width: 100%;
 }
 
 .dnd-score-input {
-    width: 48px !important;
+    width: 40px !important;
     text-align: center;
     font-weight: 700;
-    font-size: 1.1rem;
-    padding: 0.3rem !important;
+    font-size: 1rem;
+    padding: 0.25rem !important;
     background: transparent !important;
     border: none !important;
     color: var(--text-bright);
@@ -1096,21 +1098,23 @@ body.system-op .vital-box.rs-only { display: none; }
 }
 
 .btn-attr-small {
-    width: 26px !important;
-    height: 26px !important;
-    min-width: 26px !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
     padding: 0 !important;
-    font-size: 0.75rem !important;
-    border-radius: 8px !important;
+    font-size: 0.7rem !important;
+    border-radius: 6px !important;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .dnd-save {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 0.4rem;
     margin-top: 0.75rem;
     padding: 0.4rem 0.6rem;
     background: rgba(46, 204, 113, 0.1);
@@ -1119,6 +1123,7 @@ body.system-op .vital-box.rs-only { display: none; }
     color: var(--text-secondary);
     border: 1px solid transparent;
     transition: all 0.2s;
+    width: 100%;
 }
 
 .dnd-save:has(.save-prof:checked) {
@@ -1528,59 +1533,32 @@ body.system-op .vital-box.rs-only { display: none; }
     min-height: 100px;
 }
 
-/* Vitals Compact Card */
+/* ========== VITALS COMPACT - REESCRITO ========== */
 .vitals-compact-card {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: var(--spacing-lg);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 8px;
     background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
-    padding: var(--spacing-xl);
+    padding: 12px;
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--border-color);
 }
 
-/* Explicit column control classes */
-.vitals-compact-card.cols-1 {
-    grid-template-columns: 1fr;
-    max-width: 280px;
-    margin: 0 auto;
-}
-
-.vitals-compact-card.cols-2 {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 500px;
-}
-
-.vitals-compact-card.cols-3 {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-lg);
-}
-
-/* Adaptive grid based on visible items (modern browsers) */
-.vitals-compact-card:has(.vital-compact:only-child) {
-    grid-template-columns: 1fr;
-    max-width: 280px;
-    margin: 0 auto;
-}
-
-.vitals-compact-card:has(.vital-compact:nth-child(2):last-child) {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 500px;
-}
-
+/* Cada vital individual */
 .vital-compact {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-lg) var(--spacing-md);
+    flex: 1;
+    min-width: 95px;
+    max-width: 130px;
+    padding: 14px 12px;
     background: linear-gradient(135deg, var(--bg-input) 0%, rgba(20, 20, 35, 0.9) 100%);
-    border-radius: var(--border-radius-lg);
-    overflow: hidden;
+    border-radius: var(--border-radius-md);
     border: 1px solid var(--border-light);
     transition: all 0.3s ease;
-    min-height: 140px;
-    min-width: 100px;
 }
 
 .vital-compact:hover {
@@ -1588,78 +1566,104 @@ body.system-op .vital-box.rs-only { display: none; }
     transform: translateY(-2px);
 }
 
-.hp-compact { border-left: 4px solid var(--hp-color); }
-.san-compact { border-left: 4px solid var(--san-color); }
-.pe-compact { border-left: 4px solid var(--pe-color); }
+/* Cores por tipo */
+.hp-compact { border-left: 3px solid var(--hp-color); }
+.san-compact { border-left: 3px solid var(--san-color); }
+.pe-compact { border-left: 3px solid var(--pe-color); }
 
 .hp-compact:hover { box-shadow: 0 4px 20px var(--hp-glow); }
 .san-compact:hover { box-shadow: 0 4px 20px var(--san-glow); }
 .pe-compact:hover { box-shadow: 0 4px 20px var(--pe-glow); }
 
-.vital-compact i {
-    font-size: 1.5rem;
-    filter: drop-shadow(0 0 8px currentColor);
+/* Ícone - bloco separado */
+.vital-compact .vital-icon {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    filter: drop-shadow(0 0 4px currentColor);
 }
 
-.hp-compact i { color: var(--hp-color); }
-.san-compact i { color: var(--san-color); }
-.pe-compact i { color: var(--pe-color); }
+.hp-compact .vital-icon { color: var(--hp-color); }
+.san-compact .vital-icon { color: var(--san-color); }
+.pe-compact .vital-icon { color: var(--pe-color); }
 
-.vital-compact label {
-    font-size: var(--font-size-sm);
+/* Label - bloco separado */
+.vital-compact .vital-label {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 0.55rem;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.03em;
     font-weight: 600;
+    margin-bottom: 6px;
 }
 
-.vital-compact-values {
+/* Container dos valores */
+.vital-compact .vital-values {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    font-weight: 700;
-    flex-wrap: nowrap;
-    margin: var(--spacing-sm) 0;
+    gap: 2px;
+    margin-bottom: 6px;
+    padding: 4px 6px;
+    background: rgba(10, 10, 20, 0.5);
+    border-radius: var(--border-radius-sm);
 }
 
-.vital-compact-input {
-    width: 58px !important;
-    min-width: 58px;
-    text-align: center;
-    padding: 0.6rem !important;
-    font-size: 1.3rem !important;
+/* Input do valor atual */
+.vital-compact .vital-current {
+    width: 20px !important;
+    text-align: right !important;
+    padding: 0 !important;
+    font-size: 0.6rem !important;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--bg-input) 0%, rgba(15, 15, 25, 0.95) 100%) !important;
-    border: 1px solid var(--border-light) !important;
-    border-radius: var(--border-radius-md);
+    background: transparent !important;
+    border: none !important;
 }
 
-.hp-compact .vital-compact-input { color: var(--hp-color); }
-.san-compact .vital-compact-input { color: var(--san-color); }
-.pe-compact .vital-compact-input { color: var(--pe-color); }
+.hp-compact .vital-current { color: var(--hp-color); }
+.san-compact .vital-current { color: var(--san-color); }
+.pe-compact .vital-current { color: var(--pe-color); }
 
-.vital-compact-max {
+/* Separador e valor máximo */
+.vital-compact .vital-separator {
     color: var(--text-secondary);
-    font-size: 1.1rem;
+    font-size: 0.6rem;
 }
 
-.vital-buttons {
+.vital-compact .vital-max {
+    width: 20px;
+    text-align: left;
+    color: var(--text-secondary);
+    font-size: 0.6rem;
+    font-weight: 600;
+}
+
+/* Botões */
+.vital-compact .vital-btns {
     display: flex;
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-md);
+    justify-content: center;
+    width: 100%;
+    gap: 6px;
 }
 
-.vital-buttons .btn-adjust {
-    width: 38px;
-    height: 34px;
-    min-width: 38px;
-    font-size: 0.9rem;
-    border-radius: var(--border-radius-md);
+.vital-compact .vital-btn {
+    width: 22px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.vital-buttons .btn-adjust:hover {
+.vital-compact .vital-btn:hover {
     transform: scale(1.1);
 }
 

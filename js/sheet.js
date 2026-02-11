@@ -126,61 +126,9 @@ const Sheet = {
     },
     
     // Update vitals compact card layout based on visible items
+    // Note: CSS flexbox now handles the adaptive layout automatically
     updateVitalsLayout() {
-        // Update main vitals card
-        const vitalsCard = document.querySelector('.vitals-compact-card');
-        if (vitalsCard) {
-            // Count visible vital-compact elements (check computed style)
-            const allVitals = vitalsCard.querySelectorAll('.vital-compact');
-            let visibleCount = 0;
-            
-            allVitals.forEach(vital => {
-                const style = window.getComputedStyle(vital);
-                if (style.display !== 'none') {
-                    visibleCount++;
-                }
-            });
-            
-            // Remove existing cols classes
-            vitalsCard.classList.remove('cols-1', 'cols-2', 'cols-3');
-            
-            // Add appropriate class
-            if (visibleCount === 1) {
-                vitalsCard.classList.add('cols-1');
-            } else if (visibleCount === 2) {
-                vitalsCard.classList.add('cols-2');
-            } else if (visibleCount >= 3) {
-                vitalsCard.classList.add('cols-3');
-            }
-        }
-        
-        // Update combat vitals grid
-        const combatVitals = document.querySelector('.vital-stats');
-        if (combatVitals) {
-            const allBoxes = combatVitals.querySelectorAll('.vital-box');
-            let visibleCount = 0;
-            
-            allBoxes.forEach(box => {
-                const style = window.getComputedStyle(box);
-                if (style.display !== 'none') {
-                    visibleCount++;
-                }
-            });
-            
-            // Remove existing cols classes
-            combatVitals.classList.remove('cols-1', 'cols-2', 'cols-3', 'cols-4');
-            
-            // Add appropriate class
-            if (visibleCount === 1) {
-                combatVitals.classList.add('cols-1');
-            } else if (visibleCount === 2) {
-                combatVitals.classList.add('cols-2');
-            } else if (visibleCount === 3) {
-                combatVitals.classList.add('cols-3');
-            } else if (visibleCount >= 4) {
-                combatVitals.classList.add('cols-4');
-            }
-        }
+        // Keep method for compatibility - flexbox handles layout now
     },
     
     // Populate custom classes select
@@ -623,11 +571,13 @@ const Sheet = {
         // Sync vital values to main tab
         const currentHpMain = document.getElementById('currentHpMain');
         const sanityMain = document.getElementById('sanityMain');
+        const maxSanityMain = document.getElementById('maxSanityMain');
         const currentPEMain = document.getElementById('currentPEMain');
         const currentPAInput = document.getElementById('currentPA');
         
         if (currentHpMain) currentHpMain.value = character.currentHp || 20;
         if (sanityMain) sanityMain.value = character.sanity || 20;
+        if (maxSanityMain) maxSanityMain.textContent = character.maxSanity || 20;
         if (currentPEMain) currentPEMain.value = character.currentPE || 6;
         
         // Initialize currentPA if not set

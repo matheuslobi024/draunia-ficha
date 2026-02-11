@@ -1358,42 +1358,43 @@
 
                         <!-- HP e Sanidade compactos -->
                         <div class="vitals-compact-card draggable-card" data-card-id="vitals">
-                            <div class="card-drag-handle"><i class="fas fa-grip-horizontal"></i></div>
                             <div class="vital-compact hp-compact">
-                                <i class="fas fa-heart"></i>
-                                <label>HP</label>
-                                <div class="vital-compact-values">
-                                    <input type="number" id="currentHpMain" class="vital-compact-input" min="0" value="20">
-                                    <span>/</span>
-                                    <span id="maxHpMain" class="vital-compact-max">20</span>
+                                <i class="fas fa-heart vital-icon"></i>
+                                <span class="vital-label">HP</span>
+                                <div class="vital-values">
+                                    <input type="number" id="currentHpMain" class="vital-current" min="0" value="20">
+                                    <span class="vital-separator">/</span>
+                                    <span id="maxHpMain" class="vital-max">20</span>
                                 </div>
-                                <div class="vital-buttons">
-                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentHpMain', -1)"><i class="fas fa-minus"></i></button>
-                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentHpMain', 1)"><i class="fas fa-plus"></i></button>
+                                <div class="vital-btns">
+                                    <button type="button" class="vital-btn btn-adjust" onclick="Sheet.adjustValue('currentHpMain', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="vital-btn btn-adjust" onclick="Sheet.adjustValue('currentHpMain', 1)"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
                             <div class="vital-compact san-compact rs-op-only">
-                                <i class="fas fa-brain"></i>
-                                <label>Sanidade</label>
-                                <div class="vital-compact-values">
-                                    <input type="number" id="sanityMain" class="vital-compact-input" min="0" value="20">
+                                <i class="fas fa-brain vital-icon"></i>
+                                <span class="vital-label">Sanidade</span>
+                                <div class="vital-values">
+                                    <input type="number" id="sanityMain" class="vital-current" min="0" value="20">
+                                    <span class="vital-separator">/</span>
+                                    <span id="maxSanityMain" class="vital-max">20</span>
                                 </div>
-                                <div class="vital-buttons">
-                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('sanityMain', -1)"><i class="fas fa-minus"></i></button>
-                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('sanityMain', 1)"><i class="fas fa-plus"></i></button>
+                                <div class="vital-btns">
+                                    <button type="button" class="vital-btn btn-adjust" onclick="Sheet.adjustValue('sanityMain', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="vital-btn btn-adjust" onclick="Sheet.adjustValue('sanityMain', 1)"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
                             <div class="vital-compact pe-compact rs-op-only">
-                                <i class="fas fa-bolt"></i>
-                                <label>PE</label>
-                                <div class="vital-compact-values">
-                                    <input type="number" id="currentPEMain" class="vital-compact-input" min="0" value="6">
-                                    <span>/</span>
-                                    <span id="maxPEMain" class="vital-compact-max">6</span>
+                                <i class="fas fa-bolt vital-icon"></i>
+                                <span class="vital-label">PE</span>
+                                <div class="vital-values">
+                                    <input type="number" id="currentPEMain" class="vital-current" min="0" value="6">
+                                    <span class="vital-separator">/</span>
+                                    <span id="maxPEMain" class="vital-max">6</span>
                                 </div>
-                                <div class="vital-buttons">
-                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPEMain', -1)"><i class="fas fa-minus"></i></button>
-                                    <button type="button" class="btn-adjust" onclick="Sheet.adjustValue('currentPEMain', 1)"><i class="fas fa-plus"></i></button>
+                                <div class="vital-btns">
+                                    <button type="button" class="vital-btn btn-adjust" onclick="Sheet.adjustValue('currentPEMain', -1)"><i class="fas fa-minus"></i></button>
+                                    <button type="button" class="vital-btn btn-adjust" onclick="Sheet.adjustValue('currentPEMain', 1)"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
                         </div>
