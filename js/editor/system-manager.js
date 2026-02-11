@@ -1,114 +1,10 @@
 // ========== SYSTEM MANAGER MODULE ==========
-// Manages custom RPG systems
+// UI and management for custom RPG systems
+// Uses SystemRegistry for system data
 
 const SystemManager = {
     // Current editing system
     currentEditingSystem: null,
-    
-    // Built-in systems (cannot be deleted)
-    builtInSystems: ['realsscripts', 'dnd5e', 'ordemparanormal'],
-    
-    // Default systems
-    defaultSystems: {
-        'realsscripts': {
-            id: 'realsscripts',
-            name: 'Realms&Scripts',
-            description: 'Sistema original com Fusões, PA, atributos personalizados e mecânicas únicas de Draunia.',
-            icon: 'fa-scroll',
-            isBuiltIn: true,
-            config: {
-                attrType: 'realsscripts',
-                attrPointLimit: 8,
-                modifierCalc: 'direct',
-                hpFormula: 'realsscripts',
-                hasEnergyPoints: true,
-                energyName: 'PE',
-                peFormula: 'realsscripts',
-                hasSanity: true,
-                sanityHasMax: false,
-                hasActionPoints: true,
-                paFormula: 'realsscripts',
-                hasFusions: true,
-                caFormula: 'realsscripts',
-                hasDodge: true,
-                dodgeFormula: 'realsscripts',
-                hasClasses: false,
-                skillSystem: 'realsscripts',
-                skillList: 'realsscripts',
-                hasSpellSlots: false
-            }
-        },
-        'dnd5e': {
-            id: 'dnd5e',
-            name: 'D&D 5e Clássico',
-            description: 'Sistema completo baseado em D&D 5e: 6 atributos (FOR, DES, CON, INT, SAB, CAR), modificadores calculados automaticamente, bônus de proficiência por nível, 18 perícias, classes com dados de vida, CA, iniciativa, spell slots e regras oficiais.',
-            icon: 'fa-dragon',
-            isBuiltIn: true,
-            config: {
-                attrType: 'dnd',
-                attrPointLimit: 0,
-                modifierCalc: 'dnd',
-                hpFormula: 'dnd',
-                hasEnergyPoints: false,
-                hasSanity: false,
-                sanityHasMax: false,
-                hasActionPoints: false,
-                hasFusions: false,
-                caFormula: 'dnd',
-                hasDodge: false,
-                hasClasses: true,
-                classAffectsHp: true,
-                skillSystem: 'dnd',
-                skillList: 'dnd',
-                hasSpellSlots: true,
-                hasSavingThrows: true,
-                hasProficiencyBonus: true,
-                hasPassivePerception: true,
-                hasAdvantageDisadvantage: true
-            }
-        },
-        'ordemparanormal': {
-            id: 'ordemparanormal',
-            name: 'Ordem Paranormal',
-            description: 'Sistema brasileiro de horror e investigação. 5 atributos (AGI, FOR, INT, PRE, VIG), NEX, PE, Sanidade, Trilhas (Combatente, Especialista, Ocultista) e Rituais.',
-            icon: 'fa-eye',
-            isBuiltIn: true,
-            config: {
-                attrType: 'ordemparanormal',
-                attrMin: 0,
-                attrMax: 5,
-                attrPointLimit: 0,
-                modifierCalc: 'direct',
-                hpFormula: 'ordemparanormal',
-                hasEnergyPoints: true,
-                energyName: 'PE',
-                peFormula: 'ordemparanormal',
-                hasSanity: true,
-                sanityName: 'Sanidade',
-                sanityHasMax: true,
-                sanityMax: 100,
-                hasActionPoints: false,
-                hasFusions: false,
-                caFormula: 'ordemparanormal',
-                hasDodge: false,
-                hasClasses: true,
-                classAffectsHp: false,
-                fieldClass: true,
-                hasRaces: false,
-                hasMagic: false,
-                hasRituals: true,
-                ritualSystem: 'ordemparanormal',
-                ritualsCostPE: true,
-                ritualsAffectSanity: true,
-                skillSystem: 'ordemparanormal',
-                skillList: 'ordemparanormal',
-                hasSpellSlots: false,
-                hasSavingThrows: true,
-                saveType: 'ordemparanormal',
-                hasResistances: true
-            }
-        }
-    },
     
     // Custom systems (loaded from Firebase)
     customSystems: {},
@@ -126,20 +22,35 @@ const SystemManager = {
         try {
             const systems = await API.getCustomSystems();
             this.customSystems = systems || {};
+            
+            // Register custom systems in SystemRegistry
+            for (const [id, system] of Object.entries(this.customSystems)) {
+                if (!SystemRegistry.get(id)) {
+                    SystemRegistry.register(id, {
+                        ...system,
+                        calculations: BaseCalculations // Use base calculations for custom systems
+                    });
+                }
+            }
         } catch (error) {
             console.error('Erro ao carregar sistemas:', error);
             this.customSystems = {};
         }
     },
     
-    // Get all available systems
+    // Get all available systems (from SystemRegistry)
     getAllSystems() {
-        return { ...this.defaultSystems, ...this.customSystems };
+        return SystemRegistry.getAll();
     },
     
-    // Get system by ID
+    // Get system by ID (from SystemRegistry)
     getSystem(systemId) {
-        return this.getAllSystems()[systemId] || this.defaultSystems['realsscripts'];
+        return SystemRegistry.get(systemId) || SystemRegistry.get('realsscripts');
+    },
+    
+    // Check if system is built-in
+    isBuiltIn(systemId) {
+        return SystemRegistry.BUILT_IN_SYSTEMS.includes(systemId);
     },
     
     // Helper to toggle sections based on select value
@@ -335,7 +246,7 @@ const SystemManager = {
         
         let html = '';
         for (const [id, system] of Object.entries(allSystems)) {
-            const isBuiltIn = system.isBuiltIn;
+            const isBuiltIn = this.isBuiltIn(id);
             const isShared = system.isShared;
             html += `
                 <div class="system-manager-item ${isBuiltIn ? 'built-in' : ''} ${isShared ? 'shared' : ''}" data-system-id="${id}">
