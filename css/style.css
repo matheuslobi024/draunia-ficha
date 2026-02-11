@@ -642,20 +642,23 @@ select option:checked {
 /* ========== TAB PRINCIPAL ========== */
 .principal-layout {
     display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 1rem;
+    grid-template-columns: minmax(280px, 350px) 1fr;
+    gap: var(--spacing-lg);
+    align-items: start;
 }
 
 .principal-left {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--spacing-md);
+    position: sticky;
+    top: var(--spacing-md);
 }
 
 .principal-right {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--spacing-md);
 }
 
 /* Portrait */
@@ -943,10 +946,29 @@ select option:checked {
 /* D&D Visibility Toggles */
 .dnd-only { display: none; }
 .rs-only { display: block; }
+.op-only { display: none; }
+.rs-op-only { display: block; } /* Shows for RS and OP, hides for D&D */
+
+/* D&D system */
 body.system-dnd .dnd-only { display: block; }
 body.system-dnd .rs-only { display: none; }
+body.system-dnd .op-only { display: none; }
+body.system-dnd .rs-op-only { display: none; }
 body.system-dnd #racesRealsscripts { display: none; }
 body.system-dnd #racesDnd { display: block; }
+
+/* OP system */
+body.system-op .dnd-only { display: none; }
+body.system-op .rs-only { display: none; }
+body.system-op .op-only { display: block; }
+body.system-op .rs-op-only { display: block; }
+
+/* RS system (default) */
+body.system-rs .dnd-only { display: none; }
+body.system-rs .rs-only { display: block; }
+body.system-rs .op-only { display: none; }
+body.system-rs .rs-op-only { display: block; }
+
 body:not(.system-dnd) #racesRealsscripts { display: block; }
 body:not(.system-dnd) #racesDnd { display: none; }
 
@@ -955,6 +977,15 @@ body:not(.system-dnd) #racesDnd { display: none; }
 .skill-legend.dnd-only { display: none; }
 body.system-dnd .skill-legend.dnd-only { display: flex; }
 body.system-dnd .skill-legend.rs-only { display: none; }
+
+/* Vital boxes system visibility - use flex for proper grid behavior */
+.vital-box.rs-op-only,
+.vital-compact.rs-op-only { display: flex; }
+body.system-dnd .vital-box.rs-op-only,
+body.system-dnd .vital-compact.rs-op-only { display: none; }
+.vital-box.rs-only { display: flex; }
+body.system-dnd .vital-box.rs-only,
+body.system-op .vital-box.rs-only { display: none; }
 
 /* ========== D&D ATTRIBUTES - ENHANCED DESIGN ========== */
 .dnd-attributes-grid {
@@ -1265,11 +1296,6 @@ body.system-dnd .skill-legend.rs-only { display: none; }
     text-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
 }
 
-/* OP system visibility classes */
-body.system-op .rs-only,
-body.system-op .dnd-only { display: none !important; }
-body.system-op .op-only { display: block !important; }
-
 @media (max-width: 768px) {
     .op-attributes-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -1482,27 +1508,65 @@ body.system-op .op-only { display: block !important; }
 /* Vitals Compact Card */
 .vitals-compact-card {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-    background: var(--bg-card);
-    padding: 0.75rem;
-    border-radius: var(--border-radius);
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--spacing-sm);
+    background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-lg);
     border: 1px solid var(--border-color);
+}
+
+/* Explicit column control classes */
+.vitals-compact-card.cols-1 {
+    grid-template-columns: 1fr;
+}
+
+.vitals-compact-card.cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.vitals-compact-card.cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* Adaptive grid based on visible items (modern browsers) */
+.vitals-compact-card:has(.vital-compact:only-child) {
+    grid-template-columns: 1fr;
+}
+
+.vitals-compact-card:has(.vital-compact:nth-child(2):last-child) {
+    grid-template-columns: repeat(2, 1fr);
 }
 
 .vital-compact {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0.3rem;
-    background: var(--bg-input);
-    border-radius: var(--border-radius);
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-xs);
+    background: linear-gradient(135deg, var(--bg-input) 0%, rgba(20, 20, 35, 0.9) 100%);
+    border-radius: var(--border-radius-md);
     overflow: hidden;
+    border: 1px solid var(--border-light);
+    transition: all 0.3s ease;
 }
 
+.vital-compact:hover {
+    border-color: var(--border-accent);
+    transform: translateY(-2px);
+}
+
+.hp-compact { border-left: 3px solid var(--hp-color); }
+.san-compact { border-left: 3px solid var(--san-color); }
+.pe-compact { border-left: 3px solid var(--pe-color); }
+
+.hp-compact:hover { box-shadow: 0 4px 16px var(--hp-glow); }
+.san-compact:hover { box-shadow: 0 4px 16px var(--san-glow); }
+.pe-compact:hover { box-shadow: 0 4px 16px var(--pe-glow); }
+
 .vital-compact i {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
+    filter: drop-shadow(0 0 6px currentColor);
 }
 
 .hp-compact i { color: var(--hp-color); }
@@ -1510,9 +1574,11 @@ body.system-op .op-only { display: block !important; }
 .pe-compact i { color: var(--pe-color); }
 
 .vital-compact label {
-    font-size: 0.65rem;
+    font-size: var(--font-size-xs);
     color: var(--text-secondary);
     text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
 }
 
 .vital-compact-values {
@@ -1520,35 +1586,48 @@ body.system-op .op-only { display: block !important; }
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
-    font-weight: 600;
+    font-weight: 700;
     flex-wrap: nowrap;
 }
 
 .vital-compact-input {
-    width: 45px !important;
-    min-width: 45px;
+    width: 50px !important;
+    min-width: 50px;
     text-align: center;
-    padding: 0.3rem !important;
-    font-size: 1rem !important;
-    font-weight: 600;
+    padding: 0.4rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--bg-input) 0%, rgba(15, 15, 25, 0.95) 100%) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: var(--border-radius-sm);
 }
+
+.hp-compact .vital-compact-input { color: var(--hp-color); }
+.san-compact .vital-compact-input { color: var(--san-color); }
+.pe-compact .vital-compact-input { color: var(--pe-color); }
 
 .vital-compact-max {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
 .vital-buttons {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
 }
 
 .vital-buttons .btn-adjust {
-    width: 28px;
-    height: 24px;
-    min-width: 28px;
-    font-size: 0.7rem;
+    width: 30px;
+    height: 26px;
+    min-width: 30px;
+    font-size: 0.75rem;
+    border-radius: var(--border-radius-md);
+    transition: all 0.2s ease;
+}
+
+.vital-buttons .btn-adjust:hover {
+    transform: scale(1.1);
 }
 
 /* ========== TAB COMBATE ========== */
@@ -1566,6 +1645,10 @@ body.system-op .op-only { display: block !important; }
 }
 
 /* Quando tem poucos itens, distribui igualmente */
+.vital-stats.cols-1 {
+    grid-template-columns: 1fr;
+}
+
 .vital-stats.cols-2 {
     grid-template-columns: repeat(2, 1fr);
 }

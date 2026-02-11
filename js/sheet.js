@@ -11,6 +11,7 @@ const Sheet = {
         this.generateSkillsHTML();
         this.generateCombatSkillsHTML();
         this.setupSkillSearch();
+        this.updateVitalsLayout();
         
         // Hide D&D races by default (R&S is default system)
         const dndRaces = document.getElementById('racesDnd');
@@ -115,7 +116,71 @@ const Sheet = {
         // Set current system in calculations
         Calculations.currentSystem = systemId;
         
+        // Update vitals layout after CSS has been applied
+        // Use requestAnimationFrame to ensure styles are computed
+        requestAnimationFrame(() => {
+            this.updateVitalsLayout();
+        });
+        
         console.log('[Sheet] Sistema configurado:', this.currentSystem, 'Config:', config);
+    },
+    
+    // Update vitals compact card layout based on visible items
+    updateVitalsLayout() {
+        // Update main vitals card
+        const vitalsCard = document.querySelector('.vitals-compact-card');
+        if (vitalsCard) {
+            // Count visible vital-compact elements (check computed style)
+            const allVitals = vitalsCard.querySelectorAll('.vital-compact');
+            let visibleCount = 0;
+            
+            allVitals.forEach(vital => {
+                const style = window.getComputedStyle(vital);
+                if (style.display !== 'none') {
+                    visibleCount++;
+                }
+            });
+            
+            // Remove existing cols classes
+            vitalsCard.classList.remove('cols-1', 'cols-2', 'cols-3');
+            
+            // Add appropriate class
+            if (visibleCount === 1) {
+                vitalsCard.classList.add('cols-1');
+            } else if (visibleCount === 2) {
+                vitalsCard.classList.add('cols-2');
+            } else if (visibleCount >= 3) {
+                vitalsCard.classList.add('cols-3');
+            }
+        }
+        
+        // Update combat vitals grid
+        const combatVitals = document.querySelector('.vital-stats');
+        if (combatVitals) {
+            const allBoxes = combatVitals.querySelectorAll('.vital-box');
+            let visibleCount = 0;
+            
+            allBoxes.forEach(box => {
+                const style = window.getComputedStyle(box);
+                if (style.display !== 'none') {
+                    visibleCount++;
+                }
+            });
+            
+            // Remove existing cols classes
+            combatVitals.classList.remove('cols-1', 'cols-2', 'cols-3', 'cols-4');
+            
+            // Add appropriate class
+            if (visibleCount === 1) {
+                combatVitals.classList.add('cols-1');
+            } else if (visibleCount === 2) {
+                combatVitals.classList.add('cols-2');
+            } else if (visibleCount === 3) {
+                combatVitals.classList.add('cols-3');
+            } else if (visibleCount >= 4) {
+                combatVitals.classList.add('cols-4');
+            }
+        }
     },
     
     // Populate custom classes select
