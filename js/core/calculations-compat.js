@@ -177,6 +177,24 @@ const Calculations = {
         return DnD5eSystem?.calculations?.updateAll?.(charData) || {};
     },
     
+    getDndProficientSkills(charData) {
+        const proficient = [];
+        const proficiencies = charData.dndSkillProficiencies || {};
+        
+        this.DND_SKILLS.forEach(skill => {
+            const level = proficiencies[skill.id] || 0; // 0 = none, 1 = proficient, 2 = expertise
+            if (level > 0) {
+                proficient.push({
+                    ...skill,
+                    proficiency: level,
+                    total: this.calculateDndSkillTotal(charData, skill.id)
+                });
+            }
+        });
+        
+        return proficient.sort((a, b) => b.total - a.total);
+    },
+    
     // ========== ORDEM PARANORMAL METHODS (delegate to OrdemParanormalSystem) ==========
     
     calculateOPMaxHP(charData) {
