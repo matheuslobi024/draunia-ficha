@@ -125,10 +125,35 @@ const Sheet = {
         console.log('[Sheet] Sistema configurado:', this.currentSystem, 'Config:', config);
     },
     
-    // Update vitals compact card layout based on visible items
-    // Note: CSS flexbox now handles the adaptive layout automatically
+    // Update vitals layout based on visible items
     updateVitalsLayout() {
-        // Keep method for compatibility - flexbox handles layout now
+        // Update combat vitals grid
+        const combatVitals = document.querySelector('.vital-stats');
+        if (combatVitals) {
+            const allBoxes = combatVitals.querySelectorAll('.vital-box');
+            let visibleCount = 0;
+            
+            allBoxes.forEach(box => {
+                const style = window.getComputedStyle(box);
+                if (style.display !== 'none') {
+                    visibleCount++;
+                }
+            });
+            
+            // Remove existing cols classes
+            combatVitals.classList.remove('cols-1', 'cols-2', 'cols-3', 'cols-4');
+            
+            // Add appropriate class
+            if (visibleCount === 1) {
+                combatVitals.classList.add('cols-1');
+            } else if (visibleCount === 2) {
+                combatVitals.classList.add('cols-2');
+            } else if (visibleCount === 3) {
+                combatVitals.classList.add('cols-3');
+            } else if (visibleCount >= 4) {
+                combatVitals.classList.add('cols-4');
+            }
+        }
     },
     
     // Populate custom classes select

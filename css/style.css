@@ -1677,13 +1677,14 @@ body.system-op .vital-box.rs-only { display: none; }
 /* ========== VITAL STATS - RESPONSIVE GRID ========== */
 .vital-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1rem;
 }
 
 /* Quando tem poucos itens, distribui igualmente */
 .vital-stats.cols-1 {
     grid-template-columns: 1fr;
+    max-width: 400px;
 }
 
 .vital-stats.cols-2 {
@@ -1698,6 +1699,12 @@ body.system-op .vital-box.rs-only { display: none; }
     grid-template-columns: repeat(4, 1fr);
 }
 
+@media (max-width: 1200px) {
+    .vital-stats.cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 900px) {
     .vital-stats.cols-4,
     .vital-stats.cols-3 {
@@ -1705,7 +1712,7 @@ body.system-op .vital-box.rs-only { display: none; }
     }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .vital-stats.cols-4,
     .vital-stats.cols-3,
     .vital-stats.cols-2 {
@@ -1718,6 +1725,8 @@ body.system-op .vital-box.rs-only { display: none; }
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-md);
     display: flex;
+    flex-direction: row;
+    align-items: flex-start;
     gap: var(--spacing-md);
     border: 1px solid var(--border-light);
     transition: all 0.3s ease;
