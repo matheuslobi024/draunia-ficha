@@ -522,13 +522,13 @@ const App = {
         if (combatMaxPe) combatMaxPe.textContent = maxPe;
         if (combatMaxPa) combatMaxPa.textContent = maxPa;
         
-        // Update used attr points
-        const usedPoints = Math.abs(parseInt(data.attrFor) || 0) +
-                          Math.abs(parseInt(data.attrCon) || 0) +
-                          Math.abs(parseInt(data.attrVon) || 0) +
-                          Math.abs(parseInt(data.attrCar) || 0) +
-                          Math.abs(parseInt(data.attrInt) || 0) +
-                          Math.abs(parseInt(data.attrAgi) || 0);
+        // Update used attr points (sum of all, negative values give points back)
+        const usedPoints = (parseInt(data.attrFor) || 0) +
+                          (parseInt(data.attrCon) || 0) +
+                          (parseInt(data.attrVon) || 0) +
+                          (parseInt(data.attrCar) || 0) +
+                          (parseInt(data.attrInt) || 0) +
+                          (parseInt(data.attrAgi) || 0);
         document.getElementById('usedAttrPoints').textContent = usedPoints;
         
         // Update combat skills display
@@ -1133,7 +1133,7 @@ const App = {
                 const attr = btn.dataset.attr;
                 const input = document.getElementById(attr);
                 const delta = btn.classList.contains('plus') ? 1 : -1;
-                const newVal = Math.min(5, Math.max(-3, (parseInt(input.value) || 0) + delta));
+                const newVal = (parseInt(input.value) || 0) + delta;
                 input.value = newVal;
                 this.charData[attr] = newVal;
                 this.updateCalculations();
