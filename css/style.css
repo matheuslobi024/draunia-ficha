@@ -1809,6 +1809,7 @@ body.system-op .vital-box.rs-only { display: none; }
 .hp-box .vital-current { color: var(--hp-color); }
 .pe-box .vital-current { color: var(--pe-color); }
 .san-box .vital-current { color: var(--san-color); }
+.pa-box .vital-current { color: var(--accent-gold); }
 
 .vital-max {
     color: var(--text-secondary);
@@ -1880,7 +1881,7 @@ input.vital-single {
 }
 
 .pa-fill {
-    background: linear-gradient(90deg, #e6a800 0%, var(--pa-color) 50%, #ffd93d 100%);
+    background: linear-gradient(90deg, #e6a800 0%, var(--accent-gold) 50%, #ffd93d 100%);
     box-shadow: 0 0 8px rgba(255, 217, 61, 0.4);
 }
 
@@ -2188,6 +2189,22 @@ input.vital-single {
 
 .pe-box .btn-restore:hover {
     background: #2980b9 !important;
+}
+
+.san-box .btn-restore {
+    background: var(--san-color) !important;
+}
+
+.san-box .btn-restore:hover {
+    background: #6c3483 !important;
+}
+
+.pa-box .btn-restore {
+    background: var(--accent-gold) !important;
+}
+
+.pa-box .btn-restore:hover {
+    background: #e6a800 !important;
 }
 
 /* Sheet Notification */
