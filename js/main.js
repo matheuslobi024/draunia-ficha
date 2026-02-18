@@ -253,8 +253,18 @@ const App = {
             fusionHeart: 'vermelho',
             fusionBrain: 'vermelho',
             fusionEyes: 'nao',
-            fusionMuscle: 'vermelho',
-            fusionBone: 'comeco',
+            // Muscles (by body part)
+            fusionMuscleArms: 'vermelho',
+            fusionMuscleHead: 'vermelho',
+            fusionMuscleBack: 'vermelho',
+            fusionMuscleChest: 'vermelho',
+            fusionMuscleLegs: 'vermelho',
+            // Bones (by body part)
+            fusionBoneArms: 'comeco',
+            fusionBoneHead: 'comeco',
+            fusionBoneBack: 'comeco',
+            fusionBoneChest: 'comeco',
+            fusionBoneLegs: 'comeco',
             
             // Combat
             armorType: 'none',
@@ -385,20 +395,6 @@ const App = {
             eyes: {
                 nao: 'Sem bônus',
                 fundido: '+5 em Investigação e Percepção'
-            },
-            muscle: {
-                vermelho: 'Sem bônus de fusão',
-                rosaProfundo: '+2 Luta/Atletismo',
-                rosaClaro: '+4 Luta/Atletismo',
-                prata: '+6 Luta/Atletismo',
-                branco: '+8 Luta/Atletismo'
-            },
-            bone: {
-                comeco: 'Sem redução de dano',
-                transiente: '-1 de dano recebido',
-                mesclado: '-2 de dano recebido',
-                integrado: '-3 de dano recebido',
-                fundido: '-4 de dano recebido'
             }
         };
         
@@ -406,8 +402,6 @@ const App = {
         const heartEffect = document.getElementById('heartEffect');
         const brainEffect = document.getElementById('brainEffect');
         const eyesEffect = document.getElementById('eyesEffect');
-        const muscleEffect = document.getElementById('muscleEffect');
-        const boneEffect = document.getElementById('boneEffect');
         
         if (heartEffect && this.charData.fusionHeart) {
             heartEffect.textContent = fusionData.heart[this.charData.fusionHeart] || '';
@@ -417,12 +411,6 @@ const App = {
         }
         if (eyesEffect && this.charData.fusionEyes) {
             eyesEffect.textContent = fusionData.eyes[this.charData.fusionEyes] || '';
-        }
-        if (muscleEffect && this.charData.fusionMuscle) {
-            muscleEffect.textContent = fusionData.muscle[this.charData.fusionMuscle] || '';
-        }
-        if (boneEffect && this.charData.fusionBone) {
-            boneEffect.textContent = fusionData.bone[this.charData.fusionBone] || '';
         }
     },
     
@@ -535,11 +523,17 @@ const App = {
         document.getElementById('skillReflexos').textContent = this.formatBonus(reflexosTotal);
         document.getElementById('skillIniciativa').textContent = this.formatBonus(initiative);
         
-        // Fusions summary - using new dropdown values
-        const boneReduction = this.getFusionMultiplier('bone', data.fusionBone);
-        document.getElementById('defendReduction').textContent = boneReduction;
-        document.getElementById('damageReduction').textContent = boneReduction;
-        document.getElementById('fallReduction').textContent = boneReduction;
+        // Fusions summary - calculate from individual body parts
+        const boneArms = this.getFusionMultiplier('bone', data.fusionBoneArms);
+        const boneHead = this.getFusionMultiplier('bone', data.fusionBoneHead);
+        const boneBack = this.getFusionMultiplier('bone', data.fusionBoneBack);
+        const boneChest = this.getFusionMultiplier('bone', data.fusionBoneChest);
+        const boneLegs = this.getFusionMultiplier('bone', data.fusionBoneLegs);
+        
+        document.getElementById('defendReduction').textContent = boneArms;
+        const avgBoneReduction = Math.floor((boneArms + boneHead + boneBack + boneChest + boneLegs) / 5);
+        document.getElementById('damageReduction').textContent = avgBoneReduction;
+        document.getElementById('fallReduction').textContent = boneLegs;
         
         // Weight
         this.updateWeight();
@@ -587,10 +581,18 @@ const App = {
             total += armor.skillPenalty;
         }
         
-        // Muscle bonuses (using new dropdown values)
-        const muscleBonus = this.getFusionMultiplier('muscle', data.fusionMuscle);
-        if (skillId === 'luta' || skillId === 'atletismo') {
-            total += muscleBonus;
+        // Muscle bonuses (using individual body parts)
+        // Arms = Luta, Head = Percepção, Back = Pontaria, Chest = Atletismo, Legs = Acrobacia
+        if (skillId === 'luta') {
+            total += this.getFusionMultiplier('muscle', data.fusionMuscleArms);
+        } else if (skillId === 'percepcao') {
+            total += this.getFusionMultiplier('muscle', data.fusionMuscleHead);
+        } else if (skillId === 'pontaria') {
+            total += this.getFusionMultiplier('muscle', data.fusionMuscleBack);
+        } else if (skillId === 'atletismo') {
+            total += this.getFusionMultiplier('muscle', data.fusionMuscleChest);
+        } else if (skillId === 'acrobacia') {
+            total += this.getFusionMultiplier('muscle', data.fusionMuscleLegs);
         }
         
         // Eyes bonus
@@ -743,7 +745,15 @@ const App = {
             return;
         }
         
-        list.innerHTML = attacks.map((atk, i) => `
+        list.innerHTML = attacks.map((atk, i) => {
+            const paCost = atk.paCost || 0;
+            const peCost = atk.peCost || 0;
+            const costText = [];
+            if (paCost > 0) costText.push(`${paCost} PA`);
+            if (peCost > 0) costText.push(`${peCost} PE`);
+            const costDisplay = costText.length > 0 ? `(${costText.join(', ')})` : '';
+            
+            return `
             <div class="attack-item" data-index="${i}">
                 <div class="attack-header">
                     <input type="text" value="${atk.name}" placeholder="Nome" onchange="App.updateAttack(${i}, 'name', this.value)">
@@ -765,26 +775,22 @@ const App = {
                         <input type="text" value="${atk.crit}" onchange="App.updateAttack(${i}, 'crit', this.value)">
                     </div>
                 </div>
-                <div class="attack-stats" style="margin-top: var(--spacing-xs);">
+                <div class="attack-stats">
                     <div class="attack-stat">
                         <label>Custo PA</label>
-                        <input type="number" value="${atk.paCost || 0}" min="0" onchange="App.updateAttack(${i}, 'paCost', this.value)">
+                        <input type="number" value="${paCost}" min="0" onchange="App.updateAttack(${i}, 'paCost', this.value)">
                     </div>
                     <div class="attack-stat">
                         <label>Custo PE</label>
-                        <input type="number" value="${atk.peCost || 0}" min="0" onchange="App.updateAttack(${i}, 'peCost', this.value)">
-                    </div>
-                    <div class="attack-stat">
-                        <button class="execute-attack-btn" onclick="App.executeAttack(${i})">
-                            <i class="fas fa-bolt"></i> Usar
-                        </button>
+                        <input type="number" value="${peCost}" min="0" onchange="App.updateAttack(${i}, 'peCost', this.value)">
                     </div>
                 </div>
-                <button class="attack-roll-btn" onclick="App.rollAttack(${i})">
-                    <i class="fas fa-dice-d20"></i> Apenas Rolar
+                <button class="execute-attack-btn" onclick="App.executeAttack(${i})">
+                    <i class="fas fa-dice-d20"></i> Atacar <span class="attack-cost">${costDisplay}</span>
                 </button>
             </div>
-        `).join('');
+        `;
+        }).join('');
     },
     
     updateAttack(index, field, value) {

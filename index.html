@@ -529,19 +529,56 @@
                         <i class="fas fa-dumbbell"></i> Músculos
                     </div>
                     <div class="card-body">
-                        <div class="fusion-select-grid">
-                            <div class="fusion-select-item muscle">
-                                <label class="fusion-select-label">
-                                    <i class="fas fa-dumbbell"></i> Nível de Fusão
-                                </label>
-                                <select id="fusionMuscle" data-field="fusionMuscle" class="fusion-select">
-                                    <option value="vermelho">Vermelho (Sem bônus)</option>
-                                    <option value="rosaProfundo">Rosa Profundo (+2)</option>
-                                    <option value="rosaClaro">Rosa Claro (+4)</option>
-                                    <option value="prata">Prata (+6)</option>
-                                    <option value="branco">Branco (+8)</option>
+                        <div class="fusion-body-grid">
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-hand-fist"></i> Braços</label>
+                                <select id="fusionMuscleArms" data-field="fusionMuscleArms" class="fusion-select-sm">
+                                    <option value="vermelho">Vermelho</option>
+                                    <option value="rosaProfundo">Rosa Profundo</option>
+                                    <option value="rosaClaro">Rosa Claro</option>
+                                    <option value="prata">Prata</option>
+                                    <option value="branco">Branco</option>
                                 </select>
-                                <div class="fusion-effect-text" id="muscleEffect">Sem bônus de fusão</div>
+                            </div>
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-head-side"></i> Cabeça</label>
+                                <select id="fusionMuscleHead" data-field="fusionMuscleHead" class="fusion-select-sm">
+                                    <option value="vermelho">Vermelho</option>
+                                    <option value="rosaProfundo">Rosa Profundo</option>
+                                    <option value="rosaClaro">Rosa Claro</option>
+                                    <option value="prata">Prata</option>
+                                    <option value="branco">Branco</option>
+                                </select>
+                            </div>
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-person"></i> Costas</label>
+                                <select id="fusionMuscleBack" data-field="fusionMuscleBack" class="fusion-select-sm">
+                                    <option value="vermelho">Vermelho</option>
+                                    <option value="rosaProfundo">Rosa Profundo</option>
+                                    <option value="rosaClaro">Rosa Claro</option>
+                                    <option value="prata">Prata</option>
+                                    <option value="branco">Branco</option>
+                                </select>
+                            </div>
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-vest"></i> Peito</label>
+                                <select id="fusionMuscleChest" data-field="fusionMuscleChest" class="fusion-select-sm">
+                                    <option value="vermelho">Vermelho</option>
+                                    <option value="rosaProfundo">Rosa Profundo</option>
+                                    <option value="rosaClaro">Rosa Claro</option>
+                                    <option value="prata">Prata</option>
+                                    <option value="branco">Branco</option>
+                                </select>
+                            </div>
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-socks"></i> Pernas</label>
+                                <select id="fusionMuscleLegs" data-field="fusionMuscleLegs" class="fusion-select-sm">
+                                    <option value="vermelho">Vermelho</option>
+                                    <option value="rosaProfundo">Rosa Profundo</option>
+                                    <option value="rosaClaro">Rosa Claro</option>
+                                    <option value="prata">Prata</option>
+                                    <option value="branco">Branco</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -553,19 +590,56 @@
                         <i class="fas fa-bone"></i> Ossos
                     </div>
                     <div class="card-body">
-                        <div class="fusion-select-grid">
-                            <div class="fusion-select-item bone">
-                                <label class="fusion-select-label">
-                                    <i class="fas fa-bone"></i> Nível de Fusão
-                                </label>
-                                <select id="fusionBone" data-field="fusionBone" class="fusion-select">
-                                    <option value="comeco">Começo (Sem redução)</option>
-                                    <option value="transiente">Transiente (-1 dano)</option>
-                                    <option value="mesclado">Mesclado (-2 dano)</option>
-                                    <option value="integrado">Integrado (-3 dano)</option>
-                                    <option value="fundido">Fundido (-4 dano)</option>
+                        <div class="fusion-body-grid">
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-hand-fist"></i> Braços</label>
+                                <select id="fusionBoneArms" data-field="fusionBoneArms" class="fusion-select-sm">
+                                    <option value="comeco">Começo</option>
+                                    <option value="transiente">Transiente</option>
+                                    <option value="mesclado">Mesclado</option>
+                                    <option value="integrado">Integrado</option>
+                                    <option value="fundido">Fundido</option>
                                 </select>
-                                <div class="fusion-effect-text" id="boneEffect">Sem redução de dano</div>
+                            </div>
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-head-side"></i> Cabeça</label>
+                                <select id="fusionBoneHead" data-field="fusionBoneHead" class="fusion-select-sm">
+                                    <option value="comeco">Começo</option>
+                                    <option value="transiente">Transiente</option>
+                                    <option value="mesclado">Mesclado</option>
+                                    <option value="integrado">Integrado</option>
+                                    <option value="fundido">Fundido</option>
+                                </select>
+                            </div>
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-person"></i> Costas</label>
+                                <select id="fusionBoneBack" data-field="fusionBoneBack" class="fusion-select-sm">
+                                    <option value="comeco">Começo</option>
+                                    <option value="transiente">Transiente</option>
+                                    <option value="mesclado">Mesclado</option>
+                                    <option value="integrado">Integrado</option>
+                                    <option value="fundido">Fundido</option>
+                                </select>
+                            </div>
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-vest"></i> Peito</label>
+                                <select id="fusionBoneChest" data-field="fusionBoneChest" class="fusion-select-sm">
+                                    <option value="comeco">Começo</option>
+                                    <option value="transiente">Transiente</option>
+                                    <option value="mesclado">Mesclado</option>
+                                    <option value="integrado">Integrado</option>
+                                    <option value="fundido">Fundido</option>
+                                </select>
+                            </div>
+                            <div class="fusion-body-item">
+                                <label><i class="fas fa-socks"></i> Pernas</label>
+                                <select id="fusionBoneLegs" data-field="fusionBoneLegs" class="fusion-select-sm">
+                                    <option value="comeco">Começo</option>
+                                    <option value="transiente">Transiente</option>
+                                    <option value="mesclado">Mesclado</option>
+                                    <option value="integrado">Integrado</option>
+                                    <option value="fundido">Fundido</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -579,15 +653,15 @@
                     <div class="card-body">
                         <div class="fusion-summary">
                             <div class="summary-item">
-                                <span>Redução de Dano (Defesa):</span>
+                                <span>Redução ao Defender (Braços):</span>
                                 <span id="defendReduction">0</span>
                             </div>
                             <div class="summary-item">
-                                <span>Redução de Dano Geral:</span>
+                                <span>Red. Dano Geral (Média):</span>
                                 <span id="damageReduction">0</span>
                             </div>
                             <div class="summary-item">
-                                <span>Redução de Queda:</span>
+                                <span>Red. Dano de Queda (Pernas):</span>
                                 <span id="fallReduction">0</span>
                             </div>
                         </div>
