@@ -1785,23 +1785,57 @@ button {
 .inventory-list {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
+}
+
+/* Inventory Header */
+.inventory-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.inventory-header span {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inv-col-name {
+    flex: 1;
+}
+
+.inv-col-weight {
+    width: 60px;
+    text-align: center;
+}
+
+.inv-col-qty {
+    width: 50px;
+    text-align: center;
+}
+
+.inv-col-action {
+    width: 32px;
 }
 
 .inventory-item {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    padding: var(--spacing-sm);
+    padding: var(--spacing-xs);
     background: var(--bg-input);
     border-radius: var(--border-radius-sm);
     border: 1px solid var(--border-color);
-    flex-wrap: wrap;
 }
 
-.inventory-item input {
-    flex: 1 1 120px;
-    min-width: 80px;
+.inventory-item .item-name {
+    flex: 1;
     padding: var(--spacing-sm);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -1810,13 +1844,22 @@ button {
 }
 
 .inventory-item .item-weight {
-    width: 50px;
-    flex-shrink: 0;
+    width: 60px;
+    padding: var(--spacing-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    text-align: center;
 }
 
 .inventory-item .item-qty {
-    width: 45px;
-    flex-shrink: 0;
+    width: 50px;
+    padding: var(--spacing-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
     text-align: center;
 }
 
@@ -1827,29 +1870,67 @@ button {
     align-items: center;
     justify-content: center;
     color: var(--danger);
+    flex-shrink: 0;
 }
 
-.money-input {
+/* Money Section */
+.money-section {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: var(--spacing-sm);
 }
 
-.money-input input {
-    flex: 1;
+.money-display {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
     padding: var(--spacing-md);
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+    border: 1px solid rgba(255, 217, 61, 0.3);
+    border-radius: var(--border-radius);
+    width: 100%;
+}
+
+.money-icon {
+    font-size: 2rem;
+    color: var(--accent-gold);
+}
+
+.money-amount {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.money-amount input {
+    width: 120px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-card);
+    border: 2px solid var(--accent-gold);
     border-radius: var(--border-radius-sm);
-    color: var(--text-bright);
-    font-size: 1.2rem;
-    font-weight: 600;
+    color: var(--accent-gold);
+    font-size: 1.5rem;
+    font-weight: 700;
     text-align: center;
 }
 
-.money-label {
+.money-amount input::placeholder {
+    color: rgba(255, 217, 61, 0.4);
+}
+
+.money-currency {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+}
+
+.money-hint {
+    font-size: 0.75rem;
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-style: italic;
 }
 
 /* ========== NOTES TAB ========== */

@@ -692,6 +692,12 @@
                         <i class="fas fa-box-open"></i> Inventário
                     </div>
                     <div class="card-body">
+                        <div class="inventory-header">
+                            <span class="inv-col-name">Item</span>
+                            <span class="inv-col-weight">Peso</span>
+                            <span class="inv-col-qty">Qtd</span>
+                            <span class="inv-col-action"></span>
+                        </div>
                         <div id="inventoryList" class="inventory-list">
                             <!-- Items will be generated here -->
                         </div>
@@ -707,9 +713,15 @@
                         <i class="fas fa-coins"></i> Dinheiro
                     </div>
                     <div class="card-body">
-                        <div class="money-input">
-                            <input type="number" id="money" data-field="money" placeholder="0" min="0">
-                            <span class="money-label">moedas</span>
+                        <div class="money-section">
+                            <div class="money-display">
+                                <i class="fas fa-coins money-icon"></i>
+                                <div class="money-amount">
+                                    <input type="number" id="money" data-field="money" placeholder="0" min="0">
+                                    <span class="money-currency">$</span>
+                                </div>
+                            </div>
+                            <p class="money-hint">Moeda padrão do sistema</p>
                         </div>
                     </div>
                 </div>
