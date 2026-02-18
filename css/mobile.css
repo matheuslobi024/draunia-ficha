@@ -301,6 +301,8 @@ button {
 .form-group input,
 .form-group select,
 .form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--bg-input);
     border: 1px solid var(--border-color);
@@ -318,15 +320,17 @@ button {
 
 .form-row {
     display: flex;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
+    width: 100%;
 }
 
 .form-row .form-group {
     flex: 1;
+    min-width: 0;
 }
 
-.form-row .flex-1 { flex: 1; }
-.form-row .flex-2 { flex: 2; }
+.form-row .flex-1 { flex: 1; min-width: 0; }
+.form-row .flex-2 { flex: 2; min-width: 0; }
 
 /* Buttons */
 .btn-primary {
@@ -1808,20 +1812,24 @@ button {
 
 .inv-col-name {
     flex: 1;
+    min-width: 0;
 }
 
 .inv-col-weight {
-    width: 60px;
+    width: 45px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .inv-col-qty {
-    width: 50px;
+    width: 40px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .inv-col-action {
-    width: 32px;
+    width: 28px;
+    flex-shrink: 0;
 }
 
 .inventory-item {
@@ -1832,45 +1840,54 @@ button {
     background: var(--bg-input);
     border-radius: var(--border-radius-sm);
     border: 1px solid var(--border-color);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .inventory-item .item-name {
     flex: 1;
-    padding: var(--spacing-sm);
+    min-width: 0;
+    padding: var(--spacing-xs);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
     color: var(--text-primary);
+    font-size: 0.85rem;
 }
 
 .inventory-item .item-weight {
-    width: 60px;
-    padding: var(--spacing-sm);
+    width: 45px;
+    flex-shrink: 0;
+    padding: var(--spacing-xs);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
     color: var(--text-primary);
     text-align: center;
+    font-size: 0.85rem;
 }
 
 .inventory-item .item-qty {
-    width: 50px;
-    padding: var(--spacing-sm);
+    width: 40px;
+    flex-shrink: 0;
+    padding: var(--spacing-xs);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
     color: var(--text-primary);
     text-align: center;
+    font-size: 0.85rem;
 }
 
 .inventory-item .delete-item {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--danger);
-    flex-shrink: 0;
+    font-size: 0.85rem;
 }
 
 /* Money Section */
