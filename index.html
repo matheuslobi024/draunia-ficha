@@ -305,16 +305,85 @@
 
             <!-- TAB: COMBATE -->
             <section id="tabCombate" class="tab-content">
+                <!-- Combat Resources -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-heart-pulse"></i> Recursos de Combate
+                    </div>
+                    <div class="card-body">
+                        <div class="combat-resources-grid">
+                            <div class="combat-resource hp">
+                                <div class="combat-res-label"><i class="fas fa-heart"></i> HP</div>
+                                <div class="combat-res-values">
+                                    <input type="number" id="combatHp" class="combat-res-input" value="20" onchange="App.updateCombatResource('hp', this.value)">
+                                    <span>/</span>
+                                    <span id="combatMaxHp">20</span>
+                                </div>
+                                <div class="combat-res-bar">
+                                    <div id="combatHpBar" class="bar-fill hp-fill" style="width: 100%"></div>
+                                </div>
+                                <div class="combat-res-btns">
+                                    <button onclick="App.modifyResource('hp', -5)">-5</button>
+                                    <button onclick="App.modifyResource('hp', -1)">-1</button>
+                                    <button onclick="App.modifyResource('hp', 1)">+1</button>
+                                    <button onclick="App.modifyResource('hp', 5)">+5</button>
+                                </div>
+                            </div>
+                            <div class="combat-resource pe">
+                                <div class="combat-res-label"><i class="fas fa-bolt"></i> PE</div>
+                                <div class="combat-res-values">
+                                    <input type="number" id="combatPe" class="combat-res-input" value="6" onchange="App.updateCombatResource('pe', this.value)">
+                                    <span>/</span>
+                                    <span id="combatMaxPe">6</span>
+                                </div>
+                                <div class="combat-res-bar">
+                                    <div id="combatPeBar" class="bar-fill pe-fill" style="width: 100%"></div>
+                                </div>
+                                <div class="combat-res-btns">
+                                    <button onclick="App.modifyResource('pe', -3)">-3</button>
+                                    <button onclick="App.modifyResource('pe', -1)">-1</button>
+                                    <button onclick="App.modifyResource('pe', 1)">+1</button>
+                                    <button onclick="App.modifyResource('pe', 3)">+3</button>
+                                </div>
+                            </div>
+                            <div class="combat-resource san">
+                                <div class="combat-res-label"><i class="fas fa-brain"></i> SAN</div>
+                                <div class="combat-res-values">
+                                    <input type="number" id="combatSan" class="combat-res-input" value="20" onchange="App.updateCombatResource('san', this.value)">
+                                </div>
+                                <div class="combat-res-btns">
+                                    <button onclick="App.modifyResource('san', -5)">-5</button>
+                                    <button onclick="App.modifyResource('san', -1)">-1</button>
+                                    <button onclick="App.modifyResource('san', 1)">+1</button>
+                                    <button onclick="App.modifyResource('san', 5)">+5</button>
+                                </div>
+                            </div>
+                            <div class="combat-resource pa">
+                                <div class="combat-res-label"><i class="fas fa-running"></i> PA</div>
+                                <div class="combat-res-values">
+                                    <input type="number" id="combatPa" class="combat-res-input" value="5" onchange="App.updateCombatResource('pa', this.value)">
+                                    <span>/</span>
+                                    <span id="combatMaxPa">5</span>
+                                </div>
+                                <div class="combat-res-btns">
+                                    <button onclick="App.modifyResource('pa', -1)">-1</button>
+                                    <button onclick="App.resetPa()">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Combat Stats -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-shield-alt"></i> Estatísticas de Combate
+                        <i class="fas fa-shield-alt"></i> Estatísticas
                     </div>
                     <div class="card-body">
                         <div class="combat-stats-grid">
                             <div class="combat-stat">
                                 <div class="stat-value" id="combatCA">10</div>
-                                <div class="stat-label">CA</div>
+                                <div class="stat-label">DA</div>
                             </div>
                             <div class="combat-stat">
                                 <div class="stat-value" id="combatDodge">10</div>
@@ -347,14 +416,14 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fas fa-crosshairs"></i> Ataques
-                        <button class="add-btn" onclick="App.addAttack()">
-                            <i class="fas fa-plus"></i>
-                        </button>
                     </div>
                     <div class="card-body">
                         <div id="attacksList" class="attacks-list">
                             <!-- Attacks will be generated here -->
                         </div>
+                        <button class="add-item-btn" onclick="App.addAttack()">
+                            <i class="fas fa-plus"></i> Adicionar Ataque
+                        </button>
                     </div>
                 </div>
 
@@ -403,28 +472,52 @@
 
             <!-- TAB: FUSÕES -->
             <section id="tabFusoes" class="tab-content">
-                <!-- Heart & Brain -->
+                <!-- Heart, Brain & Eyes -->
                 <div class="card">
                     <div class="card-header">
                         <i class="fas fa-dna"></i> Fusões Vitais
                     </div>
                     <div class="card-body">
-                        <div class="fusion-grid">
-                            <div class="fusion-item heart">
-                                <div class="fusion-icon"><i class="fas fa-heart"></i></div>
-                                <div class="fusion-info">
-                                    <span class="fusion-name">Coração</span>
-                                    <span class="fusion-effect">HP Máximo</span>
-                                </div>
-                                <input type="number" id="fusionHeart" data-field="fusionHeart" class="fusion-input" value="1" min="0" step="0.5">
+                        <div class="fusion-select-grid">
+                            <div class="fusion-select-item heart">
+                                <label class="fusion-select-label">
+                                    <i class="fas fa-heart"></i> Coração
+                                </label>
+                                <select id="fusionHeart" data-field="fusionHeart" class="fusion-select">
+                                    <option value="vermelho">Vermelho (Nível 1)</option>
+                                    <option value="rosaEscuro">Rosa Escuro (Nível 3)</option>
+                                    <option value="rosaProfundo">Rosa Profundo (Nível 6)</option>
+                                    <option value="rosaShock">Rosa Shock (Nível 10)</option>
+                                    <option value="rosaClaro">Rosa Claro (Nível 13)</option>
+                                    <option value="prata">Prata (Nível 16)</option>
+                                    <option value="branco">Branco (Nível 20)</option>
+                                </select>
+                                <div class="fusion-effect-text" id="heartEffect">HP Base: 20</div>
                             </div>
-                            <div class="fusion-item brain">
-                                <div class="fusion-icon"><i class="fas fa-brain"></i></div>
-                                <div class="fusion-info">
-                                    <span class="fusion-name">Cérebro</span>
-                                    <span class="fusion-effect">PE Máximo</span>
-                                </div>
-                                <input type="number" id="fusionBrain" data-field="fusionBrain" class="fusion-input" value="1" min="0" step="0.5">
+                            <div class="fusion-select-item brain">
+                                <label class="fusion-select-label">
+                                    <i class="fas fa-brain"></i> Cérebro
+                                </label>
+                                <select id="fusionBrain" data-field="fusionBrain" class="fusion-select">
+                                    <option value="vermelho">Vermelho (Nível 1)</option>
+                                    <option value="rosaEscuro">Rosa Escuro (Nível 3)</option>
+                                    <option value="rosaProfundo">Rosa Profundo (Nível 6)</option>
+                                    <option value="rosaShock">Rosa Shock (Nível 10)</option>
+                                    <option value="rosaClaro">Rosa Claro (Nível 13)</option>
+                                    <option value="prata">Prata (Nível 16)</option>
+                                    <option value="branco">Branco (Nível 20)</option>
+                                </select>
+                                <div class="fusion-effect-text" id="brainEffect">PE Base: 6</div>
+                            </div>
+                            <div class="fusion-select-item eye">
+                                <label class="fusion-select-label">
+                                    <i class="fas fa-eye"></i> Olhos
+                                </label>
+                                <select id="fusionEyes" data-field="fusionEyes" class="fusion-select">
+                                    <option value="nao">Não Fundido</option>
+                                    <option value="fundido">Fundido</option>
+                                </select>
+                                <div class="fusion-effect-text" id="eyesEffect">Sem bônus</div>
                             </div>
                         </div>
                     </div>
@@ -433,29 +526,22 @@
                 <!-- Muscles -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-dumbbell"></i> Músculos (Bônus em Perícias)
+                        <i class="fas fa-dumbbell"></i> Músculos
                     </div>
                     <div class="card-body">
-                        <div class="fusion-grid compact">
-                            <div class="fusion-item muscle">
-                                <span class="fusion-label">Braços <small>(Luta)</small></span>
-                                <input type="number" id="fusionMuscleArms" data-field="fusionMuscleArms" class="fusion-input-sm" value="0" min="0">
-                            </div>
-                            <div class="fusion-item muscle">
-                                <span class="fusion-label">Cabeça <small>(Percep.)</small></span>
-                                <input type="number" id="fusionMuscleHead" data-field="fusionMuscleHead" class="fusion-input-sm" value="0" min="0">
-                            </div>
-                            <div class="fusion-item muscle">
-                                <span class="fusion-label">Costas <small>(Pont.)</small></span>
-                                <input type="number" id="fusionMuscleBack" data-field="fusionMuscleBack" class="fusion-input-sm" value="0" min="0">
-                            </div>
-                            <div class="fusion-item muscle">
-                                <span class="fusion-label">Peito <small>(Atlet.)</small></span>
-                                <input type="number" id="fusionMuscleChest" data-field="fusionMuscleChest" class="fusion-input-sm" value="0" min="0">
-                            </div>
-                            <div class="fusion-item muscle">
-                                <span class="fusion-label">Pernas <small>(Acrob.)</small></span>
-                                <input type="number" id="fusionMuscleLegs" data-field="fusionMuscleLegs" class="fusion-input-sm" value="0" min="0">
+                        <div class="fusion-select-grid">
+                            <div class="fusion-select-item muscle">
+                                <label class="fusion-select-label">
+                                    <i class="fas fa-dumbbell"></i> Nível de Fusão
+                                </label>
+                                <select id="fusionMuscle" data-field="fusionMuscle" class="fusion-select">
+                                    <option value="vermelho">Vermelho (Sem bônus)</option>
+                                    <option value="rosaProfundo">Rosa Profundo (+2)</option>
+                                    <option value="rosaClaro">Rosa Claro (+4)</option>
+                                    <option value="prata">Prata (+6)</option>
+                                    <option value="branco">Branco (+8)</option>
+                                </select>
+                                <div class="fusion-effect-text" id="muscleEffect">Sem bônus de fusão</div>
                             </div>
                         </div>
                     </div>
@@ -464,38 +550,40 @@
                 <!-- Bones -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fas fa-bone"></i> Ossos (Redução de Dano)
+                        <i class="fas fa-bone"></i> Ossos
                     </div>
                     <div class="card-body">
-                        <div class="fusion-grid compact">
-                            <div class="fusion-item bone">
-                                <span class="fusion-label">Braços <small>(Defesa)</small></span>
-                                <input type="number" id="fusionBoneArms" data-field="fusionBoneArms" class="fusion-input-sm" value="0" min="0">
-                            </div>
-                            <div class="fusion-item bone">
-                                <span class="fusion-label">Cabeça <small>(Geral)</small></span>
-                                <input type="number" id="fusionBoneHead" data-field="fusionBoneHead" class="fusion-input-sm" value="0" min="0">
-                            </div>
-                            <div class="fusion-item bone">
-                                <span class="fusion-label">Costas <small>(Geral)</small></span>
-                                <input type="number" id="fusionBoneBack" data-field="fusionBoneBack" class="fusion-input-sm" value="0" min="0">
-                            </div>
-                            <div class="fusion-item bone">
-                                <span class="fusion-label">Peito <small>(Geral)</small></span>
-                                <input type="number" id="fusionBoneChest" data-field="fusionBoneChest" class="fusion-input-sm" value="0" min="0">
-                            </div>
-                            <div class="fusion-item bone">
-                                <span class="fusion-label">Pernas <small>(Queda)</small></span>
-                                <input type="number" id="fusionBoneLegs" data-field="fusionBoneLegs" class="fusion-input-sm" value="0" min="0">
+                        <div class="fusion-select-grid">
+                            <div class="fusion-select-item bone">
+                                <label class="fusion-select-label">
+                                    <i class="fas fa-bone"></i> Nível de Fusão
+                                </label>
+                                <select id="fusionBone" data-field="fusionBone" class="fusion-select">
+                                    <option value="comeco">Começo (Sem redução)</option>
+                                    <option value="transiente">Transiente (-1 dano)</option>
+                                    <option value="mesclado">Mesclado (-2 dano)</option>
+                                    <option value="integrado">Integrado (-3 dano)</option>
+                                    <option value="fundido">Fundido (-4 dano)</option>
+                                </select>
+                                <div class="fusion-effect-text" id="boneEffect">Sem redução de dano</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Fusion Summary -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-shield-alt"></i> Resumo de Fusões
+                    </div>
+                    <div class="card-body">
                         <div class="fusion-summary">
                             <div class="summary-item">
-                                <span>Redução ao Defender:</span>
+                                <span>Redução de Dano (Defesa):</span>
                                 <span id="defendReduction">0</span>
                             </div>
                             <div class="summary-item">
-                                <span>Redução Geral:</span>
+                                <span>Redução de Dano Geral:</span>
                                 <span id="damageReduction">0</span>
                             </div>
                             <div class="summary-item">
@@ -528,14 +616,14 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fas fa-box-open"></i> Inventário
-                        <button class="add-btn" onclick="App.addItem()">
-                            <i class="fas fa-plus"></i>
-                        </button>
                     </div>
                     <div class="card-body">
                         <div id="inventoryList" class="inventory-list">
                             <!-- Items will be generated here -->
                         </div>
+                        <button class="add-item-btn" onclick="App.addItem()">
+                            <i class="fas fa-plus"></i> Adicionar Item
+                        </button>
                     </div>
                 </div>
 

@@ -249,19 +249,12 @@ const App = {
             sanity: 20,
             currentPa: 5,
             
-            // Fusions
-            fusionHeart: 1,
-            fusionBrain: 1,
-            fusionMuscleArms: 0,
-            fusionMuscleHead: 0,
-            fusionMuscleBack: 0,
-            fusionMuscleChest: 0,
-            fusionMuscleLegs: 0,
-            fusionBoneArms: 0,
-            fusionBoneHead: 0,
-            fusionBoneBack: 0,
-            fusionBoneChest: 0,
-            fusionBoneLegs: 0,
+            // Fusions (new dropdown format)
+            fusionHeart: 'vermelho',
+            fusionBrain: 'vermelho',
+            fusionEyes: 'nao',
+            fusionMuscle: 'vermelho',
+            fusionBone: 'comeco',
             
             // Combat
             armorType: 'none',
@@ -360,6 +353,77 @@ const App = {
         
         // Inventory
         this.renderInventory();
+        
+        // Sync combat resources
+        this.syncCombatResources();
+        
+        // Update fusion effects display
+        this.updateFusionEffects();
+    },
+    
+    updateFusionEffects() {
+        // Update fusion effect texts if elements exist
+        const fusionData = {
+            heart: {
+                vermelho: 'HP Base: 20',
+                rosaEscuro: 'HP Base: 40',
+                rosaProfundo: 'HP Base: 60',
+                rosaShock: 'HP Base: 80',
+                rosaClaro: 'HP Base: 100',
+                prata: 'HP Base: 120',
+                branco: 'HP Base: 140'
+            },
+            brain: {
+                vermelho: 'PE Base: 6',
+                rosaEscuro: 'PE Base: 12',
+                rosaProfundo: 'PE Base: 18',
+                rosaShock: 'PE Base: 24',
+                rosaClaro: 'PE Base: 30',
+                prata: 'PE Base: 36',
+                branco: 'PE Base: 42'
+            },
+            eyes: {
+                nao: 'Sem bônus',
+                fundido: '+5 em Investigação e Percepção'
+            },
+            muscle: {
+                vermelho: 'Sem bônus de fusão',
+                rosaProfundo: '+2 Luta/Atletismo',
+                rosaClaro: '+4 Luta/Atletismo',
+                prata: '+6 Luta/Atletismo',
+                branco: '+8 Luta/Atletismo'
+            },
+            bone: {
+                comeco: 'Sem redução de dano',
+                transiente: '-1 de dano recebido',
+                mesclado: '-2 de dano recebido',
+                integrado: '-3 de dano recebido',
+                fundido: '-4 de dano recebido'
+            }
+        };
+        
+        // Update effect displays if they exist
+        const heartEffect = document.getElementById('heartEffect');
+        const brainEffect = document.getElementById('brainEffect');
+        const eyesEffect = document.getElementById('eyesEffect');
+        const muscleEffect = document.getElementById('muscleEffect');
+        const boneEffect = document.getElementById('boneEffect');
+        
+        if (heartEffect && this.charData.fusionHeart) {
+            heartEffect.textContent = fusionData.heart[this.charData.fusionHeart] || '';
+        }
+        if (brainEffect && this.charData.fusionBrain) {
+            brainEffect.textContent = fusionData.brain[this.charData.fusionBrain] || '';
+        }
+        if (eyesEffect && this.charData.fusionEyes) {
+            eyesEffect.textContent = fusionData.eyes[this.charData.fusionEyes] || '';
+        }
+        if (muscleEffect && this.charData.fusionMuscle) {
+            muscleEffect.textContent = fusionData.muscle[this.charData.fusionMuscle] || '';
+        }
+        if (boneEffect && this.charData.fusionBone) {
+            boneEffect.textContent = fusionData.bone[this.charData.fusionBone] || '';
+        }
     },
     
     // ========== SAVING ==========
@@ -394,15 +458,31 @@ const App = {
     },
     
     // ========== CALCULATIONS ==========
+    getFusionMultiplier(fusionType, value) {
+        // Convert fusion dropdown values to numeric multipliers
+        const multipliers = {
+            heart: { vermelho: 1, rosaEscuro: 2, rosaProfundo: 3, rosaShock: 4, rosaClaro: 5, prata: 6, branco: 7 },
+            brain: { vermelho: 1, rosaEscuro: 2, rosaProfundo: 3, rosaShock: 4, rosaClaro: 5, prata: 6, branco: 7 },
+            muscle: { vermelho: 0, rosaProfundo: 2, rosaClaro: 4, prata: 6, branco: 8 },
+            bone: { comeco: 0, transiente: 1, mesclado: 2, integrado: 3, fundido: 4 },
+            eyes: { nao: 0, fundido: 5 }
+        };
+        return multipliers[fusionType]?.[value] || (fusionType === 'heart' || fusionType === 'brain' ? 1 : 0);
+    },
+    
     updateCalculations() {
         const data = this.charData;
         
+        // Get fusion multipliers
+        const heartLevel = this.getFusionMultiplier('heart', data.fusionHeart);
+        const brainLevel = this.getFusionMultiplier('brain', data.fusionBrain);
+        
         // Max HP: (heartLevel × 20) + (level × CON)
-        const maxHp = Math.floor((parseFloat(data.fusionHeart) || 1) * 20 + (parseInt(data.charLevel) || 1) * (parseInt(data.attrCon) || 0));
+        const maxHp = Math.floor(heartLevel * 20 + (parseInt(data.charLevel) || 1) * (parseInt(data.attrCon) || 0));
         document.getElementById('maxHp').textContent = maxHp;
         
         // Max PE: (brainLevel × 6) + (level × VON)
-        const maxPe = Math.floor((parseFloat(data.fusionBrain) || 1) * 6 + (parseInt(data.charLevel) || 1) * (parseInt(data.attrVon) || 0));
+        const maxPe = Math.floor(brainLevel * 6 + (parseInt(data.charLevel) || 1) * (parseInt(data.attrVon) || 0));
         document.getElementById('maxPe').textContent = maxPe;
         
         // PA: AGI + Level + 4 - penalties
@@ -432,6 +512,14 @@ const App = {
         document.getElementById('quickSan').textContent = data.sanity || 0;
         document.getElementById('quickPa').textContent = `${data.currentPa || 0}/${maxPa}`;
         
+        // Update combat max values
+        const combatMaxHp = document.getElementById('combatMaxHp');
+        const combatMaxPe = document.getElementById('combatMaxPe');
+        const combatMaxPa = document.getElementById('combatMaxPa');
+        if (combatMaxHp) combatMaxHp.textContent = maxHp;
+        if (combatMaxPe) combatMaxPe.textContent = maxPe;
+        if (combatMaxPa) combatMaxPa.textContent = maxPa;
+        
         // Update used attr points
         const usedPoints = Math.abs(parseInt(data.attrFor) || 0) +
                           Math.abs(parseInt(data.attrCon) || 0) +
@@ -447,20 +535,23 @@ const App = {
         document.getElementById('skillReflexos').textContent = this.formatBonus(reflexosTotal);
         document.getElementById('skillIniciativa').textContent = this.formatBonus(initiative);
         
-        // Fusions summary
-        document.getElementById('defendReduction').textContent = parseInt(data.fusionBoneArms) || 0;
-        const generalReduction = Math.floor(((parseInt(data.fusionBoneHead) || 0) + 
-                                            (parseInt(data.fusionBoneBack) || 0) + 
-                                            (parseInt(data.fusionBoneChest) || 0) + 
-                                            (parseInt(data.fusionBoneLegs) || 0)) / 4);
-        document.getElementById('damageReduction').textContent = generalReduction;
-        document.getElementById('fallReduction').textContent = parseInt(data.fusionBoneLegs) || 0;
+        // Fusions summary - using new dropdown values
+        const boneReduction = this.getFusionMultiplier('bone', data.fusionBone);
+        document.getElementById('defendReduction').textContent = boneReduction;
+        document.getElementById('damageReduction').textContent = boneReduction;
+        document.getElementById('fallReduction').textContent = boneReduction;
         
         // Weight
         this.updateWeight();
         
         // Update all skills
         this.updateSkillsDisplay();
+        
+        // Update fusion effects
+        this.updateFusionEffects();
+        
+        // Sync combat resources
+        this.syncCombatResources();
     },
     
     formatBonus(value) {
@@ -496,12 +587,17 @@ const App = {
             total += armor.skillPenalty;
         }
         
-        // Muscle bonuses
-        if (skillId === 'luta') total += parseInt(data.fusionMuscleArms) || 0;
-        else if (skillId === 'percepcao') total += parseInt(data.fusionMuscleHead) || 0;
-        else if (skillId === 'pontaria') total += parseInt(data.fusionMuscleBack) || 0;
-        else if (skillId === 'atletismo') total += parseInt(data.fusionMuscleChest) || 0;
-        else if (skillId === 'acrobacia') total += parseInt(data.fusionMuscleLegs) || 0;
+        // Muscle bonuses (using new dropdown values)
+        const muscleBonus = this.getFusionMultiplier('muscle', data.fusionMuscle);
+        if (skillId === 'luta' || skillId === 'atletismo') {
+            total += muscleBonus;
+        }
+        
+        // Eyes bonus
+        const eyesBonus = this.getFusionMultiplier('eyes', data.fusionEyes);
+        if (skillId === 'percepcao' || skillId === 'investigacao') {
+            total += eyesBonus;
+        }
         
         return total;
     },
@@ -625,7 +721,9 @@ const App = {
             name: 'Novo Ataque',
             bonus: '+0',
             damage: '1d6',
-            crit: '2x'
+            crit: '2x',
+            paCost: 1,
+            peCost: 0
         });
         this.renderAttacks();
         this.scheduleAutoSave();
@@ -667,8 +765,23 @@ const App = {
                         <input type="text" value="${atk.crit}" onchange="App.updateAttack(${i}, 'crit', this.value)">
                     </div>
                 </div>
+                <div class="attack-stats" style="margin-top: var(--spacing-xs);">
+                    <div class="attack-stat">
+                        <label>Custo PA</label>
+                        <input type="number" value="${atk.paCost || 0}" min="0" onchange="App.updateAttack(${i}, 'paCost', this.value)">
+                    </div>
+                    <div class="attack-stat">
+                        <label>Custo PE</label>
+                        <input type="number" value="${atk.peCost || 0}" min="0" onchange="App.updateAttack(${i}, 'peCost', this.value)">
+                    </div>
+                    <div class="attack-stat">
+                        <button class="execute-attack-btn" onclick="App.executeAttack(${i})">
+                            <i class="fas fa-bolt"></i> Usar
+                        </button>
+                    </div>
+                </div>
                 <button class="attack-roll-btn" onclick="App.rollAttack(${i})">
-                    <i class="fas fa-dice-d20"></i> Rolar Ataque
+                    <i class="fas fa-dice-d20"></i> Apenas Rolar
                 </button>
             </div>
         `).join('');
@@ -676,7 +789,11 @@ const App = {
     
     updateAttack(index, field, value) {
         if (this.charData.attacks && this.charData.attacks[index]) {
-            this.charData.attacks[index][field] = value;
+            if (field === 'paCost' || field === 'peCost') {
+                this.charData.attacks[index][field] = parseInt(value) || 0;
+            } else {
+                this.charData.attacks[index][field] = value;
+            }
             this.scheduleAutoSave();
         }
     },
@@ -698,6 +815,102 @@ const App = {
         const result = roll + bonus;
         
         this.showDiceResult(result, `${atk.name}: 1d20 (${roll}) ${this.formatBonus(bonus)}`);
+    },
+    
+    executeAttack(index) {
+        const atk = this.charData.attacks[index];
+        if (!atk) return;
+        
+        const paCost = parseInt(atk.paCost) || 0;
+        const peCost = parseInt(atk.peCost) || 0;
+        const currentPa = parseInt(this.charData.currentPa) || 0;
+        const currentPe = parseInt(this.charData.currentPe) || 0;
+        
+        // Check if enough resources
+        if (currentPa < paCost) {
+            alert(`PA insuficiente! Necessário: ${paCost}, Atual: ${currentPa}`);
+            return;
+        }
+        if (currentPe < peCost) {
+            alert(`PE insuficiente! Necessário: ${peCost}, Atual: ${currentPe}`);
+            return;
+        }
+        
+        // Deduct resources
+        this.charData.currentPa = currentPa - paCost;
+        this.charData.currentPe = currentPe - peCost;
+        
+        // Update UI
+        document.getElementById('currentPa').value = this.charData.currentPa;
+        document.getElementById('currentPe').value = this.charData.currentPe;
+        this.syncCombatResources();
+        this.updateCalculations();
+        this.scheduleAutoSave();
+        
+        // Roll the attack
+        const bonus = parseInt(atk.bonus) || 0;
+        const roll = Math.floor(Math.random() * 20) + 1;
+        const result = roll + bonus;
+        
+        let breakdown = `${atk.name}: 1d20 (${roll}) ${this.formatBonus(bonus)}`;
+        if (paCost > 0 || peCost > 0) {
+            breakdown += `\n[Gasto: ${paCost > 0 ? paCost + ' PA' : ''}${paCost > 0 && peCost > 0 ? ', ' : ''}${peCost > 0 ? peCost + ' PE' : ''}]`;
+        }
+        
+        this.showDiceResult(result, breakdown);
+    },
+    
+    syncCombatResources() {
+        // Sync combat tab inputs with main values
+        const combatHp = document.getElementById('combatHp');
+        const combatPe = document.getElementById('combatPe');
+        const combatSan = document.getElementById('combatSan');
+        const combatPa = document.getElementById('combatPa');
+        
+        if (combatHp) combatHp.value = this.charData.currentHp || 0;
+        if (combatPe) combatPe.value = this.charData.currentPe || 0;
+        if (combatSan) combatSan.value = this.charData.sanity || 0;
+        if (combatPa) combatPa.value = this.charData.currentPa || 0;
+        
+        // Update combat bars
+        const maxHp = parseInt(document.getElementById('maxHp')?.textContent) || 20;
+        const maxPe = parseInt(document.getElementById('maxPe')?.textContent) || 6;
+        
+        const combatHpBar = document.getElementById('combatHpBar');
+        const combatPeBar = document.getElementById('combatPeBar');
+        
+        if (combatHpBar) {
+            const hpPercent = Math.min(100, Math.max(0, ((this.charData.currentHp || 0) / maxHp) * 100));
+            combatHpBar.style.width = `${hpPercent}%`;
+        }
+        if (combatPeBar) {
+            const pePercent = Math.min(100, Math.max(0, ((this.charData.currentPe || 0) / maxPe) * 100));
+            combatPeBar.style.width = `${pePercent}%`;
+        }
+    },
+    
+    updateCombatResource(type, value) {
+        const val = parseInt(value) || 0;
+        
+        if (type === 'hp') {
+            const maxHp = parseInt(document.getElementById('maxHp').textContent) || 20;
+            this.charData.currentHp = Math.min(maxHp, Math.max(0, val));
+            document.getElementById('currentHp').value = this.charData.currentHp;
+        } else if (type === 'pe') {
+            const maxPe = parseInt(document.getElementById('maxPe').textContent) || 6;
+            this.charData.currentPe = Math.min(maxPe, Math.max(0, val));
+            document.getElementById('currentPe').value = this.charData.currentPe;
+        } else if (type === 'san') {
+            this.charData.sanity = Math.max(0, val);
+            document.getElementById('sanity').value = this.charData.sanity;
+        } else if (type === 'pa') {
+            const maxPa = parseInt(document.getElementById('maxPa').textContent) || 5;
+            this.charData.currentPa = Math.min(maxPa, Math.max(0, val));
+            document.getElementById('currentPa').value = this.charData.currentPa;
+        }
+        
+        this.updateCalculations();
+        this.scheduleAutoSave();
     },
     
     // ========== INVENTORY ==========
