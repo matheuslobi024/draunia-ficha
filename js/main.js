@@ -84,10 +84,15 @@ const App = {
     charData: null,
     saveTimeout: null,
     isInitialized: false,
+    diceRollsEnabled: true,
     
     // Initialize App
     async init() {
         console.log('🚀 Initializing App...');
+        
+        // Load dice roll preference from localStorage
+        const savedPref = localStorage.getItem('diceRollsEnabled');
+        this.diceRollsEnabled = savedPref === null ? true : savedPref === 'true';
         
         // Setup auth listener
         auth.onAuthStateChanged(async (user) => {
@@ -113,9 +118,18 @@ const App = {
             }, 500);
         });
         
+        // Set dice roll toggle state
+        const diceToggle = document.getElementById('diceRollToggle');
+        if (diceToggle) diceToggle.checked = this.diceRollsEnabled;
+        
         this.bindEvents();
         this.generateSkillsList();
         this.isInitialized = true;
+    },
+    
+    toggleDiceRolls(enabled) {
+        this.diceRollsEnabled = enabled;
+        localStorage.setItem('diceRollsEnabled', enabled);
     },
     
     // ========== AUTH ==========
@@ -708,6 +722,8 @@ const App = {
     },
     
     rollSkill(skillId) {
+        if (!this.diceRollsEnabled) return;
+        
         const total = this.calculateSkillTotal(skillId);
         const roll = Math.floor(Math.random() * 20) + 1;
         const result = roll + total;
@@ -852,6 +868,9 @@ const App = {
         this.syncCombatResources();
         this.updateCalculations();
         this.scheduleAutoSave();
+        
+        // Skip dice roll if disabled
+        if (!this.diceRollsEnabled) return;
         
         // Roll the attack
         const bonus = parseInt(atk.bonus) || 0;

@@ -517,12 +517,13 @@ button {
 /* Tab Container */
 .tab-container {
     flex: 1;
-    padding: var(--spacing-md);
-    padding-top: calc(var(--quick-stats-height) + var(--spacing-md));
+    padding: var(--spacing-sm);
+    padding-top: calc(var(--quick-stats-height) + var(--spacing-sm));
     padding-bottom: var(--spacing-xl);
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    max-width: 100%;
 }
 
 .tab-content {
@@ -571,8 +572,9 @@ button {
 }
 
 .card-body {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
     overflow: visible;
+    max-width: 100%;
 }
 
 /* Add Button in Card Header */
@@ -646,8 +648,8 @@ button {
 /* Attributes Grid */
 .attributes-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-xs);
 }
 
 .attr-item {
@@ -670,15 +672,15 @@ button {
 }
 
 .attr-btn {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--bg-elevated);
     color: var(--text-secondary);
     border-radius: var(--border-radius-sm);
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: bold;
     transition: all 0.2s ease;
 }
@@ -697,15 +699,15 @@ button {
 }
 
 .attr-control input {
-    width: 40px;
-    height: 32px;
+    width: 36px;
+    height: 28px;
     text-align: center;
     background: var(--bg-input);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
     color: var(--text-bright);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
 /* Resources Grid */
@@ -922,6 +924,80 @@ button {
     font-size: 1.2rem;
 }
 
+/* Side Menu Options/Toggle */
+.side-menu-options {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.menu-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.option-label i {
+    color: var(--accent-primary);
+    width: 20px;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    transition: 0.3s;
+    border-radius: 26px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--text-secondary);
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: var(--accent-tertiary);
+    border-color: var(--accent-primary);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+    background-color: var(--accent-primary);
+}
+
 .side-menu-actions {
     flex: 1;
     padding: var(--spacing-md);
@@ -981,21 +1057,21 @@ button {
 /* ========== COMBAT TAB ========== */
 .combat-stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-sm);
 }
 
 .combat-stat {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
     background: var(--bg-input);
     border-radius: var(--border-radius);
 }
 
 .stat-value {
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--accent-secondary);
 }
@@ -1010,8 +1086,8 @@ button {
 /* Combat Resources Grid */
 .combat-resources-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-xs);
 }
 
 .combat-resource {
@@ -1233,8 +1309,8 @@ button {
 
 .attack-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-xs);
 }
 
 .attack-stat {
@@ -1405,7 +1481,7 @@ button {
 
 .fusion-grid.compact {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-sm);
 }
 
@@ -1477,8 +1553,8 @@ button {
 /* Fusion Body Parts Grid */
 .fusion-body-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-xs);
 }
 
 .fusion-body-item {
@@ -1690,15 +1766,17 @@ button {
 .inventory-item {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
     padding: var(--spacing-sm);
     background: var(--bg-input);
     border-radius: var(--border-radius-sm);
     border: 1px solid var(--border-color);
+    flex-wrap: wrap;
 }
 
 .inventory-item input {
-    flex: 1;
+    flex: 1 1 120px;
+    min-width: 80px;
     padding: var(--spacing-sm);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -1707,11 +1785,13 @@ button {
 }
 
 .inventory-item .item-weight {
-    width: 60px;
+    width: 50px;
+    flex-shrink: 0;
 }
 
 .inventory-item .item-qty {
-    width: 50px;
+    width: 45px;
+    flex-shrink: 0;
     text-align: center;
 }
 

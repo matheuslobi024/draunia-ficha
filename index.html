@@ -784,6 +784,15 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
+            <div class="side-menu-options">
+                <div class="menu-option">
+                    <span class="option-label"><i class="fas fa-dice"></i> Rolagens de Dados</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="diceRollToggle" checked onchange="App.toggleDiceRolls(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
             <div class="side-menu-actions">
                 <button onclick="App.showCharacterModal()">
                     <i class="fas fa-exchange-alt"></i> Trocar Ficha
