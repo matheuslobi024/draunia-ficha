@@ -648,8 +648,14 @@ button {
 /* Attributes Grid */
 .attributes-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--spacing-xs);
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+}
+
+@media (max-width: 320px) {
+    .attributes-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .attr-item {
@@ -657,57 +663,76 @@ button {
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    background: var(--bg-input);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
 }
 
 .attr-item label {
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--accent-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.attr-control {
+.attr-item > input {
+    width: 100%;
+    max-width: 60px;
+    height: 40px;
+    text-align: center;
+    background: var(--bg-card);
+    border: 2px solid var(--accent-tertiary);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-bright);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.attr-buttons {
     display: flex;
-    align-items: center;
-    gap: 2px;
+    gap: var(--spacing-xs);
+    width: 100%;
+    justify-content: center;
 }
 
 .attr-btn {
-    width: 28px;
-    height: 28px;
+    flex: 1;
+    max-width: 40px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--bg-elevated);
     color: var(--text-secondary);
     border-radius: var(--border-radius-sm);
-    font-size: 0.9rem;
-    font-weight: bold;
+    font-size: 0.8rem;
     transition: all 0.2s ease;
 }
 
+.attr-btn.minus {
+    background: rgba(248, 113, 113, 0.2);
+    color: var(--danger);
+}
+
+.attr-btn.plus {
+    background: rgba(74, 222, 128, 0.2);
+    color: var(--success);
+}
+
 .attr-btn:active {
-    background: var(--accent-primary);
-    color: white;
+    transform: scale(0.95);
 }
 
 .attr-btn.minus:active {
     background: var(--danger);
+    color: white;
 }
 
 .attr-btn.plus:active {
     background: var(--success);
-}
-
-.attr-control input {
-    width: 36px;
-    height: 28px;
-    text-align: center;
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    color: var(--text-bright);
-    font-weight: 600;
-    font-size: 0.9rem;
+    color: white;
 }
 
 /* Resources Grid */
