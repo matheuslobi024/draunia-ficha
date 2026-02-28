@@ -320,29 +320,45 @@ const RealmsScriptsSystem = {
             return RealmsScriptsSystem.data.trainingLevels[level] || RealmsScriptsSystem.data.trainingLevels[0];
         },
         
+        // Bone fusion level mapping
+        BONE_FUSION_LEVELS: {
+            'comeco': 0,
+            'transiente': 1,
+            'mesclado': 2,
+            'integrado': 3,
+            'fundido': 4
+        },
+
+        getBoneFusionLevel(value) {
+            return this.BONE_FUSION_LEVELS[value] || 0;
+        },
+
         /**
-         * Calculate damage reduction from defending
+         * Calculate damage reduction from defending (arms bones)
+         * Transiente: 2, each level above +2
          */
         calculateDefendReduction(charData) {
-            return parseInt(charData.fusionBoneArms) || 0;
+            const level = this.getBoneFusionLevel(charData.fusionBoneArms);
+            return level * 2;
         },
         
         /**
-         * Calculate general damage reduction
+         * Calculate general damage reduction (back + chest)
+         * Each part: transiente = 1, each level above +1. Head ignored.
          */
         calculateDamageReduction(charData) {
-            const head = parseInt(charData.fusionBoneHead) || 0;
-            const back = parseInt(charData.fusionBoneBack) || 0;
-            const chest = parseInt(charData.fusionBoneChest) || 0;
-            const legs = parseInt(charData.fusionBoneLegs) || 0;
-            return Math.floor((head + back + chest + legs) / 4);
+            const back = this.getBoneFusionLevel(charData.fusionBoneBack);
+            const chest = this.getBoneFusionLevel(charData.fusionBoneChest);
+            return back + chest;
         },
         
         /**
-         * Calculate fall damage reduction
+         * Calculate fall damage reduction (legs bones)
+         * Transiente: 2, each level above +2
          */
         calculateFallReduction(charData) {
-            return parseInt(charData.fusionBoneLegs) || 0;
+            const level = this.getBoneFusionLevel(charData.fusionBoneLegs);
+            return level * 2;
         },
         
         /**
@@ -382,9 +398,9 @@ const RealmsScriptsSystem = {
                 heavyWeight: this.calculateHeavyWeight(charData),
                 currentWeight: this.calculateCurrentWeight(charData),
                 weightStatus: this.getWeightStatus(charData),
-                defendReduction: this.calculateDefendReduction(charData),
-                damageReduction: this.calculateDamageReduction(charData),
-                fallReduction: this.calculateFallReduction(charData)
+                reduceDefend: this.calculateDefendReduction(charData),
+                reduceDamage: this.calculateDamageReduction(charData),
+                reduceFall: this.calculateFallReduction(charData)
             };
         }
     }

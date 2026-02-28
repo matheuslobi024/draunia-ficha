@@ -1007,23 +1007,39 @@ const Calculations = {
         return total;
     },
 
-    // Calculate damage reduction from defending (arms bones)
-    calculateDefendReduction(charData) {
-        return parseInt(charData.fusionBoneArms) || 0;
+    // Bone fusion level mapping
+    BONE_FUSION_LEVELS: {
+        'comeco': 0,
+        'transiente': 1,
+        'mesclado': 2,
+        'integrado': 3,
+        'fundido': 4
     },
 
-    // Calculate general damage reduction (average of other bones)
+    getBoneFusionLevel(value) {
+        return this.BONE_FUSION_LEVELS[value] || 0;
+    },
+
+    // Calculate damage reduction from defending (arms bones)
+    // Transiente: 2, each level above +2
+    calculateDefendReduction(charData) {
+        const level = this.getBoneFusionLevel(charData.fusionBoneArms);
+        return level * 2;
+    },
+
+    // Calculate general damage reduction (back + chest)
+    // Each part: transiente = 1, each level above +1. Head ignored.
     calculateDamageReduction(charData) {
-        const head = parseInt(charData.fusionBoneHead) || 0;
-        const back = parseInt(charData.fusionBoneBack) || 0;
-        const chest = parseInt(charData.fusionBoneChest) || 0;
-        const legs = parseInt(charData.fusionBoneLegs) || 0;
-        return Math.floor((head + back + chest + legs) / 4);
+        const back = this.getBoneFusionLevel(charData.fusionBoneBack);
+        const chest = this.getBoneFusionLevel(charData.fusionBoneChest);
+        return back + chest;
     },
 
     // Calculate fall damage reduction (legs bones)
+    // Transiente: 2, each level above +2
     calculateFallReduction(charData) {
-        return parseInt(charData.fusionBoneLegs) || 0;
+        const level = this.getBoneFusionLevel(charData.fusionBoneLegs);
+        return level * 2;
     },
 
     // Calculate PN per level (sanity / 5)

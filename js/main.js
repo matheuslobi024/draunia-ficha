@@ -539,15 +539,19 @@ const App = {
         
         // Fusions summary - calculate from individual body parts
         const boneArms = this.getFusionMultiplier('bone', data.fusionBoneArms);
-        const boneHead = this.getFusionMultiplier('bone', data.fusionBoneHead);
         const boneBack = this.getFusionMultiplier('bone', data.fusionBoneBack);
         const boneChest = this.getFusionMultiplier('bone', data.fusionBoneChest);
         const boneLegs = this.getFusionMultiplier('bone', data.fusionBoneLegs);
         
-        document.getElementById('defendReduction').textContent = boneArms;
-        const avgBoneReduction = Math.floor((boneArms + boneHead + boneBack + boneChest + boneLegs) / 5);
-        document.getElementById('damageReduction').textContent = avgBoneReduction;
-        document.getElementById('fallReduction').textContent = boneLegs;
+        // Braços: 2 por nível (redução ao bloquear)
+        const defendReductionEl = document.getElementById('reduceDefend');
+        if (defendReductionEl) defendReductionEl.textContent = boneArms * 2;
+        // Costas + Peito: 1 por nível cada, somados
+        const damageReductionEl = document.getElementById('reduceDamage');
+        if (damageReductionEl) damageReductionEl.textContent = boneBack + boneChest;
+        // Pernas: 2 por nível (redução de dano de queda)
+        const fallReductionEl = document.getElementById('reduceFall');
+        if (fallReductionEl) fallReductionEl.textContent = boneLegs * 2;
         
         // Weight
         this.updateWeight();

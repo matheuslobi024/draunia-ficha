@@ -169,11 +169,11 @@ const Auth = {
             baseData.fusionEyes = 'normal';
             
             // Fusions - Bones
-            baseData.fusionBoneArms = '0';
-            baseData.fusionBoneHead = '0';
-            baseData.fusionBoneBack = '0';
-            baseData.fusionBoneChest = '0';
-            baseData.fusionBoneLegs = '0';
+            baseData.fusionBoneArms = 'comeco';
+            baseData.fusionBoneHead = 'comeco';
+            baseData.fusionBoneBack = 'comeco';
+            baseData.fusionBoneChest = 'comeco';
+            baseData.fusionBoneLegs = 'comeco';
             
             // Fusions - Muscles
             baseData.fusionMuscleArms = '0';
