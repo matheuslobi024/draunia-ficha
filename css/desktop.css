@@ -1,0 +1,726 @@
+/* ========================================
+   REALMS&SCRIPTS - DESKTOP LAYOUT
+   Only applies at min-width: 1024px
+   Does NOT affect mobile styles
+   ======================================== */
+
+@media (min-width: 1024px) {
+
+    /* ========== ROOT OVERRIDES ========== */
+    :root {
+        --sidebar-width: 240px;
+        --header-height: 60px;
+        --quick-stats-height: 0px;
+        --nav-height: 0px;
+    }
+
+    /* ========== BODY ========== */
+    body {
+        overflow: hidden;
+    }
+
+    /* ========== MODAL IMPROVEMENTS ========== */
+    .modal-content {
+        max-width: 480px;
+    }
+
+    .character-list {
+        max-height: 400px;
+    }
+
+    .modal-actions {
+        flex-direction: row;
+    }
+
+    /* ========== MAIN APP - SIDEBAR LAYOUT ========== */
+    .main-app {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr;
+        grid-template-rows: var(--header-height) 1fr;
+        grid-template-areas:
+            "sidebar header"
+            "sidebar content";
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* ========== HEADER ========== */
+    .app-header {
+        grid-area: header;
+        position: relative;
+        height: var(--header-height);
+        padding-top: 0;
+        border-bottom: 1px solid var(--border-color);
+        border-left: 1px solid var(--border-color);
+        background: var(--bg-card);
+        z-index: 10;
+    }
+
+    .char-name {
+        font-size: 1.25rem;
+        max-width: 400px;
+    }
+
+    #menuBtn {
+        display: none;
+    }
+
+    /* ========== QUICK STATS ========== */
+    .quick-stats {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        height: auto;
+        background: transparent;
+        border: none;
+        display: flex;
+        gap: var(--spacing-md);
+        justify-content: flex-start;
+        padding: 0 var(--spacing-lg);
+        z-index: auto;
+        margin-right: auto;
+        flex: 1;
+    }
+
+    .quick-stat {
+        font-size: 0.95rem;
+        padding: var(--spacing-xs) var(--spacing-md);
+        background: var(--bg-input);
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .quick-stat:hover {
+        background: var(--bg-elevated);
+        border-color: var(--border-light);
+        transform: translateY(-1px);
+    }
+
+    /* Merge quick stats into header */
+    .app-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding-inline: var(--spacing-lg);
+    }
+
+    /* ========== SIDEBAR NAVIGATION ========== */
+    .bottom-nav {
+        grid-area: sidebar;
+        position: relative;
+        bottom: auto;
+        left: auto;
+        right: auto;
+        width: var(--sidebar-width);
+        height: 100vh;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        padding: 0;
+        padding-top: 0;
+        padding-bottom: var(--spacing-lg);
+        background: var(--bg-card);
+        border-top: none;
+        border-right: 1px solid var(--border-color);
+        z-index: 10;
+        overflow-y: auto;
+        gap: 0;
+    }
+
+    /* Sidebar Brand */
+    .bottom-nav::before {
+        content: "Realms & Scripts";
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: var(--header-height);
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent-secondary);
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-elevated);
+        letter-spacing: 0.3px;
+        flex-shrink: 0;
+    }
+
+    .nav-btn {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: 0.9rem;
+        min-width: auto;
+        border-radius: 0;
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+        color: var(--text-secondary);
+    }
+
+    .nav-btn i {
+        font-size: 1.1rem;
+        width: 24px;
+        text-align: center;
+    }
+
+    .nav-btn span {
+        font-size: 0.9rem;
+    }
+
+    .nav-btn:hover {
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        border-left-color: var(--border-light);
+    }
+
+    .nav-btn.active {
+        background: rgba(124, 108, 247, 0.1);
+        color: var(--accent-secondary);
+        border-left-color: var(--accent-primary);
+        font-weight: 600;
+    }
+
+    .nav-btn:active {
+        transform: none;
+    }
+
+    /* ========== TAB CONTAINER ========== */
+    .tab-container {
+        grid-area: content;
+        padding: var(--spacing-lg) var(--spacing-xl);
+        padding-top: var(--spacing-lg);
+        padding-bottom: var(--spacing-xl);
+        max-width: 1200px;
+        margin: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: calc(100vh - var(--header-height));
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* ========== CARDS ========== */
+    .card {
+        margin-bottom: var(--spacing-lg);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        border-color: var(--border-light);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: 1rem;
+    }
+
+    .card-body {
+        padding: var(--spacing-lg);
+    }
+
+    /* ========== CHARACTER TAB - 2 COLUMN ========== */
+    #tabPersonagem.active {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-lg);
+        align-items: start;
+    }
+
+    /* Info card spans full width */
+    #tabPersonagem > .card:first-child {
+        grid-column: 1 / -1;
+    }
+
+    /* ========== ATTRIBUTES GRID ========== */
+    .attributes-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .attr-item {
+        padding: var(--spacing-md);
+    }
+
+    .attr-item label {
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+
+    .attr-item > input {
+        max-width: 70px;
+        height: 48px;
+        font-size: 1.4rem;
+    }
+
+    .attr-btn {
+        max-width: 44px;
+        height: 36px;
+        cursor: pointer;
+    }
+
+    .attr-btn:hover {
+        transform: scale(1.05);
+    }
+
+    .attr-btn.minus:hover {
+        background: var(--danger);
+        color: white;
+    }
+
+    .attr-btn.plus:hover {
+        background: var(--success);
+        color: white;
+    }
+
+    /* ========== RESOURCES GRID ========== */
+    .resources-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .resource-item {
+        padding: var(--spacing-lg);
+    }
+
+    .resource-current {
+        width: 60px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    .res-btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        cursor: pointer;
+    }
+
+    .res-btn:hover {
+        transform: scale(1.02);
+    }
+
+    .res-btn.damage:hover {
+        background: var(--hp-color);
+        color: white;
+    }
+
+    .res-btn.heal:hover {
+        background: var(--success);
+        color: white;
+    }
+
+    /* ========== COMBAT TAB ========== */
+    #tabCombate.active {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-lg);
+        align-items: start;
+    }
+
+    /* Combat resources full width */
+    #tabCombate > .card:first-child {
+        grid-column: 1 / -1;
+    }
+
+    .combat-resources-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .combat-stat {
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+    }
+
+    .combat-skills-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .combat-skill-item {
+        cursor: pointer;
+    }
+
+    .combat-skill-item:hover {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-light);
+        transform: translateY(-1px);
+    }
+
+    .combat-res-btns button {
+        cursor: pointer;
+    }
+
+    .combat-res-btns button:hover {
+        background: var(--bg-elevated);
+        color: var(--text-bright);
+    }
+
+    /* Attacks in grid */
+    .attacks-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .attack-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* ========== SKILLS TAB ========== */
+    .skill-search {
+        max-width: 400px;
+    }
+
+    .skills-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+    }
+
+    .skill-item {
+        padding: var(--spacing-sm) var(--spacing-md);
+        transition: all 0.2s ease;
+    }
+
+    .skill-item:hover {
+        background: var(--bg-elevated);
+        border-radius: var(--border-radius-sm);
+    }
+
+    .skill-item .skill-roll {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .skill-item .skill-roll:hover {
+        background: var(--accent-primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .training-btn {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .training-btn:hover {
+        background: var(--accent-tertiary);
+        color: white;
+    }
+
+    /* ========== FUSIONS TAB ========== */
+    #tabFusoes.active {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+
+    /* All fusion cards full width */
+    #tabFusoes > .card {
+        width: 100%;
+    }
+
+    .fusion-select-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .fusion-select-item {
+        padding: var(--spacing-lg);
+    }
+
+    /* Muscles & Bones side by side */
+    #tabFusoes > .card:nth-child(2),
+    #tabFusoes > .card:nth-child(3) {
+        width: 100%;
+    }
+
+    .fusion-body-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .fusion-body-item {
+        padding: var(--spacing-md);
+        min-width: 0;
+    }
+
+    .fusion-body-item label {
+        white-space: nowrap;
+    }
+
+    .fusion-select-sm {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .fusion-select,
+    .fusion-select-sm {
+        cursor: pointer;
+    }
+
+    .fusion-select:hover,
+    .fusion-select-sm:hover {
+        border-color: var(--accent-primary);
+    }
+
+    .fusion-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .summary-item {
+        padding: var(--spacing-md) var(--spacing-lg);
+        background: var(--bg-input);
+        border-radius: var(--border-radius-sm);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: var(--spacing-sm);
+    }
+
+    .summary-item span:first-child {
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .summary-item span:last-child {
+        font-size: 1.5rem;
+    }
+
+    /* ========== INVENTORY TAB ========== */
+    #tabInventario.active {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--spacing-lg);
+        align-items: start;
+    }
+
+    /* Weight card full width */
+    #tabInventario > .card:first-child {
+        grid-column: 1 / -1;
+    }
+
+    .inventory-item {
+        transition: background 0.2s ease;
+    }
+
+    .inventory-item:hover {
+        background: var(--bg-elevated);
+    }
+
+    .inventory-item .delete-item {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .inventory-item .delete-item:hover {
+        color: white;
+        background: var(--danger);
+        border-radius: var(--border-radius-sm);
+    }
+
+    .money-amount input {
+        font-size: 1.8rem;
+        width: 160px;
+    }
+
+    /* ========== NOTES TAB ========== */
+    #tabNotas.active {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-lg);
+        align-items: start;
+    }
+
+    /* History full width */
+    #tabNotas > .card:first-child {
+        grid-column: 1 / -1;
+    }
+
+    .notes-textarea {
+        min-height: 200px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease;
+    }
+
+    .notes-textarea:hover {
+        border-color: var(--border-light);
+    }
+
+    .notes-textarea:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 2px rgba(124, 108, 247, 0.15);
+    }
+
+    /* ========== SIDE MENU - make it overlay style ========== */
+    .side-menu {
+        width: 320px;
+        left: -320px;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+    }
+
+    .side-menu.open {
+        left: 0;
+    }
+
+    /* ========== DICE MODAL ========== */
+    .dice-modal {
+        max-width: 400px;
+    }
+
+    .dice-total {
+        font-size: 5rem;
+    }
+
+    .dice-icon {
+        font-size: 3.5rem;
+    }
+
+    /* ========== BUTTONS HOVER STATES ========== */
+    .btn-primary:hover {
+        background: var(--accent-tertiary);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(124, 108, 247, 0.3);
+    }
+
+    .btn-secondary:hover {
+        background: var(--bg-card-hover);
+        border-color: var(--border-light);
+    }
+
+    .add-item-btn {
+        cursor: pointer;
+    }
+
+    .add-item-btn:hover {
+        background: var(--bg-card-hover);
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+    }
+
+    /* ========== FORM HOVER STATES ========== */
+    .form-group input:hover,
+    .form-group select:hover,
+    .form-group textarea:hover {
+        border-color: var(--border-light);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 2px rgba(124, 108, 247, 0.15);
+    }
+
+    /* ========== SCROLLBAR ========== */
+    .tab-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .tab-container::-webkit-scrollbar-track {
+        background: var(--bg-dark);
+    }
+
+    .tab-container::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+    }
+
+    .tab-container::-webkit-scrollbar-thumb:hover {
+        background: var(--border-light);
+    }
+
+    /* ========== EXECUTE ATTACK BUTTON ========== */
+    .execute-attack-btn {
+        cursor: pointer;
+    }
+
+    .execute-attack-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(124, 108, 247, 0.4);
+    }
+
+    /* ========== CHARACTER ITEM ========== */
+    .character-item {
+        cursor: pointer;
+    }
+
+    .character-item:hover {
+        background: var(--bg-elevated);
+        border-color: var(--accent-primary);
+    }
+
+    .character-item .delete-btn {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .character-item .delete-btn:hover {
+        transform: scale(1.2);
+    }
+
+    /* ========== FORM ROW ========== */
+    .form-row {
+        gap: var(--spacing-md);
+    }
+
+    /* ========== WEIGHT BAR ========== */
+    .weight-bar {
+        height: 16px;
+        border-radius: 8px;
+    }
+
+    /* ========== ARMOR SELECT ========== */
+    .armor-select {
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+    }
+
+    .armor-select:hover {
+        border-color: var(--accent-primary);
+    }
+}
+
+/* ========== WIDE DESKTOP (1440px+) ========== */
+@media (min-width: 1440px) {
+    :root {
+        --sidebar-width: 260px;
+    }
+
+    .tab-container {
+        max-width: 1400px;
+        padding: var(--spacing-xl) calc(var(--spacing-xl) * 2);
+    }
+
+    .skills-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .combat-skills-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .fusion-body-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    #tabPersonagem.active {
+        grid-template-columns: 1fr 1fr;
+    }
+}
